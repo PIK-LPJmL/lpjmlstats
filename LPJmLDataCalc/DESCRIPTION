@@ -1,11 +1,12 @@
 Package: LPJmLDataCalc
 Title: Extends the LPJmLData class by adding calculation functionality
 Version: 0.0.0.9000
-Authors@R: 
-    person("David"),
-    person("Jannes")
-Description: 
-License: 
+Authors@R: c(person("David","Hötten", email = "davidho@pik-potsdam.de", role = c("aut", "cre")))
+Description: A more complete description of what your package does. It should be at least one paragraph long. 
+License: Tbd
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
