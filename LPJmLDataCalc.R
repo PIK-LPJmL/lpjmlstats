@@ -19,7 +19,7 @@ LPJmLDataCalc <- R6::R6Class(
       if (!inherits(lpjml_data_obj, "LPJmLData")) {
         stop("Expected an LPJmLData object")
       }
-      # Feed the data from the provided LPJmLData object
+      # Copy the data from the provided LPJmLData object
       private$.data = lpjml_data_obj$data
       private$.meta = lpjml_data_obj$meta
       private$.grid = lpjml_data_obj$grid

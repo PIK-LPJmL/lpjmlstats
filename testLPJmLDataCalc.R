@@ -3,15 +3,12 @@ library(lpjmlkit)
 source("LPJmLDataCalc.R")
 
 test_that("when feeding a non LPJmLData an error is thrown",{
-  # prepare lpjmlCalcData
-  header <- lpjmlkit::create_header(ncell = 0)
-  myLPJmLMetaData <- lpjmlkit:::LPJmLMetaData$new(header)
-  myLPJmLDataCalc <- LPJmLDataCalc$new(data = 0, meta_data = myLPJmLMetaData)
+  myLPJmLDataCalc <- LPJmLDataCalc$new(data = 0)
   
   expect_error(myLPJmLDataCalc$feed_LPJmLData(1))
 })
 
-test_that("when feeding a LPJmLData its content is stored in the object",{
+test_that("when feeding a LPJmLData its content arrives in the LPJmLDataCalc",{
   # prepare lpjmlCalcData
   header <- lpjmlkit::create_header(ncell = 11)
   myLPJmLMetaData <- lpjmlkit:::LPJmLMetaData$new(header)
@@ -22,6 +19,7 @@ test_that("when feeding a LPJmLData its content is stored in the object",{
   myLPJmLMetaData2 <- lpjmlkit:::LPJmLMetaData$new(header2)
   myLPJmLData <- lpjmlkit:::LPJmLData$new(1, meta_data = myLPJmLMetaData2)
   
+  #feed lpjmlData -> lpjmlCalcData
   myLPJmLDataCalc$feed_LPJmLData(myLPJmLData)
   
   expect_equal(myLPJmLDataCalc$meta$ncell , 6)
