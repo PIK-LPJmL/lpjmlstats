@@ -29,5 +29,10 @@ Check out [the LPJmL wiki](https://gitlab.pik-potsdam.de/lpjml/LPJmL_internal/-/
 * Use each issue to document the status of your work and ask questions/start discussions if something is unclear or problems arise
 * If necessary new issues can be added for each Milestone
 
+### Reference data
+
+* there's a collection of possible reference data sets [here](https://gitlab.pik-potsdam.de/lpjml/LPJmL_internal/-/wikis/Future-benchmarking)
+* reference data should be downloaded, processed, stored and used in a strucutured manner, such as with the MADRAT universe
+
 ### Contact
 For any questions add @jannesbr to the corresponding question or write a mail at [jannesbr@pik-potsdam.de](mailto:jannesbr@pik-potsdam.de)
