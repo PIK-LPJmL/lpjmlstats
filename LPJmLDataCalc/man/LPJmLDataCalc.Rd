@@ -15,6 +15,7 @@ An extended LPJmLData class that enables calculations and statistics.
 \item \href{#method-LPJmLDataCalc-new}{\code{LPJmLDataCalc$new()}}
 \item \href{#method-LPJmLDataCalc-feed_LPJmLData}{\code{LPJmLDataCalc$feed_LPJmLData()}}
 \item \href{#method-LPJmLDataCalc-add_LPJmLDataCalc}{\code{LPJmLDataCalc$add_LPJmLDataCalc()}}
+\item \href{#method-LPJmLDataCalc-mult_LPJmLDataCalc}{\code{LPJmLDataCalc$mult_LPJmLDataCalc()}}
 \item \href{#method-LPJmLDataCalc-clone}{\code{LPJmLDataCalc$clone()}}
 }
 }
@@ -63,6 +64,15 @@ An extended LPJmLData class that enables calculations and statistics.
 \subsection{Method \code{add_LPJmLDataCalc()}}{
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$add_LPJmLDataCalc(lpj_calc_obj)}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLDataCalc-mult_LPJmLDataCalc"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-mult_LPJmLDataCalc}{}}}
+\subsection{Method \code{mult_LPJmLDataCalc()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$mult_LPJmLDataCalc(lpj_calc_obj)}\if{html}{\out{</div>}}
 }
 
 }
