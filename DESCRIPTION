@@ -1,8 +1,8 @@
 Package: LPJmLDataCalc
 Title: Extends the LPJmLData class by adding calculation functionality
 Version: 0.0.0.9000
-Authors@R: c(person("David","Hötten", email = "davidho[at]pik-potsdam.de", role = c("aut", "cre")),
-             person("Jannes","Breier", email = "jannes.breier[at]pik-potsdam.de", role = c("aut", "cre")))
+Authors@R: c(person("David","Hötten", email = "davidho@pik-potsdam.de", role = c("aut", "cre")),
+             person("Jannes","Breier", email = "jannes.breier@pik-potsdam.de", role = c("aut")))
 Description: A more complete description of what your package does. It should be at least one paragraph long. 
 License: Tbd
 Encoding: UTF-8
