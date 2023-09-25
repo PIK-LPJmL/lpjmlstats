@@ -46,7 +46,7 @@ test_that("as_LPJmLDataCalc returns LPJmLDataCalc object", {
 })
 
 test_that("conversion LPJ unit of the wild to format of units package works", {
-  path_to_data <- test_path("../data", "soiln.rds")
+  path_to_data <- test_path("../testdata", "soiln.rds")
   soil_n <- readRDS(path_to_data)
 
   soil_n_calc <- as_LPJmLDataCalc(soil_n)
@@ -89,7 +89,6 @@ test_that("correct units and value results from addition", {
 )
 
 test_that("correct units and value results from multiplication", {
-
   ## experiment 1: gN/m^2 * 1/gN = 1/m^2
   lpj_calc1 <- create_LPJmLDataCalc(1, "gN/m2")
   lpj_calc2 <- create_LPJmLDataCalc(1, "1/gN")
