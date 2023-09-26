@@ -42,7 +42,7 @@ LPJmLDataCalc <- R6::R6Class(
       }
       private$.data <- private$.data + lpj_calc_obj$.__data_with_unit__
     },
-    substract = function(lpj_calc_obj) {
+    subtract = function(lpj_calc_obj) {
       if (!inherits(lpj_calc_obj, "LPJmLDataCalc")) {
         stop("Expected an LPJmLDataCalc object")
       }
@@ -110,7 +110,7 @@ LPJmLDataCalc <- R6::R6Class(
 #' @export
 `-.LPJmLDataCalc` <- function(o1, o2) {
   sum <- o1$clone(deep = TRUE)
-  sum$substract(o2)
+  sum$subtract(o2)
   return(sum)
 }
 
