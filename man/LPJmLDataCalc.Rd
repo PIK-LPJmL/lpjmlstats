@@ -13,9 +13,9 @@ An extended LPJmLData class that enables calculations and statistics.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-LPJmLDataCalc-new}{\code{LPJmLDataCalc$new()}}
-\item \href{#method-LPJmLDataCalc-feed_LPJmLData}{\code{LPJmLDataCalc$feed_LPJmLData()}}
-\item \href{#method-LPJmLDataCalc-add_LPJmLDataCalc}{\code{LPJmLDataCalc$add_LPJmLDataCalc()}}
-\item \href{#method-LPJmLDataCalc-mult_LPJmLDataCalc}{\code{LPJmLDataCalc$mult_LPJmLDataCalc()}}
+\item \href{#method-LPJmLDataCalc-add}{\code{LPJmLDataCalc$add()}}
+\item \href{#method-LPJmLDataCalc-multiply}{\code{LPJmLDataCalc$multiply()}}
+\item \href{#method-LPJmLDataCalc-divide}{\code{LPJmLDataCalc$divide()}}
 \item \href{#method-LPJmLDataCalc-clone}{\code{LPJmLDataCalc$clone()}}
 }
 }
@@ -44,37 +44,72 @@ An extended LPJmLData class that enables calculations and statistics.
 \if{html}{\out{<a id="method-LPJmLDataCalc-new"></a>}}
 \if{latex}{\out{\hypertarget{method-LPJmLDataCalc-new}{}}}
 \subsection{Method \code{new()}}{
+!Internal method only to be used for package development!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$new(data, meta_data = NULL)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$new(lpjml_data)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lpjml_data}}{an LPJmLData object.
+Addition of two LPJmLDataCalc objects}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLDataCalc-feed_LPJmLData"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-feed_LPJmLData}{}}}
-\subsection{Method \code{feed_LPJmLData()}}{
+\if{html}{\out{<a id="method-LPJmLDataCalc-add"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-add}{}}}
+\subsection{Method \code{add()}}{
+!Internal method only to be used for package development!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$feed_LPJmLData(lpjml_data_obj)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$add(lpjml_calc_obj)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.
+Multiplication of two LPJmLDataCalc objects}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLDataCalc-add_LPJmLDataCalc"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-add_LPJmLDataCalc}{}}}
-\subsection{Method \code{add_LPJmLDataCalc()}}{
+\if{html}{\out{<a id="method-LPJmLDataCalc-multiply"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-multiply}{}}}
+\subsection{Method \code{multiply()}}{
+!Internal method only to be used for package development!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$add_LPJmLDataCalc(lpj_calc_obj)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$multiply(lpjml_calc_obj)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.
+Division of two LPJmLDataCalc objects}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLDataCalc-mult_LPJmLDataCalc"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-mult_LPJmLDataCalc}{}}}
-\subsection{Method \code{mult_LPJmLDataCalc()}}{
+\if{html}{\out{<a id="method-LPJmLDataCalc-divide"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-divide}{}}}
+\subsection{Method \code{divide()}}{
+!Internal method only to be used for package development!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$mult_LPJmLDataCalc(lpj_calc_obj)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$divide(lpjml_calc_obj)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LPJmLDataCalc-clone"></a>}}

@@ -9,62 +9,95 @@
 
 #' @export
 
-LPJmLDataCalc <- R6::R6Class(
+LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
 
   classname = "LPJmLDataCalc",
 
   inherit = lpjmlkit:::LPJmLData,
 
   public = list(
-    initialize = function(lpj_dat) {
+    # Create a new LPJmLDataCalc object; to be used internally or explicitly
+    #' @description
+    #' !Internal method only to be used for package development!
+    #'
+    #' @param lpjml_data an LPJmLData object.
+    initialize = function(lpjml_data) {
       # TODO: unit configuration into package installation?
       units::units_options(set_units_mode = "standard")
-      unit_database_path <- test_path("../../inst/lpj_units", "udunits2.xml")
+      unit_database_path <- system.file(
+        "lpjml_units",
+        "udunits2.xml",
+        package = "lpjmlstats"
+      )
       # TODO: install more LPJmL units next to gC gN?
       units::load_units_xml(unit_database_path)
 
       # Ensure the passed object is of class LPJmLData
-      if (!inherits(lpj_dat, "LPJmLData")) {
+      if (!inherits(lpjml_data, "LPJmLData")) {
         stop("Expected an LPJmLData object")
       }
-      if (!methods::is(lpj_dat$meta, "LPJmLMetaData")) {
+      if (!methods::is(lpjml_data$meta, "LPJmLMetaData")) {
         stop("Meta data is missing")
       }
       # Copy the data from the provided LPJmLData object
-      private$.data <- lpj_dat$data
-      private$.meta <- lpj_dat$meta
-      private$.grid <- lpj_dat$grid
+      private$.data <- lpjml_data$data
+      private$.meta <- lpjml_data$meta
+      private$.grid <- lpjml_data$grid
       private$copy_unit_meta2array()
     },
-    add = function(lpj_calc_obj) {
-      if (!inherits(lpj_calc_obj, "LPJmLDataCalc")) {
+
+
+    #' Addition of two LPJmLDataCalc objects
+    #' @description
+    #' !Internal method only to be used for package development!
+    #'
+    #' @param lpjml_calc_obj An `LPJmLData` object.
+    add = function(lpjml_calc_obj) {
+      if (!inherits(lpjml_calc_obj, "LPJmLDataCalc")) {
         stop("Expected an LPJmLDataCalc object")
       }
-      private$.data <- private$.data + lpj_calc_obj$.__data_with_unit__
+      private$.data <- private$.data + lpjml_calc_obj$.__data_with_unit__
     },
-    multiply = function(lpj_calc_obj) {
-      if (!inherits(lpj_calc_obj, "LPJmLDataCalc")) {
+
+
+    #' Multiplication of two LPJmLDataCalc objects
+    #' @description
+    #' !Internal method only to be used for package development!
+    #'
+    #' @param lpjml_calc_obj An `LPJmLData` object.
+    multiply = function(lpjml_calc_obj) {
+      if (!inherits(lpjml_calc_obj, "LPJmLDataCalc")) {
         stop("Expected an LPJmLDataCalc object")
       }
-      private$.data <- private$.data * lpj_calc_obj$.__data_with_unit__
+      private$.data <- private$.data * lpjml_calc_obj$.__data_with_unit__
       private$copy_unit_array2meta()
     },
-    divide = function(lpj_calc_obj) {
-      if (!inherits(lpj_calc_obj, "LPJmLDataCalc")) {
+
+    #' Division of two LPJmLDataCalc objects
+    #' @description
+    #' !Internal method only to be used for package development!
+    #'
+    #' @param lpjml_calc_obj An `LPJmLData` object.
+    divide = function(lpjml_calc_obj) {
+      if (!inherits(lpjml_calc_obj, "LPJmLDataCalc")) {
         stop("Expected an LPJmLDataCalc object")
       }
-      private$.data <- private$.data / lpj_calc_obj$.__data_with_unit__
+      private$.data <- private$.data / lpjml_calc_obj$.__data_with_unit__
       private$copy_unit_array2meta()
     }
   ),
 
   private = list(
+
+    # Copy the unit attribute from the meta data to the units data array
     copy_unit_meta2array = function() {
       unit <- private$.meta$unit
       private$.data <- set_units(private$.data, as_units(unit))
     },
+
+    # Copy the unit attribute from the units data array to the meta data
     copy_unit_array2meta = function() {
-      unit <- attr(self$.__data_with_unit__, "unit")
+      unit <- attr(self$.__data_with_unit__, "units")
       if (identical(unit$numerator, character(0))) {
         numerator <- 1
       } else {
@@ -94,6 +127,13 @@ LPJmLDataCalc <- R6::R6Class(
   )
 )
 
+#' Addition of two LPJmLDataCalc objects
+#' Add an LPJmLDataCalc object to another LPJmLDataCalc object
+#'
+#' @param o1 An `LPJmLDataCalc` object.
+#' @param o2 An `LPJmLDataCalc` object.
+#'
+#' @return An `LPJmLDataCalc` object.
 #' @export
 `+.LPJmLDataCalc` <- function(o1, o2) {
   sum <- o1$clone(deep = TRUE)
@@ -101,6 +141,13 @@ LPJmLDataCalc <- R6::R6Class(
   return(sum)
 }
 
+#' Multiplication of two LPJmLDataCalc objects
+#' Multiply an LPJmLDataCalc object by another LPJmLDataCalc object
+#'
+#' @param o1 An `LPJmLDataCalc` object.
+#' @param o2 An `LPJmLDataCalc` object.
+#'
+#' @return An `LPJmLDataCalc` object.
 #' @export
 `*.LPJmLDataCalc` <- function(o1, o2) {
   product <- o1$clone(deep = TRUE)
@@ -108,6 +155,13 @@ LPJmLDataCalc <- R6::R6Class(
   return(product)
 }
 
+#' Division of two LPJmLDataCalc objects
+#' Divide an LPJmLDataCalc object by another LPJmLDataCalc object
+#'
+#' @param o1 An `LPJmLDataCalc` object.
+#' @param o2 An `LPJmLDataCalc` object.
+#'
+#' @return An `LPJmLDataCalc` object.
 #' @export
 `/.LPJmLDataCalc` <- function(o1, o2) {
   quotient <- o1$clone(deep = TRUE)
@@ -115,8 +169,20 @@ LPJmLDataCalc <- R6::R6Class(
   return(quotient)
 }
 
+
+
+#' Coerce an LPJmLData object into an LPJmLDataCalc object
+#'
+#' Function to coerce (convert) an [`LPJmLData`] object into an
+#' LPJmLDataCalc object with extended functionality.
+#'
+#' @param obj LPJmLData object.
+#'
+#' @return An LPJmLDataCalc object.
+#'
+#' @md
 #' @export
-as_LPJmLDataCalc <- function(obj) {
+as_LPJmLDataCalc <- function(obj) { # nolint:object_linter_name
   calc <- LPJmLDataCalc$new(obj)
   return(calc)
 }

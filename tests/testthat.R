@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(LPJmLDataCalc)
+library(lpjmlstats)
 
-test_check("LPJmLDataCalc")
+test_check("lpjmlstats")

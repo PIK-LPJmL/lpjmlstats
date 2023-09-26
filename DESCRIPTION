@@ -1,13 +1,17 @@
-Package: LPJmLDataCalc
-Title: Extends the LPJmLData class by adding calculation functionality
+Package: lpjmlstats
+Title: Statistical tools for LPJmL data analysis
 Version: 0.0.0.9000
 Authors@R: c(person("David","Hötten", email = "davidho@pik-potsdam.de", role = c("aut", "cre")),
              person("Jannes","Breier", email = "jannes.breier@pik-potsdam.de", role = c("aut")))
-Description: A more complete description of what your package does. It should be at least one paragraph long. 
-License: Tbd
+Description: This package provides statistical tools for LPJmL data analysis
+    to be used for benchmarking LPJmL outputs.
+License: AGPL-3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
+Imports:
+    units,
+    lpjmlkit
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
