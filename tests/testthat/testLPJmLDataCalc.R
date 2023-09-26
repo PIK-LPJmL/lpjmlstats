@@ -83,6 +83,18 @@ test_that("correct units and value results from addition", {
 }
 )
 
+test_that("correct units and value results from addition", {
+  ## experiment 1: 1 g/m2 + 1 kg/m2 = 1001 g/m2
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "g/m2")
+  lpjml_calc2 <- create_LPJmLDataCalc(1, "kg/m2")
+
+  sum <- lpjml_calc1 - lpjml_calc2
+
+  expect_equal(sum$meta$unit, "g/m2")
+  expect_equal(sum$data, -999)
+}
+)
+
 test_that("correct units and value results from multiplication", {
   ## experiment 1: gN/m^2 * 1/gN = 1/m^2
   lpjml_calc1 <- create_LPJmLDataCalc(1, "gN/m2")
@@ -144,4 +156,13 @@ test_that("meta from multiplicand is used", {
   product <- lpjml_calc1 * lpjml_calc2
 
   expect_equal(product$meta, lpjml_calc1$meta)
+})
+
+test_that("multiplication with scalar units object works", {
+  lpjml_calc1 <- create_LPJmLDataCalc(array(c(1, 2, 3, 4), c(2, 2)), "gN")
+  z <- create_LPJmLDataCalc(2, "")
+
+  product <- lpjml_calc1 * z
+
+  expect_equal(product$data, array(c(2, 4, 6, 8), c(2, 2)))
 })

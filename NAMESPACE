@@ -2,6 +2,7 @@
 
 S3method("*",LPJmLDataCalc)
 S3method("+",LPJmLDataCalc)
+S3method("-",LPJmLDataCalc)
 S3method("/",LPJmLDataCalc)
 export(LPJmLDataCalc)
 export(as_LPJmLDataCalc)

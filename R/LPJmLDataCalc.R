@@ -60,6 +60,19 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     },
 
 
+    #' Subtraction of two LPJmLDataCalc objects
+    #' @description
+    #' !Internal method only to be used for package development!
+    #'
+    #' @param lpjml_calc_obj An `LPJmLData` object.
+    subtract = function(lpjml_calc_obj) {
+      if (!inherits(lpjml_calc_obj, "LPJmLDataCalc")) {
+        stop("Expected an LPJmLDataCalc object")
+      }
+      private$.data <- private$.data - lpjml_calc_obj$.__data_with_unit__
+    },
+
+
     #' Multiplication of two LPJmLDataCalc objects
     #' @description
     #' !Internal method only to be used for package development!
@@ -127,6 +140,7 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
   )
 )
 
+
 #' Addition of two LPJmLDataCalc objects
 #' Add an LPJmLDataCalc object to another LPJmLDataCalc object
 #'
@@ -140,6 +154,22 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
   sum$add(o2)
   return(sum)
 }
+
+
+#' Subtraction of two LPJmLDataCalc objects
+#' Subtract an LPJmLDataCalc object from another LPJmLDataCalc object
+#'
+#' @param o1 An `LPJmLDataCalc` object.
+#' @param o2 An `LPJmLDataCalc` object.
+#'
+#' @return An `LPJmLDataCalc` object.
+#' @export
+`-.LPJmLDataCalc` <- function(o1, o2) {
+  sum <- o1$clone(deep = TRUE)
+  sum$subtract(o2)
+  return(sum)
+}
+
 
 #' Multiplication of two LPJmLDataCalc objects
 #' Multiply an LPJmLDataCalc object by another LPJmLDataCalc object
@@ -155,6 +185,7 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
   return(product)
 }
 
+
 #' Division of two LPJmLDataCalc objects
 #' Divide an LPJmLDataCalc object by another LPJmLDataCalc object
 #'
@@ -168,7 +199,6 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
   quotient$divide(o2)
   return(quotient)
 }
-
 
 
 #' Coerce an LPJmLData object into an LPJmLDataCalc object

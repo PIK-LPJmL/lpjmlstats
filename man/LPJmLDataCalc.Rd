@@ -14,6 +14,7 @@ An extended LPJmLData class that enables calculations and statistics.
 \itemize{
 \item \href{#method-LPJmLDataCalc-new}{\code{LPJmLDataCalc$new()}}
 \item \href{#method-LPJmLDataCalc-add}{\code{LPJmLDataCalc$add()}}
+\item \href{#method-LPJmLDataCalc-subtract}{\code{LPJmLDataCalc$subtract()}}
 \item \href{#method-LPJmLDataCalc-multiply}{\code{LPJmLDataCalc$multiply()}}
 \item \href{#method-LPJmLDataCalc-divide}{\code{LPJmLDataCalc$divide()}}
 \item \href{#method-LPJmLDataCalc-clone}{\code{LPJmLDataCalc$clone()}}
@@ -65,6 +66,24 @@ Addition of two LPJmLDataCalc objects}
 !Internal method only to be used for package development!
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$add(lpjml_calc_obj)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.
+Subtraction of two LPJmLDataCalc objects}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLDataCalc-subtract"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-subtract}{}}}
+\subsection{Method \code{subtract()}}{
+!Internal method only to be used for package development!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$subtract(lpjml_calc_obj)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
