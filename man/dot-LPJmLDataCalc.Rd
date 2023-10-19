@@ -2,8 +2,7 @@
 % Please edit documentation in R/LPJmLDataCalc.R
 \name{-.LPJmLDataCalc}
 \alias{-.LPJmLDataCalc}
-\title{Subtraction of two LPJmLDataCalc objects
-Subtract an LPJmLDataCalc object from another LPJmLDataCalc object}
+\title{Subtraction of two LPJmLDataCalc objects}
 \usage{
 \method{-}{LPJmLDataCalc}(o1, o2)
 }
@@ -16,6 +15,5 @@ Subtract an LPJmLDataCalc object from another LPJmLDataCalc object}
 An \code{LPJmLDataCalc} object.
 }
 \description{
-Subtraction of two LPJmLDataCalc objects
 Subtract an LPJmLDataCalc object from another LPJmLDataCalc object
 }

@@ -11,7 +11,11 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
 Imports:
     units,
-    lpjmlkit
+    lpjmlkit,
+    Matrix,
+    abind
 Suggests: 
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    raster,
+    maps
 Config/testthat/edition: 3

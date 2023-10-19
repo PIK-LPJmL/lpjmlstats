@@ -2,8 +2,7 @@
 % Please edit documentation in R/LPJmLDataCalc.R
 \name{+.LPJmLDataCalc}
 \alias{+.LPJmLDataCalc}
-\title{Addition of two LPJmLDataCalc objects
-Add an LPJmLDataCalc object to another LPJmLDataCalc object}
+\title{Addition of two LPJmLDataCalc objects}
 \usage{
 \method{+}{LPJmLDataCalc}(o1, o2)
 }
@@ -16,6 +15,5 @@ Add an LPJmLDataCalc object to another LPJmLDataCalc object}
 An \code{LPJmLDataCalc} object.
 }
 \description{
-Addition of two LPJmLDataCalc objects
 Add an LPJmLDataCalc object to another LPJmLDataCalc object
 }

@@ -4,19 +4,38 @@
 \alias{LPJmLDataCalc}
 \title{LPJmLDataCalc}
 \description{
-An extended LPJmLData class that enables calculations and statistics.
+An extended LPJmLData class that enables arithmetic and statistics.
+}
+\seealso{
+\link[lpjmlkit]{calc_cellarea}
 }
 \section{Super class}{
 \code{\link[lpjmlkit:LPJmLData]{lpjmlkit::LPJmLData}} -> \code{LPJmLDataCalc}
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{data}}{the data array}
+
+\item{\code{.data_with_unit}}{Returns the internal enclosed unit object
+!Internal method only to be used for package development!}
+}
+\if{html}{\out{</div>}}
 }
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-LPJmLDataCalc-new}{\code{LPJmLDataCalc$new()}}
-\item \href{#method-LPJmLDataCalc-add}{\code{LPJmLDataCalc$add()}}
-\item \href{#method-LPJmLDataCalc-subtract}{\code{LPJmLDataCalc$subtract()}}
-\item \href{#method-LPJmLDataCalc-multiply}{\code{LPJmLDataCalc$multiply()}}
-\item \href{#method-LPJmLDataCalc-divide}{\code{LPJmLDataCalc$divide()}}
+\item \href{#method-LPJmLDataCalc-aggregate}{\code{LPJmLDataCalc$aggregate()}}
+\item \href{#method-LPJmLDataCalc-area_dens2cell_values}{\code{LPJmLDataCalc$area_dens2cell_values()}}
+\item \href{#method-LPJmLDataCalc-plot}{\code{LPJmLDataCalc$plot()}}
+\item \href{#method-LPJmLDataCalc-.check_internal_integrity}{\code{LPJmLDataCalc$.check_internal_integrity()}}
+\item \href{#method-LPJmLDataCalc-.plot_aggregated}{\code{LPJmLDataCalc$.plot_aggregated()}}
+\item \href{#method-LPJmLDataCalc-.add}{\code{LPJmLDataCalc$.add()}}
+\item \href{#method-LPJmLDataCalc-.subtract}{\code{LPJmLDataCalc$.subtract()}}
+\item \href{#method-LPJmLDataCalc-.multiply}{\code{LPJmLDataCalc$.multiply()}}
+\item \href{#method-LPJmLDataCalc-.divide}{\code{LPJmLDataCalc$.divide()}}
+\item \href{#method-LPJmLDataCalc-.sum_up_regions}{\code{LPJmLDataCalc$.sum_up_regions()}}
 \item \href{#method-LPJmLDataCalc-clone}{\code{LPJmLDataCalc$clone()}}
 }
 }
@@ -33,7 +52,6 @@ An extended LPJmLData class that enables calculations and statistics.
 <li><span class="pkg-link" data-pkg="lpjmlkit" data-topic="LPJmLData" data-id="dim"><a href='../../lpjmlkit/html/LPJmLData.html#method-LPJmLData-dim'><code>lpjmlkit::LPJmLData$dim()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlkit" data-topic="LPJmLData" data-id="dimnames"><a href='../../lpjmlkit/html/LPJmLData.html#method-LPJmLData-dimnames'><code>lpjmlkit::LPJmLData$dimnames()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlkit" data-topic="LPJmLData" data-id="length"><a href='../../lpjmlkit/html/LPJmLData.html#method-LPJmLData-length'><code>lpjmlkit::LPJmLData$length()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="lpjmlkit" data-topic="LPJmLData" data-id="plot"><a href='../../lpjmlkit/html/LPJmLData.html#method-LPJmLData-plot'><code>lpjmlkit::LPJmLData$plot()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlkit" data-topic="LPJmLData" data-id="print"><a href='../../lpjmlkit/html/LPJmLData.html#method-LPJmLData-print'><code>lpjmlkit::LPJmLData$print()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlkit" data-topic="LPJmLData" data-id="subset"><a href='../../lpjmlkit/html/LPJmLData.html#method-LPJmLData-subset'><code>lpjmlkit::LPJmLData$subset()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlkit" data-topic="LPJmLData" data-id="summary"><a href='../../lpjmlkit/html/LPJmLData.html#method-LPJmLData-summary'><code>lpjmlkit::LPJmLData$summary()</code></a></span></li>
@@ -45,6 +63,7 @@ An extended LPJmLData class that enables calculations and statistics.
 \if{html}{\out{<a id="method-LPJmLDataCalc-new"></a>}}
 \if{latex}{\out{\hypertarget{method-LPJmLDataCalc-new}{}}}
 \subsection{Method \code{new()}}{
+Create a new LPJmLDataCalc object; to be used internally or explicitly
 !Internal method only to be used for package development!
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$new(lpjml_data)}\if{html}{\out{</div>}}
@@ -53,79 +72,251 @@ An extended LPJmLData class that enables calculations and statistics.
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{lpjml_data}}{an LPJmLData object.
-Addition of two LPJmLDataCalc objects}
+\item{\code{lpjml_data}}{an LPJmLData object.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLDataCalc-add"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-add}{}}}
-\subsection{Method \code{add()}}{
-!Internal method only to be used for package development!
+\if{html}{\out{<a id="method-LPJmLDataCalc-aggregate"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-aggregate}{}}}
+\subsection{Method \code{aggregate()}}{
+Function to aggregate an \code{\link{LPJmLDataCalc}} object in space.
+Different aggregation methods can be used.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$add(lpjml_calc_obj)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$aggregate(
+  space = "cow_regions",
+  method = "sum",
+  support_of_area_dens = "terr_area"
+)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.
-Subtraction of two LPJmLDataCalc objects}
+\item{\code{space}}{The spatial aggregation units. Can be either a string
+indicating regions of the earth surface or an \code{\link{LPJmLRegionData}} object.
+Currently the following strings are available:
+\itemize{
+\item \code{cow_regions}: The regions defined by the Correlates of War project
+\item \code{global}: A dynamically created region that fully contains all cells
+of the grid.
+}}
+
+\item{\code{method}}{String that specifies spatial method of aggregation.
+Current only the following options are available:
+\itemize{
+\item \code{sum}: The values of all cells belonging to each region are summed up.
+If a cell belongs to a region only partially, we assume
+that the quantity is distributed uniformly over the cell area and
+multiply the value by the fraction of the cell that is part of the region
+before summing up.
+\item \code{integral}: Given an area density, the integral over each region is
+calculated. First, the area density is converted to a total per cell by
+multiplying the value by the supporting cell areas.
+The integral is then calculated
+by summing up the values of all cells belonging to each region, as
+described for \code{sum}. This option expects that the stored quantity is an
+area density, i.e. \code{m^2} is par of the denominator of the unit.
+\item \code{area_mean}: Calculates the mean value over the supporting areas of
+each region. This option expects that the stored quantity is an
+area density, i.e. \code{m^2} is par of the denominator of the unit.
+}}
+
+\item{\code{support_of_area_dens}}{Specifies the areas of each cell on which
+the area density is supported. See \code{\link{LPJmLDataCalc}} method
+area_dens2cell_values.}
+
+\item{\code{lpjml_calc}}{\code{\link{LPJmLDataCalc}} object to be aggregated}
 }
 \if{html}{\out{</div>}}
 }
+\subsection{Returns}{
+An aggregated \code{\link{LPJmLDataCalc}} object.
+}
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLDataCalc-subtract"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-subtract}{}}}
-\subsection{Method \code{subtract()}}{
-!Internal method only to be used for package development!
+\if{html}{\out{<a id="method-LPJmLDataCalc-area_dens2cell_values"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-area_dens2cell_values}{}}}
+\subsection{Method \code{area_dens2cell_values()}}{
+Convert data storing a quantity given as an area density
+(per square meter)
+to the total amounts of that quantity present in each cell
+by multiplying the values with cell areas.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$subtract(lpjml_calc_obj)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$area_dens2cell_values(support_of_area_dens = "terr_area")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.
-Multiplication of two LPJmLDataCalc objects}
+\item{\code{support_of_area_dens}}{Specifies the cell areas to be used as a
+multiplier. The underlying assumption is that the given area density
+"lives" (in mathematical terms "is supported") only on this area.
+More precisely the area density is assumed to have the given constant
+value on this area but is zero outside of it.
+The following options are available:
+\itemize{
+\item \code{terr_area}: The terrestrial area of the earth including inland water
+but excluding oceans. This relies on the output "terr_area" to be
+present in the directory of the source file of the LPJmLDataCalc object.
+\item \code{full_cell_area} The complete area of each cell including oceans.
+}}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLDataCalc-multiply"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-multiply}{}}}
-\subsection{Method \code{multiply()}}{
-!Internal method only to be used for package development!
+\if{html}{\out{<a id="method-LPJmLDataCalc-plot"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-plot}{}}}
+\subsection{Method \code{plot()}}{
+Plot an LPJmLDataCalc object
+
+The function acts a wrapper of \link[lpjmlkit]{plot.LPJmLData} from
+lpjmlkit, but allows for plotting data in more formats.
+
+In case of non-aggregated data
+\link[lpjmlkit]{plot.LPJmLData}
+is directly called. In case of aggregated data the
+value for each region is assigned to all pixels that belong
+to the region.
+If a pixel belong to a region only partially, the value is
+multiplied by the
+fraction of that pixel belonging to the region. If a pixel belongs to
+multiple regions, the sum of all respective region values
+(multiplied by the fractions) is taken.
+The pixel values are then again plotted with
+\link[lpjmlkit]{plot.LPJmLData}.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$multiply(lpjml_calc_obj)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$plot(...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.
-Division of two LPJmLDataCalc objects}
+\item{\code{...}}{Arguments passed to \link[lpjmlkit]{LPJmLData} plot method.}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLDataCalc-divide"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-divide}{}}}
-\subsection{Method \code{divide()}}{
+\if{html}{\out{<a id="method-LPJmLDataCalc-.check_internal_integrity"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-.check_internal_integrity}{}}}
+\subsection{Method \code{.check_internal_integrity()}}{
+Check consistency of data and meta data
 !Internal method only to be used for package development!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$divide(lpjml_calc_obj)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$.check_internal_integrity()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLDataCalc-.plot_aggregated"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-.plot_aggregated}{}}}
+\subsection{Method \code{.plot_aggregated()}}{
+Plot aggregated data.
+Performs a very simple disaggregation to create LPJmLData obj
+that can be plotted with plot.LPJmLData.
+For each pixel the values of all regions that contain
+the pixel are multiplied by the fractions and summed up.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$.plot_aggregated(...)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{...}}{Arguments to be passed to plot.LPJmLData}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLDataCalc-.add"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-.add}{}}}
+\subsection{Method \code{.add()}}{
+Addition of two LPJmLDataCalc objects
+!Internal method only to be used for package development!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$.add(lpjml_calc_obj)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLDataCalc-.subtract"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-.subtract}{}}}
+\subsection{Method \code{.subtract()}}{
+Subtraction of two LPJmLDataCalc objects
+!Internal method only to be used for package development!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$.subtract(lpjml_calc_obj)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLDataCalc-.multiply"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-.multiply}{}}}
+\subsection{Method \code{.multiply()}}{
+Multiplication of two LPJmLDataCalc objects
+!Internal method only to be used for package development!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$.multiply(lpjml_calc_obj)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLDataCalc-.divide"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-.divide}{}}}
+\subsection{Method \code{.divide()}}{
+Division of two LPJmLDataCalc objects
+!Internal method only to be used for package development!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$.divide(lpjml_calc_obj)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lpjml_calc_obj}}{An \code{LPJmLData} object.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLDataCalc-.sum_up_regions"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-.sum_up_regions}{}}}
+\subsection{Method \code{.sum_up_regions()}}{
+Sum up cell values in each region
+!Internal method only to be used for package development!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$.sum_up_regions(lpjml_regions)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{lpjml_regions}}{An \code{LPJmLRegionData} object.}
 }
 \if{html}{\out{</div>}}
 }

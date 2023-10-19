@@ -1,0 +1,78 @@
+#' @title LPJmL meta data class
+#'
+#' @description
+#' A meta data container for the LPJmLDataCalc class that extends the
+#' \link[lpjmlkit]{LPJmLMetaData} such that aggregation can be tracked.
+#'
+
+LPJmLMetaDataCalc <- R6::R6Class( # nolint
+
+  classname = "LPJmLMetaDataCalc",
+
+  lock_objects = FALSE,
+
+  inherit = lpjmlkit:::LPJmLMetaData,
+
+  public = list( # TODO: Must be possible to do this better
+
+    #' @description
+    #' Initialize the LPJmLMetaDataCalc object by copying all
+    #' private attributes from an LPJmLMetaData object to private attributes
+    #' of this object.
+    #' !Internal method only to be used for package development!
+    #' @param lpjml_meta an LPJmLMetaData object.
+    initialize = function(lpjml_meta) {
+      # get private attribute names from lpjml_meta
+      private_attr_names <- names(lpjml_meta$.__enclos_env__$private)
+
+      # iterate over private attributes and assign them to private env
+      for (attr_name in private_attr_names) {
+        attr_data <- lpjml_meta$.__enclos_env__$private[[attr_name]]
+        private_env <- parent.env(environment())[["private"]]
+        if (!is.function(attr_data)) {
+          assign(attr_name, attr_data,
+                 envir = private_env)
+        }
+      }
+    },
+
+    #' @description
+    #' Save in metadata that data is in aggregated format
+    #' !Internal method only to be used for package development!
+    .__set_as_aggregated__ = function() {
+      private$.aggregated <- TRUE
+    },
+
+    #' @description
+    #' Wrapper for [`LPJmLMetaData`] print method.
+    #' @param spaces string of spaces to be printed as prefix
+    #' @param ... additional arguments passed to [`LPJmLMetaData`] print method
+    print = function(spaces = "", ...) {
+      super$print(spaces = spaces, ...)
+      # print aggregated attribute
+      cat(
+        paste0(
+          spaces,
+          lpjmlkit:::col_var("$aggregated"),
+          " ",
+          # Color red if aggregated
+          ifelse(self$aggregated, lpjmlkit:::col_warn(self$aggregated),
+                 self$aggregated),
+          "\n"
+        )
+      )
+    }
+  ),
+
+  active = list(
+    #' @field aggregated Indication weather the data has been
+    #' subject to aggregation, in other words weather it is aggregated.
+    aggregated = function() {
+      return(private$.aggregated)
+    }
+  ),
+
+  private = list(
+    .aggregated = FALSE
+  )
+)
