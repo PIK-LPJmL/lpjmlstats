@@ -8,5 +8,8 @@
 
 library(testthat)
 library(lpjmlstats)
+library(Matrix)
+library(raster)
+library(maps)
 
 test_check("lpjmlstats")

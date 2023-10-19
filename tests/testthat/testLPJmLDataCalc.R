@@ -1,13 +1,5 @@
-# utility functions ------------------------
 
-create_LPJmLDataCalc <- function(data, my_unit, ...) { # nolint:object_name_linter
-  header <- lpjmlkit::create_header(ncell = 1, verbose = FALSE, ...)
-  lpjml_meta <- lpjmlkit:::LPJmLMetaData$new(header, list(unit = my_unit))
-  lpjml_dat <- lpjmlkit:::LPJmLData$new(data, lpjml_meta)
-  return(LPJmLDataCalc$new(lpjml_dat))
-}
 
-# tests  ------------------------
 
 test_that("when initializing with non LPJmLData object an error is thrown", {
   expect_error(LPJmLDataCalc$new(1), regexp = "LPJmLData")
@@ -21,7 +13,7 @@ test_that("when initializing with LPJmLData the content arrives", {
   lpjml_calc <- LPJmLDataCalc$new(lpjml_dat)
 
   expect_equal(lpjml_calc$meta$ncell, 6)
-  expect_equal(lpjml_calc$data, 1)
+  expect_equal(as.numeric(lpjml_calc$data), 1, ignore_attr = TRUE)
 })
 
 test_that("the object returned when calling obj$data doesn't have class", {
@@ -32,7 +24,8 @@ test_that("the object returned when calling obj$data doesn't have class", {
 
 test_that("as_LPJmLDataCalc returns LPJmLDataCalc object", {
   header <- create_header(ncell = 1, verbose = FALSE)
-  lpjml_meta <- lpjmlkit:::LPJmLMetaData$new(header, list(unit = "g"))
+  lpjml_meta <-
+    lpjmlkit:::LPJmLMetaData$new(header, list(unit = "g"))
 
   lpjml_dat <- lpjmlkit:::LPJmLData$new(c(1), lpjml_meta)
   lpjml_calc <- as_LPJmLDataCalc(lpjml_dat)
@@ -45,7 +38,7 @@ test_that("conversion LPJ unit of the wild to format of units package works", {
   soil_n <- readRDS(path_to_data)
 
   soil_n_calc <- as_LPJmLDataCalc(soil_n)
-  x <- soil_n_calc$.__data_with_unit__
+  x <- soil_n_calc$.data_with_unit
 
   expect_equal(attr(x, "units")$numerator, "gN")
 })
@@ -65,35 +58,77 @@ test_that("correct units and value results from addition", {
 
   sum <- lpjml_calc1 + lpjml_calc2
 
-  expect_equal(sum$meta$unit, "g/m2")
-  expect_equal(sum$data, 1001)
+  expect_equal(sum$meta$unit, "g m-2")
+  expect_equal(sum$data[[1]], 1001, ignore_attr = TRUE)
 
 
   ## experiment 2: array addition
   array1 <- c(1, 0, 0, 1)
-  dim(array1) <- c(2, 2)
+  dim(array1) <- c(2, 2, 1)
   array2 <- c(3, 3, 3, 3)
-  dim(array2) <- c(2, 2)
+  dim(array2) <- c(2, 2, 1)
   lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
   lpjml_calc2 <- create_LPJmLDataCalc(array2, "")
 
   z <- lpjml_calc1 + lpjml_calc2
 
-  expect_equal(z$data, array1 + array2)
-}
-)
+  expect_equal(z$data, array1 + array2, ignore_attr = TRUE)
+})
 
-test_that("correct units and value results from addition", {
+test_that("broadcasting second operator works for addition", {
+  ## experiment 1: 1 g/m2 + 1 kg/m2 = 1001 g/m2
+  lpjml_calc1 <- create_LPJmLDataCalc(c(1, 1), "g/m2")
+  lpjml_calc2 <- create_LPJmLDataCalc(1, "kg/m2")
+
+  sum <- lpjml_calc1 + lpjml_calc2
+
+  expect_equal(sum$meta$unit, "g m-2")
+  expect_equal(sum$data[[1]], 1001, ignore_attr = TRUE)
+})
+
+test_that("addition with scalar works", {
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "g/m2")
+
+  scalar <- 1
+
+  sum <- lpjml_calc1 + scalar
+
+  expect_equal(sum$data[[1]], 2, ignore_attr = TRUE)
+})
+
+
+test_that("correct units and value results from subtraction", {
   ## experiment 1: 1 g/m2 + 1 kg/m2 = 1001 g/m2
   lpjml_calc1 <- create_LPJmLDataCalc(1, "g/m2")
   lpjml_calc2 <- create_LPJmLDataCalc(1, "kg/m2")
 
-  sum <- lpjml_calc1 - lpjml_calc2
+  difference <- lpjml_calc1 - lpjml_calc2
 
-  expect_equal(sum$meta$unit, "g/m2")
-  expect_equal(sum$data, -999)
-}
-)
+  expect_equal(difference$meta$unit, "g m-2")
+  expect_equal(difference$data[[1]], -999, ignore_attr = TRUE)
+})
+
+test_that("broadcasting second operator works for subtraction", {
+  ## experiment 1: 1 g/m2 + 1 kg/m2 = 1001 g/m2
+  lpjml_calc1 <- create_LPJmLDataCalc(c(1, 1), "g/m2")
+  lpjml_calc2 <- create_LPJmLDataCalc(1, "kg/m2")
+
+  difference <- lpjml_calc1 - lpjml_calc2
+
+  expect_equal(difference$meta$unit, "g m-2")
+  expect_equal(difference$data[[1]], -999, ignore_attr = TRUE)
+})
+
+test_that("subtraction with scalar works", {
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "g/m2")
+
+  scalar <- 1
+
+  difference <- lpjml_calc1 - scalar
+
+  expect_equal(difference$data[[1]], 0, ignore_attr = TRUE)
+})
+
 
 test_that("correct units and value results from multiplication", {
   ## experiment 1: gN/m^2 * 1/gN = 1/m^2
@@ -102,10 +137,8 @@ test_that("correct units and value results from multiplication", {
 
   product <- lpjml_calc1 * lpjml_calc2
 
-  x <- product$.__data_with_unit__
-  expect_equal(attr(x, "units")$numerator, character(0))
-  expect_equal(attr(x, "units")$denominator, "m2")
-  expect_equal(product$meta$unit, "1/m2")
+  x <- product$.data_with_unit
+  expect_equal(product$meta$unit, "m-2")
 
   ## experiment 2: gN * 1/gN = 1
   lpjml_calc1 <- create_LPJmLDataCalc(2, "gN")
@@ -113,8 +146,8 @@ test_that("correct units and value results from multiplication", {
 
   product <- lpjml_calc1 * lpjml_calc2
 
-  expect_equal(product$meta$unit, "1") # TODO: how to handle no unit case?
-  expect_equal(product$data, 1)
+  expect_equal(product$meta$unit, "") # TODO: how to handle no unit case?
+  expect_equal(product$data[[1]], 1, ignore_attr = TRUE)
 
   ## experiment 3: gC * 1/gN = gC/gN
   lpjml_calc1 <- create_LPJmLDataCalc(2, "gC")
@@ -122,22 +155,53 @@ test_that("correct units and value results from multiplication", {
 
   product <- lpjml_calc1 * lpjml_calc2
 
-  expect_equal(product$meta$unit, "gC/gN")
-  expect_equal(product$data, 1)
+  expect_equal(product$meta$unit, "gC gN-1")
+  expect_equal(product$data[[1]], 1, ignore_attr = TRUE)
 
   ## experiment 4: array multiplication
   array1 <- c(1, 0, 0, 1)
-  dim(array1) <- c(2, 2)
+  dim(array1) <- c(2, 2, 1)
   array2 <- c(3, 3, 3, 3)
-  dim(array2) <- c(2, 2)
+  dim(array2) <- c(2, 2, 1)
   lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
   lpjml_calc2 <- create_LPJmLDataCalc(array2, "")
 
   product <- lpjml_calc1 * lpjml_calc2
 
-  expect_equal(product$data, array1 * array2)
-}
-)
+  expect_equal(product$data, array1 * array2, ignore_attr = TRUE)
+
+  ## experiment 5: 1/m2 * m2 = 1
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "1/m2")
+  lpjml_calc2 <- create_LPJmLDataCalc(1, "m2")
+
+  product <- lpjml_calc1 * lpjml_calc2
+
+  expect_equal(product$meta$unit, "")
+})
+
+test_that("broadcasting second operator works for multiplication", {
+  array1 <- rep(c(1, 0, 0, 1), 3)
+  dim(array1) <- c(2, 2, 3)
+  array2 <- c(3, 2, 1)
+  dim(array2) <- c(1, 1, 3)
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  lpjml_calc2 <- create_LPJmLDataCalc(array2, "")
+
+  product <- lpjml_calc1 * lpjml_calc2
+
+  expect_equal(product$data[1, 1, ], c(3, 2, 1), ignore_attr = TRUE) #nolint
+})
+
+test_that("multiplication with scalar unit object works", {
+  array1 <- c(1, 0, 0, 1)
+  dim(array1) <- c(2, 2, 1)
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+
+  multiplier <- 2
+
+  lpjml_calc2 <- lpjml_calc1 * multiplier
+  expect_equal(lpjml_calc2$data, array1 * 2, ignore_attr = TRUE)
+})
 
 test_that("correct units and value results from division", {
   lpjml_calc1 <- create_LPJmLDataCalc(2, "gN")
@@ -145,12 +209,36 @@ test_that("correct units and value results from division", {
 
   ratio <- lpjml_calc1 / lpjml_calc2
 
-  expect_equal(ratio$data, 4)
-  expect_equal(ratio$meta$unit, "1")
+  expect_equal(ratio$data[[1]], 4, ignore_attr = TRUE)
+  expect_equal(ratio$meta$unit, "")
+})
+
+test_that("broadcasting second operator works for division", {
+  array1 <- rep(c(1, 0, 0, 1), 3)
+  dim(array1) <- c(2, 2, 3)
+  array2 <- c(3, 2, 1)
+  dim(array2) <- c(1, 1, 3)
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  lpjml_calc2 <- create_LPJmLDataCalc(array2, "")
+
+  ratio <- lpjml_calc1 / lpjml_calc2
+
+  expect_equal(ratio$data[1, 1, ], c(1 / 3, 1 / 2, 1), ignore_attr = TRUE) #nolint
+})
+
+test_that("division with scalar unit object works", {
+  array1 <- c(1, 0, 0, 1)
+  dim(array1) <- c(2, 2, 1)
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+
+  divisor <- 2
+
+  lpjml_calc2 <- lpjml_calc1 / divisor
+  expect_equal(lpjml_calc2$data, array1 / 2, ignore_attr = TRUE)
 })
 
 test_that("meta from multiplicand is used", {
-  lpjml_calc1 <- create_LPJmLDataCalc(1, "gN", nyear = 5)
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "gN", nyear = 1)
   lpjml_calc2 <- create_LPJmLDataCalc(1, "", nyear = 1)
 
   product <- lpjml_calc1 * lpjml_calc2
@@ -158,11 +246,7 @@ test_that("meta from multiplicand is used", {
   expect_equal(product$meta, lpjml_calc1$meta)
 })
 
-test_that("multiplication with scalar units object works", {
-  lpjml_calc1 <- create_LPJmLDataCalc(array(c(1, 2, 3, 4), c(2, 2)), "gN")
-  z <- create_LPJmLDataCalc(2, "")
-
-  product <- lpjml_calc1 * z
-
-  expect_equal(product$data, array(c(2, 4, 6, 8), c(2, 2)))
+test_that("consistency check fails if band number is not consistent", {
+  expect_error(create_LPJmLDataCalc(1, "gN", nyear = 1, nband = 2),
+               "inconsistent")
 })

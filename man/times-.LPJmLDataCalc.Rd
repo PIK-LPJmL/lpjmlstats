@@ -2,8 +2,7 @@
 % Please edit documentation in R/LPJmLDataCalc.R
 \name{*.LPJmLDataCalc}
 \alias{*.LPJmLDataCalc}
-\title{Multiplication of two LPJmLDataCalc objects
-Multiply an LPJmLDataCalc object by another LPJmLDataCalc object}
+\title{Multiplication of two LPJmLDataCalc objects}
 \usage{
 \method{*}{LPJmLDataCalc}(o1, o2)
 }
@@ -16,6 +15,5 @@ Multiply an LPJmLDataCalc object by another LPJmLDataCalc object}
 An \code{LPJmLDataCalc} object.
 }
 \description{
-Multiplication of two LPJmLDataCalc objects
 Multiply an LPJmLDataCalc object by another LPJmLDataCalc object
 }
