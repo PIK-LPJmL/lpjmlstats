@@ -29,6 +29,8 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
       for (attr_name in private_attr_names) {
         attr_data <- lpjml_meta$.__enclos_env__$private[[attr_name]]
         private_env <- parent.env(environment())[["private"]]
+
+        # only assign if attribute contains data but is not a function
         if (!is.function(attr_data)) {
           assign(attr_name, attr_data,
                  envir = private_env)
@@ -37,11 +39,22 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
     },
 
     #' @description
-    #' Save in metadata that data is in aggregated format
+    #' Save in metadata that data is in space_aggregation format
     #' !Internal method only to be used for package development!
-    .__set_as_aggregated__ = function() {
-      private$.aggregated <- TRUE
+    #' @param agg_method string indicating the aggregation method
+    .__set_space_aggregation__ = function(agg_method) {
+      private$.space_aggregation <- agg_method
     },
+
+    #' @description
+    #' Save in metadata that data is in time_aggregation format
+    #' !Internal method only to be used for package development!
+    #' @param agg_method string indicating the aggregation method
+    .__set_time_aggregation__ = function(agg_method) {
+      private$.time_aggregation <- agg_method
+    },
+
+
 
     #' @description
     #' Wrapper for [`LPJmLMetaData`] print method.
@@ -49,15 +62,30 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
     #' @param ... additional arguments passed to [`LPJmLMetaData`] print method
     print = function(spaces = "", ...) {
       super$print(spaces = spaces, ...)
-      # print aggregated attribute
+      # print space_aggregation attribute
       cat(
         paste0(
           spaces,
-          lpjmlkit:::col_var("$aggregated"),
+          lpjmlkit:::col_var("$space_aggregation"),
           " ",
           # Color red if aggregated
-          ifelse(self$aggregated, lpjmlkit:::col_warn(self$aggregated),
-                 self$aggregated),
+          ifelse(!is.null(self$space_aggregation),
+                 lpjmlkit:::col_warn(self$space_aggregation),
+                 "FALSE"),
+          "\n"
+        )
+      )
+
+      # print time_aggregation attribute
+      cat(
+        paste0(
+          spaces,
+          lpjmlkit:::col_var("$time_aggregation"),
+          " ",
+          # Color red if aggregated
+          ifelse(!is.null(self$time_aggregation),
+                 lpjmlkit:::col_warn(self$time_aggregation),
+                 "FALSE"),
           "\n"
         )
       )
@@ -65,14 +93,21 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
   ),
 
   active = list(
-    #' @field aggregated Indication weather the data has been
-    #' subject to aggregation, in other words weather it is aggregated.
-    aggregated = function() {
-      return(private$.aggregated)
+    #' @field space_aggregation Indication weather the data has been
+    #' subject to space aggregation.
+    space_aggregation = function() {
+      return(private$.space_aggregation)
+    },
+
+    #' @field time_aggregation Indication weather the data has been
+    #' subject to time aggregation.
+    time_aggregation = function() {
+      return(private$.time_aggregation)
     }
   ),
 
   private = list(
-    .aggregated = FALSE
+    .space_aggregation = NULL,
+    .time_aggregation = NULL
   )
 )

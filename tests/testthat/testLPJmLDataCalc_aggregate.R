@@ -1,4 +1,4 @@
-test_that(".__sum_up_regions__ produces correct output", {
+test_that("aggregate regions via sum produces correct values and metadata", {
   # ------ create LPJmLRegionData object
   # grid
   gridarray <-
@@ -26,14 +26,13 @@ test_that(".__sum_up_regions__ produces correct output", {
   lpjml_calc <- create_LPJmLDataCalc(data, "g", grid = grid)
 
   # ------ sum up regions
-  lpjml_calc$.sum_up_regions(regions)
+  lpjml_calc$aggregate(cell = list(to = regions, stat = "sum"))
 
   # ------ verify that output is as expected
   # correct values
-  expect_equal(unname(lpjml_calc$data[2, 1, 1]), 1)
-  expect_equal(unname(lpjml_calc$data[1, 2, 1]), 4.5)
-  # see todo: expect_equal(names(dim(lpjml_calc$data)),
-  #                        c("region", "time", "band"))
+  expect_equal(lpjml_calc$data[2, 1, 1], 1, ignore_attr = TRUE)
+  expect_equal(lpjml_calc$data[1, 2, 1], 4.5, ignore_attr = TRUE)
+  expect_equal(names(dim(lpjml_calc$data)), c("region", "time", "band"))
   # correct dimnames
   expect_equal(dimnames(lpjml_calc$data)[["region"]],  c("R1", "R2"))
   expect_equal(dimnames(lpjml_calc$data)[["time"]],  c("time 1", "time 2"))
@@ -43,8 +42,6 @@ test_that(".__sum_up_regions__ produces correct output", {
                "g")
   # correct grid attribute
   expect_equal(lpjml_calc$grid, regions)
-  # correct aggregated attribute of meta data
-  expect_true(lpjml_calc$meta$aggregated)
 })
 
 
@@ -58,11 +55,11 @@ test_that("aggregation speed is fast enough", {
                                            nregions = 237,
                                            ncells = 67420)
   reg_dat <- lpjmlstats:::LPJmLRegionData$new(soiln$grid, regions)
-  soiln_calc <- lpjmlstats:::as_LPJmLDataCalc(soiln)
+  soiln_calc <- lpjmlstats:::.as_LPJmLDataCalc(soiln)
 
   # do aggregation
   start_time <- Sys.time()
-  soiln_calc$.sum_up_regions(reg_dat)
+  soiln_calc$aggregate(cell = list(to = reg_dat, stat = "sum"))
   end_time <- Sys.time()
   time_diff <- end_time - start_time
 
@@ -106,25 +103,31 @@ test_that("if grids do not match an error is thrown", {
     create_LPJmLDataCalc(data, "g", grid = grid_modified)
 
   # ------ grids are not matching so error should be thrown
-  expect_error(lpjml_calc$.sum_up_regions(regions), "grid")
+  expect_error(lpjml_calc$aggregate(ref_area = "cell_area", cell = regions),
+               "grid")
 })
 
 test_that("aggregation to cowregions produces correct values in Canada and USA",
           {
-            skip("Country names are not yet available.")
             lpjml_calc <- create_test_global_LPJmLDataCalc()
 
             lpjml_calc <-
-              aggregate(lpjml_calc, space = "cow_regions", method = "sum")
+              aggregate(lpjml_calc, cell = list(to = "countries", stat = "sum"))
 
             # verify that values are correct
-            # Canada
             expect_equal(unname(lpjml_calc$data["USA", 1, 1]), 1)
-            expect_equal(unname(lpjml_calc$data[1, 1, 2]), 2)
-            # USA
-            expect_equal(unname(lpjml_calc$data[2, 1, 1]), 3)
-            expect_equal(unname(lpjml_calc$data[2, 1, 2]), 4)
+            expect_equal(unname(lpjml_calc$data["CAN", 1, 1]), 2)
           })
+
+test_that("aggregation is recorded in meta data", {
+  lpjml_calc <- create_test_global_LPJmLDataCalc()
+
+  lpjml_calc <-
+    aggregate(lpjml_calc, cell = list(to = "countries", stat = "sum"))
+
+  # correct aggregated attribute of meta data
+  expect_equal(lpjml_calc$meta$space_aggregation, "sum")
+})
 
 
 test_that("usecases of aggregation with cow and plotting runs error free", {
@@ -139,7 +142,7 @@ test_that("usecases of aggregation with cow and plotting runs error free", {
   # usecase 2: aggregate, subset and plot
   expect_no_error(
     soiln %>%
-      aggregate(space = "cow_regions", method = "sum") %>%
+      aggregate(cell = list(to = "countries", stat = "sum")) %>%
       subset(time = 1) %>%
       plot()
   )
@@ -147,18 +150,19 @@ test_that("usecases of aggregation with cow and plotting runs error free", {
 })
 
 test_that("usecases of aggregation with cow integral on multiple timesteps ",
-      { #nolint
-        # load test data
-        path_to_soil_n_json <-
-          test_path("../testdata/", "soiln.bin.json")
-        soiln <- read_io(path_to_soil_n_json)
-        soiln$add_grid()
+          {
+            # load test data
+            path_to_soil_n_json <-
+              test_path("../testdata/", "soiln.bin.json")
+            soiln <- read_io(path_to_soil_n_json)
+            soiln$add_grid()
 
-        # aggregate multiple time steps #nolint
-        expect_no_error(soiln %>%
-                          aggregate(space = "cow_regions", method = "integral"))
+            # aggregate multiple time steps #nolint
+            expect_no_error(soiln %>%
+                              aggregate(cell =
+                                          list(to = "countries", stat = "sum")))
 
-      }) #nolint
+          })
 
 test_that("aggregation to global land produces correct values", {
   lpjml_calc <- create_test_global_LPJmLDataCalc()
@@ -166,12 +170,9 @@ test_that("aggregation to global land produces correct values", {
   lpjml_calc <-
     aggregate(
       lpjml_calc,
-      space = "global",
-      method = "sum",
-      support_of_area_dens = "full_cell_area"
+      cell = list(to = "global", stat = "sum")
     )
 
-  plot(lpjml_calc)
   expect_equal(unname(lpjml_calc$data[1, 1, 1]), 3)
 })
 
@@ -180,9 +181,8 @@ test_that("integration over global land produces correct values", {
 
   lpjml_calc <- aggregate(
     lpjml_calc,
-    space = "global",
-    method = "integral",
-    support_of_area_dens = "full_cell_area"
+    ref_area = "cell_area",
+    cell = list(to = "global", stat = "weighted_sum")
   )
 
   # verify that values equals cell area times values summed up
@@ -198,9 +198,8 @@ test_that("global integration produces roughly correct global land area",
             # integrate over global land
             lpjml_calc <- aggregate(
               lpjml_calc,
-              space = "global",
-              method = "integral",
-              support_of_area_dens = "full_cell_area"
+              ref_area = "cell_area",
+              cell = list(to = "global", stat = "weighted_sum")
             )
 
             # extract area
@@ -221,9 +220,9 @@ test_that("double aggregation throws error", {
   lpjml_calc <- create_test_global_LPJmLDataCalc()
 
   lpjml_calc <-
-    aggregate(lpjml_calc, space = "global", method = "sum")
+    aggregate(lpjml_calc, cell = list(to = "countries", stat = "sum"))
 
-  expect_error(aggregate(lpjml_calc, space = "global", method = "sum"),
+  expect_error(aggregate(lpjml_calc, cell = list(to = "global", stat = "sum")),
                "already aggregated")
 })
 
@@ -243,39 +242,12 @@ test_that("convert to absolute cell values produces correct result", {
     lpjmlkit::calc_cellarea(c(6))
 
   # convert to absolute values
-  lpjml_calc$area_dens2cell_values(support_of_area_dens = "full_cell_area")
+  cell_area <- lpjml_calc$get_ref_area("cell_area")
+  lpjml_calc$.multiply(cell_area)
 
   # verify that values and unit are correct
   expect_equal(lpjml_calc$data[[1]], correct_arrea)
   expect_equal(lpjml_calc$meta$unit, "kg")
-})
-
-test_that("convert to absolutes cell val throws error for wrong unit", {
-  # create test data
-  data <- array(1, dim = c(1, 1, 1))
-  lpjml_calc <- create_LPJmLDataCalc(data, "kg")
-
-  # create test grid
-  gridarray <- array(c(5, 6), dim = c(1, 2))
-  grid <- create_LPJmLGridData(gridarray)
-
-  # add grid to lpjml_calc
-  lpjml_calc$.__set_grid__(grid)
-
-  # convert to absolute values
-  expect_error(
-    lpjml_calc$area_dens2cell_values(support_of_area_dens = "full_cell_area"),
-    "per square meter"
-  )
-})
-
-test_that("terr_area can be loaded from soiln and multiplied with soiln", {
-  soiln <- load_soiln_calc()
-
-  terr_area <- soiln$.__enclos_env__$private$.__load_terr_area__()
-
-  expect_true(inherits(terr_area, "LPJmLDataCalc"))
-  expect_silent(soiln * terr_area)
 })
 
 test_that("construction of global region works", {
@@ -284,7 +256,7 @@ test_that("construction of global region works", {
   grid <- create_LPJmLGridData(gridarray)
 
   # create global region
-  global_region <- construct_lpjml_region_global(grid)
+  global_region <- build_global_region(grid)
 
   expect_equal(as.array(global_region$region_matrix),
                array(1, dim = c(1, 2)),
@@ -295,7 +267,8 @@ test_that("construction of global region works", {
 test_that("conversion to cell totals works", {
   soiln <- load_soiln_calc()
 
-  soiln$area_dens2cell_values()
+  cell_area <- soiln$get_ref_area("terr_area")
+  soiln$.multiply(cell_area)
 
   expect_equal(soiln$meta$unit, "gN")
 })
@@ -303,16 +276,28 @@ test_that("conversion to cell totals works", {
 test_that("area mean aggregation produces correct value", {
   test_calc <-
     create_test_global_LPJmLDataCalc(value = 11.11, unit = "gN m-2")
-
   test_calc_agg <-
     aggregate(
       test_calc,
-      space = "cow_regions",
-      method = "area_mean",
-      support_of_area_dens = "full_cell_area"
+      ref_area = "cell_area",
+      cell = list(to = "global", stat = "weighted_mean")
     )
 
-  expect_equal(test_calc_agg$data[1, 1, 1], 11.11)
+  expect_equal(test_calc_agg$data[1, 1, 1], 11.11, ignore_attr = TRUE)
+  expect_equal(test_calc_agg$meta$unit, "gN m-2")
+})
+
+test_that("mean aggregation produces correct value", {
+  test_calc <-
+    create_test_global_LPJmLDataCalc(value = 11.11, unit = "gN m-2")
+  test_calc_agg <-
+    aggregate(
+      test_calc,
+      ref_area = "cell_area",
+      cell = list(to = "global", stat = "mean")
+    )
+
+  expect_equal(test_calc_agg$data[1, 1, 1], 11.11, ignore_attr = TRUE)
   expect_equal(test_calc_agg$meta$unit, "gN m-2")
 })
 
@@ -324,12 +309,11 @@ test_that("area mean aggregation works for edge cases", {
   test_calc_agg <-
     aggregate(
       test_calc,
-      space = "cow_regions",
-      method = "area_mean",
-      support_of_area_dens = "full_cell_area"
+      ref_area = "cell_area",
+      cell = list(to = "global", stat = "weighted_mean")
     )
 
-  expect_equal(test_calc_agg$data[1, 1, 1], 0)
+  expect_equal(test_calc_agg$data[1, 1, 1], 0, ignore_attr = TRUE)
 
   # Case 2: NaN
   test_calc <-
@@ -338,17 +322,58 @@ test_that("area mean aggregation works for edge cases", {
   test_calc_agg <-
     aggregate(
       test_calc,
-      space = "cow_regions",
-      method = "area_mean",
-      support_of_area_dens = "full_cell_area"
+      ref_area = "cell_area",
+      cell = list(to = "global", stat = "weighted_mean")
     )
 
-  expect_equal(test_calc_agg$data[1, 1, 1], NaN)
+  expect_equal(test_calc_agg$data[1, 1, 1], NaN, ignore_attr = TRUE)
 })
 
 test_that("grid for aggregation is loaded automatically", {
   path_to_soil_n_json <-
     test_path("../testdata/", "soiln.bin.json")
   soiln <- read_io(path_to_soil_n_json)
-  expect_no_error(soiln %>% aggregate(space = "cow_regions", method = "sum"))
+  expect_no_error(soiln %>% aggregate(cell = list(to = "global", stat = "sum")))
+})
+
+
+# ----- temporal aggregation tests -----
+
+test_that("temporal aggregation produces correct result", {
+  # create test data
+  data <- array(rep(c(2, 4), 2, each = 2) * rep(c(1, 2), each = 4) +
+                  rep(c(0, 1), 4), dim = c(2, 2, 2))
+  dimnames(data) <- list(
+    cell = c("cell1", "cell2"),
+    year = c("year1", "year2"),
+    band = c("band1", "band2")
+  )
+
+  lpjml_calc <- create_LPJmLDataCalc(data, "kg/m2", ncell = 2)
+
+  # create test grid
+  gridarray <- array(c(5, 6, 6, 7), dim = c(2, 2))
+  grid <- create_LPJmLGridData(gridarray)
+
+  # add grid to lpjml_calc
+  lpjml_calc$.__set_grid__(grid)
+
+  # aggregate
+  lpjml_calc_agg <-
+    aggregate(
+      lpjml_calc,
+      time = list(to = "full", stat = "mean")
+    )
+
+  # check correct values
+  expect_equal(lpjml_calc_agg$data, array(c(3, 4, 6, 7), dim = c(2, 1, 2)),
+               ignore_attr = TRUE)
+  # check correct names of dim vector
+  expect_equal(names(dim(lpjml_calc_agg$data)), c("cell", "time", "band"))
+  # check correct dimnames
+  expect_equal(dimnames(lpjml_calc_agg$data)[["cell"]],  c("cell1", "cell2"))
+  expect_equal(dimnames(lpjml_calc_agg$data)[["time"]],  c("sim_period_mean"))
+  expect_equal(dimnames(lpjml_calc_agg$data)[["band"]],  c("band1", "band2"))
+  #check aggregate_time meta data
+  expect_equal(lpjml_calc_agg$meta$time_aggregation, "mean")
 })

@@ -1,111 +1,257 @@
 #TODO deal with double documentation of functions (here and method)
 #' Aggregate an LPJmLDataCalc object
 #'
-#' Function to aggregate an [`LPJmLDataCalc`] object in space.
-#' Different aggregation methods can be used.
+#' Function to aggregate the full data of an [`LPJmLDataCalc`] object by
+#' applying summary statistics along the cell and/or time dimensions.
 #'
-#' @param lpjml_calc [`LPJmLDataCalc`] object to be aggregated
-#' @param space The spatial aggregation units. Can be either a string
-#' indicating regions of the earth surface or an [`LPJmLRegionData`] object.
-#' Currently the following strings are available:
-#' - `cow_regions`: The regions defined by the Correlates of War project
-#' - `global`: A dynamically created region that fully contains all cells
-#' of the grid.
-#' @param method String that specifies spatial method of aggregation.
-#' Current only the following options are available:
-#' - `sum`: The values of all cells belonging to each region are summed up.
-#' If a cell belongs to a region only partially, we assume
-#' that the quantity is distributed uniformly over the cell area and
-#' multiply the value by the fraction of the cell that is part of the region
-#' before summing up.
-#' - `integral`: Given an area density, the integral over each region is
-#' calculated. First, the area density is converted to a total per cell by
-#' multiplying the value by the supporting cell areas.
-#' The integral is then calculated
-#' by summing up the values of all cells belonging to each region, as described
-#' for `sum`. This option expects that the stored quantity is an
-#' area density, i.e. `m^2` is par of the denominator of the unit.
-#' - `area_mean`: Calculates the mean value over the supporting areas of each
-#' region. This option expects that the stored quantity is an
-#' area density, i.e. `m^2` is par of the denominator of the unit.
-#' @param support_of_area_dens Specifies the areas of each cell on which
-#' the area density is supported. See [`LPJmLDataCalc`] method
-#' area_dens2cell_values.
+#' @param x [`LPJmLDataCalc`] object to be aggregated.
+#' @param ref_area Specifies the reference area to be used as
+#'  a multiplier for the `weighted_sum` and `weighted_mean` aggregation methods.
+#'  If the data is given as an area density (i.e. per m2) the reference area
+#'  should be the area of each cell on which this area density "lives", assuming
+#'  it has the given value only on that area and the value zero elsewhere
+#'  (mathematically this is the support of the area density).
+#' @param ... One or several key-value combinations where keys represent the
+#'  dimension names and values specify the target aggregation units
+#'  and optionally also the summary statistic to be used. If the value
+#'  is a string, it is interpreted as the target aggregation unit and the method
+#'  defaults to `weighted_sum` and `mean` for the cell and time dimension,
+#'  respectively. If the value is itself a list, it must contain the
+#'  keys `to` and `stat` specifying the aggregation unit and method.
+#'  The aggregation units for the cell dimension can be either a string with
+#'  the following options
+#'  - `countries`: The regions defined in the countries of the world file
+#'  - `global`: A dynamically created region that fully contains all cells
+#'  of the grid
+#'  or an [`LPJmLRegionData`] object specifying different regions as columns of
+#'  its region matrix.
+#'  For the time dimension the only available aggregation unit is `full` which
+#'  aggregates the data over the full simulation period.
+#'  The aggregation method for space has the following options:
+#'  - `sum`: The values of all cells belonging to each region are summed up.
+#'  If a cell belongs to a region only partially, we assume
+#'  that the quantity is distributed uniformly over the cell area and
+#'  multiply the value by the fraction of the cell that is part of the region
+#'  before summing up.
+#'  - `mean`: First sums up the values of all cells belonging to each region
+#'  as described for `sum` and then divides by the number of cells belonging to
+#'  the region. Again we account for partial belonging of cells to regions
+#'  (if it exists) by only counting the fraction of the cell that is part of
+#'  the region in the divisor.
+#'  - `weighted_sum`: Similar to the `sum` option but multiplies the value of
+#'  each cell by a reference area before summing up. The reference area
+#'  default is the `terr_area` output which needs to exist in the same directory
+#'  as the output to be aggregated. Other reference areas can be specified
+#'  by setting the `reference_area` parameter.
+#'  - `weighted_mean`: Similar to the `mean` option but multiplies the value of
+#'  each cell by a reference area before summing up. Also,
+#'  the resulting sum is then divided by the total reference area of each
+#'  region instead of the number of cells.
+#'
 #'
 #' @return An aggregated [`LPJmLDataCalc`] object.
 #'
 #' @export
 aggregate <-
-  function(lpjml_calc,
-           space = "cow_regions",
-           method = "sum",
-           support_of_area_dens = "terr_area") {
-    if (!inherits(lpjml_calc, "LPJmLDataCalc")) {
+  function(x, ref_area = "terr_area", ...) {
+    if (!inherits(x, "LPJmLDataCalc")) {
       stop("Expected LPJmLDataCalc")
     }
-    lpjml_calc_agg <- lpjml_calc$clone(deep = TRUE)
-    lpjml_calc_agg$aggregate(space, method, support_of_area_dens)
-    return(lpjml_calc_agg)
+    y <- x$clone(deep = TRUE)
+    y$aggregate(ref_area, ...)
+    return(y)
   }
 
-# TODO: automatic selection of cellarea support
-LPJmLDataCalc$set("private",
-                  ".__aggregate__",
-                  function(space, method, support_of_area_dens) {
+# TODO: automatic selection of referencne area base on meta data json
+LPJmLDataCalc$set(
+  "private",
+  ".__aggregate__",
+  function(ref_area, ...) {
 
-    if (private$.meta$aggregated) {
-      stop("LPJmLDataCalc object is already aggregated")
-    }
+    subset_list <- list(...)
 
-    # select the correct LPJmLRegionData object as aggregation unit
-    if (inherits(space, "LPJmLRegionData")) {
-      aggregation_regions <- space
-    } else if (is.character(space)) {
-      if (space == "cow_regions") {
-        aggregation_regions <- read_lpjml_region_cow()
-      } else if (space == "global") {
-        aggregation_regions <- construct_lpjml_region_global(private$.grid)
-      } else {
-        stop("Unknown aggregation unit string")
+    if ("cell" %in% names(subset_list)) {
+      if (!is.null(private$.meta$space_aggregation)) {
+        stop("LPJmLDataCalc object is already aggregated")
       }
-    } else {
-      stop("Expects a string or LPJmLRegionData object as space parameter.")
+      spatial_agg_units <- get_tar_aggregation_unit(subset_list["cell"])
+      spatial_agg_method <- get_summary_stat(subset_list["cell"])
     }
+
+    if ("time" %in% names(subset_list)) {
+      if (!is.null(private$.meta$time_aggregation)) {
+        stop("LPJmLDataCalc object is already aggregated")
+      }
+      temporal_agg_units <- get_tar_aggregation_unit(subset_list["time"])
+      temporal_agg_method <- get_summary_stat(subset_list["time"])
+    }
+
+    if (exists("spatial_agg_method")) {
+      private$.__aggregate_space__(spatial_agg_units,
+                                   spatial_agg_method,
+                                   ref_area)
+    }
+
+    if (exists("temporal_agg_method")) {
+      private$.__aggregate_time__(temporal_agg_units,
+                                  temporal_agg_method)
+    }
+  }
+)
+
+# helper function to get the aggregation unit from a key-value pair
+# passed to the aggregate method
+get_tar_aggregation_unit <- function(argument) {
+  dimension <- names(argument) # get the dimension name
+  # get the aggregation specification of that dimension
+  # which is the value of the key-value pair
+  specifier <- argument[[dimension]]
+  if (is.character(specifier) || inherits(specifier, "LPJmLRegionData")) {
+    to <- specifier
+  } else if (is.list(specifier)) {
+    if ("to" %in% names(specifier)) {
+      to <- specifier$to
+    } else {
+      stop("Missing 'to' key in the aggregation specifier")
+    }
+  } else {
+    stop("Expected string or list as value for ", dimension, " key")
+  }
+  if (dimension == "cell") {
+    if (!(inherits(to, "LPJmLRegionData") || to %in% c("countries", "global"))) { # nolint
+      stop("Invalid aggregation unit for cell dimension")
+    }
+  } else if (dimension == "time") {
+    if (!to %in% c("full")) {
+      stop("Invalid aggregation unit for time dimension")
+    }
+  }
+  return(to)
+}
+
+# helper function to get the summary statistic from a key-value pair
+# passed to the aggregate method
+get_summary_stat <- function(argument) {
+  dimension <- names(argument)
+  # get the aggregation specification of that dimension
+  # which is the value of the key-value pair
+  specifier <- argument[[dimension]]
+  if (is.character(specifier) || inherits(specifier, "LPJmLRegionData")) {
+    # the default statistic for cell dimension is weighted_sum
+    # and for time dimension it is mean
+    stat <- if (dimension == "cell") "weighted_sum" else "mean"
+  } else if (is.list(specifier)) {
+    if ("stat" %in% names(specifier)) {
+      stat <- specifier$stat
+    } else {
+      stop("Missing 'stat' key in the aggregation specifier")
+    }
+  } else {
+    stop("Expected string or list as value for ", dimension, " key")
+  }
+  if (dimension == "cell") {
+    if (!stat %in% c("sum", "mean", "weighted_sum", "weighted_mean")) {
+      stop("Invalid aggregation method for cell dimension")
+    }
+  } else if (dimension == "time") {
+    if (!stat %in% c("mean")) {
+      stop("Invalid aggregation method for time dimension")
+    }
+  }
+  return(stat)
+}
+
+LPJmLDataCalc$set(
+  "private",
+  ".__aggregate_space__",
+  function(spatial_agg_units,
+           spatial_agg_method,
+           ref_area) {
 
     # the grid of the aggregation regions must match the grid of the data
-    # therefore it is needed
+    # the grid is also needed to calculate the supporting cell areas
+    # and construct dynamic regions
     self$add_grid()
 
+    # select the correct LPJmLRegionData object as aggregation unit
+    if (inherits(spatial_agg_units, "LPJmLRegionData")) {
+      aggregation_regions <- spatial_agg_units
+    } else if (is.character(spatial_agg_units)) {
+      if (spatial_agg_units == "countries") {
+        aggregation_regions <- read_cow_regions()
+      } else if (spatial_agg_units == "global") {
+        aggregation_regions <- build_global_region(private$.grid)
+      }
+    }
+
     # select the aggregation method and perform aggregation
-    if (method == "sum") {
-      self$.sum_up_regions(aggregation_regions)
-    } else if (method == "integral") {
+    if (spatial_agg_method == "sum") {
+      private$.__sum_up_regions__(aggregation_regions)
+    } else if (spatial_agg_method == "mean") {
+      private$.__sum_up_regions__(aggregation_regions)
+      cell_p_reg <- aggregation_regions$get_ncells_per_region()
+      self$.divide(cell_p_reg)
+    } else if (spatial_agg_method == "weighted_sum") {
       # weight by cell area
-      cell_areas <- private$.__get_supporting_cell_areas__(support_of_area_dens)
-      self$area_dens2cell_values(support_of_area_dens = cell_areas)
+      cell_areas <- private$.__get_ref_area__(ref_area)
+      self$.multiply(cell_areas)
       # sum up regions
-      self$.sum_up_regions(aggregation_regions)
-    } else if (method == "area_mean") {
+      private$.__sum_up_regions__(aggregation_regions)
+    } else if (spatial_agg_method == "weighted_mean") {
       # weight by cell area
-      cell_areas <- private$.__get_supporting_cell_areas__(support_of_area_dens)
-      self$area_dens2cell_values(support_of_area_dens = cell_areas)
+      cell_areas <- private$.__get_ref_area__(ref_area)
+      self$.multiply(cell_areas)
       # sum up regions
-      self$.sum_up_regions(aggregation_regions)
+      private$.__sum_up_regions__(aggregation_regions)
       # sum up supporting area of each region
-      cell_areas$.sum_up_regions(aggregation_regions)
+      cell_areas$aggregate(cell = list(to = aggregation_regions, stat = "sum"))
       # divide by total cell area
       self$.divide(cell_areas)
     } else {
       stop("Unknown aggregation method")
     }
+
+    # record aggregation in meta data
+    private$.meta$.__set_space_aggregation__(spatial_agg_method)
+
   }
 )
 
+LPJmLDataCalc$set(
+  "private",
+  ".__aggregate_time__",
+  function(temporal_agg_units,
+           temporal_agg_method) {
+
+    # perform aggregation
+    # only one option is possible
+    dimnames <- dimnames(private$.data)
+    dim_space <- dim(private$.data)[1] # todo: string index
+    dim_bands <- dim(private$.data)[3]
+    unit <- units(private$.data)
+    private$.data <- apply(private$.data, c(1, 3), mean) # names dimensions
+    private$.data <- set_units(private$.data, unit)
+    dim(private$.data) <- c(dim_space,
+                            time = 1,
+                            dim_bands)
+    dimnames(private$.data) <- c(dimnames[1],
+                                 list(time = "sim_period_mean"),
+                                 dimnames[3])
+
+
+
+    # record aggregation in meta data
+    private$.meta$.__set_time_aggregation__(temporal_agg_method)
+  }
+)
+
+
 # ----------------------.__sum_up_regions__----------------------------------- #
 
-LPJmLDataCalc$set("private",
-                  ".__sum_up_regions__",
-                  function(lpjml_regions) {
+LPJmLDataCalc$set(
+  "private",
+  ".__sum_up_regions__",
+  function(lpjml_regions) {
     # check if input is LPJmLRegionData
     if (!inherits(lpjml_regions, "LPJmLRegionData")) {
       stop("Expected an LPJmLRegionData object")
@@ -145,30 +291,61 @@ LPJmLDataCalc$set("private",
     )
 
     # set new attributes of the object
+    units <- units(private$.data) # save units
     private$.data <- aggr_data
     private$.grid <- lpjml_regions
-    private$copy_unit_meta2array()
-
-    # change respective meta entry
-    private$.meta$.__set_as_aggregated__()
+    private$.data <- units::set_units(private$.data, units) # restore units
   }
 )
 
 # ------------------- conversion of area density to cell totals -------------- #
+
+LPJmLDataCalc$set(
+  "private",
+  ".__get_ref_area__",
+  function(ref_area) {
+    if (ref_area == "terr_area") {
+      if (is.null(private$.meta$._data_dir_)) {
+        stop("The data directory must be set to read the terr_area")
+      }
+      terr_area_path <- find_terr_area(private$.meta$._data_dir_)
+      message(
+        paste0(
+          lpjmlkit:::col_var("terr_area"),
+          " read from ",
+          sQuote(basename(terr_area_path))
+        )
+      )
+      terr_area <- read_io(terr_area_path)
+      terr_area$add_grid()
+      cell_areas <- terr_area
+    } else if (ref_area == "cell_area") {
+      if (!inherits(self$grid, "LPJmLGridData")) {
+        stop("A grid is needed to convert area density to total per cell")
+      }
+      cell_areas <- calc_cellarea_wrapper(private$.grid)
+    } else {
+      stop("The ref_area must be either 'terr_area' or
+           'cell_area'")
+    }
+    return(cell_areas)
+  }
+)
+
 find_terr_area <- function(searchdir) {
-  grid_files <- list.files(
+  terr_area_files <- list.files(
     path = searchdir,
     pattern = "^terr_area",
     full.names = TRUE
   )
-  if (length(grid_files) > 0) {
-    grid_types <- sapply(grid_files, lpjmlkit::detect_io_type) # nolint
+  if (length(terr_area_files) > 0) {
+    terr_area_types <- sapply(terr_area_files, lpjmlkit::detect_io_type) # nolint
     # Prefer "meta" file_type if present
-    if (length(which(grid_types == "meta")) == 1) {
-      filename <- grid_files[match("meta", grid_types)]
-    } else if (length(which(grid_types == "clm")) == 1) {
+    if (length(which(terr_area_types == "meta")) == 1) {
+      filename <- terr_area_files[match("meta", terr_area_types)]
+    } else if (length(which(terr_area_types == "clm")) == 1) {
       # Second priority "clm" file_type
-      filename <- grid_files[match("clm", grid_types)]
+      filename <- terr_area_files[match("clm", terr_area_types)]
     } else {
       # Stop if either multiple files per file type or not the right type have
       # been detected
@@ -189,62 +366,13 @@ find_terr_area <- function(searchdir) {
 
 
 
-LPJmLDataCalc$set("private",
-                  ".__load_terr_area__",
-                  function() {
-    terr_area_path <- find_terr_area(private$.meta$._data_dir_)
-    terr_area <- read_io(terr_area_path)
-    return(terr_area)
-  }
-)
-
-LPJmLDataCalc$set("private",
-                  ".__get_supporting_cell_areas__",
-                  function(support_of_area_dens) {
-    if (support_of_area_dens == "terr_area") {
-      terr_area <- private$.__load_terr_area__()
-      terr_area$add_grid()
-      cell_areas <- terr_area
-    } else if (support_of_area_dens == "full_cell_area") {
-      if (!inherits(self$grid, "LPJmLGridData")) {
-        stop("A grid is needed to convert area density to total per cell")
-      }
-      if (!grepl("m-2", units::deparse_unit(self$.data_with_unit))) {
-        stop("Data must be given per square meter to convert to total per cell")
-      }
-      cell_areas <- calc_lpjml_calc_cell_area(private$.grid)
-    } else {
-      stop("The support_of_area_dens must be either 'terr_area' or
-           'full_cell_area'")
-    }
-    return(cell_areas)
-  }
-)
-
-
-LPJmLDataCalc$set("private",
-                  ".__area_dens2cell_totals__",
-                  function(support_of_area_dens) {
-    if (is.character(support_of_area_dens)) {
-      cell_area <- private$.__get_supporting_cell_areas__(support_of_area_dens)
-    } else if (inherits(support_of_area_dens, "LPJmLDataCalc")) {
-      cell_area <- support_of_area_dens
-    } else {
-      stop("The support_of_area_dens must be either a character string
-           or an LPJmLDataCalc object")
-    }
-    self$.multiply(cell_area)
-  }
-)
-
-
-
 # ----- utility functions -----
-# Main utility function
-# It calculates the cell areas in m^2 for a number of
+# Function calculates the cell areas in m^2 for a number of
 # gridcells given in an LPJmLGridData object
 # and returns them as an LPJmLDataCalc object.
-calc_lpjml_calc_cell_area <- function(lpjml_grid) {
+# The function is a wrapper around the calc_cellarea function
+# of the lpjmlkit package.
+calc_cellarea_wrapper <- function(lpjml_grid) {
 
   cell_areas <- lpjmlkit::calc_cellarea(lpjml_grid, return_unit = "m2")
 
@@ -276,7 +404,7 @@ calc_lpjml_calc_cell_area <- function(lpjml_grid) {
   lpjml_calc$.__set_grid__(lpjml_grid)
 
   # coerce to LPJmLDataCalc
-  lpjml_calc <- as_LPJmLDataCalc(lpjml_calc)
+  lpjml_calc <- lpjmlstats::.as_LPJmLDataCalc(lpjml_calc)
 
   return(lpjml_calc)
 }

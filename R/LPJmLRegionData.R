@@ -4,6 +4,7 @@
 #' @importFrom Matrix sparseMatrix Matrix colSums
 #' @importFrom abind abind
 #' @importFrom utils read.csv
+#' @importFrom methods as
 #' @description A class that represents one or several regions in LPJmL.
 #' Based on an LPJmL grid, a region is defined as set of grid cells together
 #' with fractions. The fractions indicate the share of each grid cell that
@@ -36,6 +37,17 @@ LPJmLRegionData <- R6::R6Class( # nolint:object_linter_name
       private$.grid <- grid
       private$.region_matrix <- region_matrix
       private$check_consistency()
+    },
+
+    #' @description
+    #' Get number of cells per region.
+    #' @return A vector of length nrow(region_matrix) containing the number of
+    #' cells per region.
+    #' @details
+    #' For partially belonging cells the fraction
+    #' of the cell that belongs to the region is counted.
+    get_ncells_per_region = function() {
+      return(Matrix::rowSums(private$.region_matrix))
     }
   ),
 
@@ -71,16 +83,14 @@ LPJmLRegionData <- R6::R6Class( # nolint:object_linter_name
 #'
 #' @description
 #'
-#' The correlates of war (COW) data contains global country borders.
-#' In the version used here each gridcell is assigned to
-#' one or more countries.
+#' The COW = countries of the world data contains global country borders.
 #'
 #' @return An LPJmLRegionData object containing the cow regions.
 #' @seealso \code{\link{LPJmLRegionData}}
 #' @export
 #'
 
-read_lpjml_region_cow <- function() {
+read_cow_regions <- function() {
   path_to_lpjml_cow_regions <- system.file("lpjml_cow_regions.rds",
                                            package = "lpjmlstats")
 
@@ -92,7 +102,7 @@ read_lpjml_region_cow <- function() {
     # ------- create cow region matrix
     # read cow region file
     path_to_cow <-
-      system.file("cow_full_2018.bin", package = "lpjmlstats")
+      system.file("cow_full_2018.bin.json", package = "lpjmlstats")
     cow <- lpjmlkit::read_io(path_to_cow)
 
     # extract first item of third dimension which contains countries
@@ -100,70 +110,46 @@ read_lpjml_region_cow <- function() {
 
     # create one hot encoding for each unique value
     unique_values <- unique(unname(cow_mat))
+    unique_values <- unique_values # add 1 to avoid 0 as index
     region_matrix <-
       array(0, c(length(unique_values), length(cow_mat)))
     for (val in unique_values) {
-      region_matrix[val, ] <- unname(cow_mat == val)
+      region_matrix[val + 1, ] <- unname(cow_mat == val)
     }
     region_matrix <- Matrix::Matrix(region_matrix, sparse = TRUE)
 
+    # ------- add country codes as dimnames
+
+    countries <- read_countrymap(path_to_cow) # read data as dataframe
+    dimnames(region_matrix) <- list(countries$`alpha-3`, NULL)
+
     # ------- read grid
-    grid <- read_lpjml_grid_default()
+    grid <- read_def_grid()
 
     # ------- combine grid and region matrix to LPJmLRegionData object
     lpjml_cow_regions <-
       lpjmlstats:::LPJmLRegionData$new(grid, region_matrix)
+
+    # ------- save LPJmLRegionData object
+    saveRDS(lpjml_cow_regions, "./inst/lpjml_cow_regions.rds")
+
     return(lpjml_cow_regions)
   }
 }
 
-# TODO: Make this region dynamically constructed by terr_area output
+# helper to extract the countrymap from json meta file
+read_countrymap <- function(file_path) {
 
-#' Read or create the global land as an LPJmLRegionData object
-#'
-#' @description
-#' Global land includes inland water bodies but excludes ocean fraction of cells
-#' along coastlines.
-#'
-#'
-#' @return An LPJmLRegionData object containing the global land.
-#' @seealso \code{\link{LPJmLRegionData}}
-#'
-#' @export
-#'
+  # Read the JSON file
+  json_data <- jsonlite::fromJSON(file_path)
 
-read_lpjml_region_global_land <- function() {
-  path_to_lpjml_global_land <- system.file("lpjml_global_land.rds",
-                                           package = "lpjmlstats")
+  # Extract 'countrymap' as a vector
+  countrymap_vector <- json_data$countrymap
 
-  # if the required LPJmLRegionData object already exists, read it
-  # else, create it
-  if (!identical(path_to_lpjml_global_land, "")) {
-    return(readRDS(path_to_lpjml_global_land))
-  } else {
-    # ------- create global land as region matrix
-    # read global land frac
-    path_to_land_frac <- system.file("landfrac_gadm36.bin.json",
-                                     package = "lpjmlstats")
-    global_land <- lpjmlkit::read_io(path_to_land_frac)
-
-    # convert to sparse matrix and transpose
-    region_matrix <- Matrix::Matrix(global_land$data, sparse = TRUE)
-    region_matrix <- Matrix::t(region_matrix)
-
-    # set region name
-    dimnames(region_matrix) <- list(c("global_land"), NULL)
-
-    # ------- read grid
-    grid <- read_lpjml_grid_default()
-
-    # ------- combine grid and region matrix to LPJmLRegionData object
-    lpjml_global_land <-
-      lpjmlstats:::LPJmLRegionData$new(grid, region_matrix)
-    return(lpjml_global_land)
-  }
-
+  return(countrymap_vector)
 }
+
+
 
 #' Construct global region object that fully contains all cells given in a
 #' grid.
@@ -171,9 +157,10 @@ read_lpjml_region_global_land <- function() {
 #' @return An LPJmLRegionData object containing the global region.
 #' @seealso \code{\link{LPJmLRegionData}}
 
-construct_lpjml_region_global <- function(grid) {
+build_global_region <- function(grid) {
   region_matrix <- Matrix::Matrix(1, nrow = 1, ncol = grid$meta$ncell,
                                   sparse = TRUE)
+  region_matrix <- as(as(region_matrix, "generalMatrix"), "CsparseMatrix")
   dimnames(region_matrix) <- list(c("global"), NULL)
   return(lpjmlstats:::LPJmLRegionData$new(grid, region_matrix))
 }
@@ -193,7 +180,7 @@ construct_lpjml_region_global <- function(grid) {
 #'
 #' @export
 
-read_lpjml_grid_default <- function() {
+read_def_grid <- function() {
   path_to_grid <- system.file("grid.bin.json", package = "lpjmlstats")
 
   if (identical(path_to_grid, "")) {

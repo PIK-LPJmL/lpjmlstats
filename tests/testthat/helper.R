@@ -48,7 +48,7 @@ generate_random_region_matrix <-
   }
 
 load_test_grid <- function() {
-  soiln_path <- test_path("../testdata", "soiln.rds")
+  soiln_path <- testthat::test_path("../testdata", "soiln.rds")
   soiln <- readRDS(soiln_path)
   soiln$add_grid()
   grid <- soiln$grid
@@ -134,7 +134,7 @@ create_test_global_LPJmLDataCalc <- function(unit = "gN", value = NULL) { # noli
   } else {
     data <- array(rep(value, 67420), dim = c(67420, 1, 1))
   }
-  grid <- read_lpjml_grid_default()
+  grid <- read_def_grid()
 
   lpjml_calc <- create_LPJmLDataCalc(data, unit, grid)
 
@@ -142,7 +142,7 @@ create_test_global_LPJmLDataCalc <- function(unit = "gN", value = NULL) { # noli
 }
 
 load_soiln_calc <- function() {
-  path_to_soil_n_json <- test_path("../testdata/", "soiln.bin.json")
+  path_to_soil_n_json <- testthat::test_path("../testdata/", "soiln.bin.json")
   soiln <- lpjmlstats::read_io(path_to_soil_n_json)
   soiln$add_grid()
   return(soiln)
