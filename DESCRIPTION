@@ -13,7 +13,8 @@ Imports:
     units,
     lpjmlkit,
     Matrix,
-    abind
+    abind,
+    methods
 Suggests: 
     testthat (>= 3.0.0),
     raster,

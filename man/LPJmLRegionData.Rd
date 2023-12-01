@@ -29,6 +29,7 @@ Create a new \code{LPJmLRegionData} object; only used internally.
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-LPJmLRegionData-new}{\code{LPJmLRegionData$new()}}
+\item \href{#method-LPJmLRegionData-get_ncells_per_region}{\code{LPJmLRegionData$get_ncells_per_region()}}
 \item \href{#method-LPJmLRegionData-clone}{\code{LPJmLRegionData$clone()}}
 }
 }
@@ -49,6 +50,25 @@ Create a new \code{LPJmLRegionData} object; only used internally.
 \item{\code{region_matrix}}{object stores the region data as a sparse matrix.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLRegionData-get_ncells_per_region"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLRegionData-get_ncells_per_region}{}}}
+\subsection{Method \code{get_ncells_per_region()}}{
+Get number of cells per region.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLRegionData$get_ncells_per_region()}\if{html}{\out{</div>}}
+}
+
+\subsection{Details}{
+For partially belonging cells the fraction
+of the cell that belongs to the region is counted.
+}
+
+\subsection{Returns}{
+A vector of length nrow(region_matrix) containing the number of
+cells per region.
 }
 }
 \if{html}{\out{<hr>}}

@@ -13,8 +13,11 @@ A meta data container for the LPJmLDataCalc class that extends the
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{aggregated}}{Indication weather the data has been
-subject to aggregation, in other words weather it is aggregated.}
+\item{\code{space_aggregation}}{Indication weather the data has been
+subject to space aggregation.}
+
+\item{\code{time_aggregation}}{Indication weather the data has been
+subject to time aggregation.}
 }
 \if{html}{\out{</div>}}
 }
@@ -22,7 +25,8 @@ subject to aggregation, in other words weather it is aggregated.}
 \subsection{Public methods}{
 \itemize{
 \item \href{#method-LPJmLMetaDataCalc-new}{\code{LPJmLMetaDataCalc$new()}}
-\item \href{#method-LPJmLMetaDataCalc-.__set_as_aggregated__}{\code{LPJmLMetaDataCalc$.__set_as_aggregated__()}}
+\item \href{#method-LPJmLMetaDataCalc-.__set_space_aggregation__}{\code{LPJmLMetaDataCalc$.__set_space_aggregation__()}}
+\item \href{#method-LPJmLMetaDataCalc-.__set_time_aggregation__}{\code{LPJmLMetaDataCalc$.__set_time_aggregation__()}}
 \item \href{#method-LPJmLMetaDataCalc-print}{\code{LPJmLMetaDataCalc$print()}}
 \item \href{#method-LPJmLMetaDataCalc-clone}{\code{LPJmLMetaDataCalc$clone()}}
 }
@@ -61,15 +65,40 @@ of this object.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLMetaDataCalc-.__set_as_aggregated__"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-.__set_as_aggregated__}{}}}
-\subsection{Method \code{.__set_as_aggregated__()}}{
-Save in metadata that data is in aggregated format
+\if{html}{\out{<a id="method-LPJmLMetaDataCalc-.__set_space_aggregation__"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-.__set_space_aggregation__}{}}}
+\subsection{Method \code{.__set_space_aggregation__()}}{
+Save in metadata that data is in space_aggregation format
 !Internal method only to be used for package development!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$.__set_as_aggregated__()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$.__set_space_aggregation__(agg_method)}\if{html}{\out{</div>}}
 }
 
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{agg_method}}{string indicating the aggregation method}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLMetaDataCalc-.__set_time_aggregation__"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-.__set_time_aggregation__}{}}}
+\subsection{Method \code{.__set_time_aggregation__()}}{
+Save in metadata that data is in time_aggregation format
+!Internal method only to be used for package development!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$.__set_time_aggregation__(agg_method)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{agg_method}}{string indicating the aggregation method}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LPJmLMetaDataCalc-print"></a>}}

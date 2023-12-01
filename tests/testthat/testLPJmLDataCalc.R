@@ -22,13 +22,13 @@ test_that("the object returned when calling obj$data doesn't have class", {
   expect_false(inherits(lpjml_calc$data, "units"))
 })
 
-test_that("as_LPJmLDataCalc returns LPJmLDataCalc object", {
+test_that(".as_LPJmLDataCalc returns LPJmLDataCalc object", {
   header <- create_header(ncell = 1, verbose = FALSE)
   lpjml_meta <-
     lpjmlkit:::LPJmLMetaData$new(header, list(unit = "g"))
 
   lpjml_dat <- lpjmlkit:::LPJmLData$new(c(1), lpjml_meta)
-  lpjml_calc <- as_LPJmLDataCalc(lpjml_dat)
+  lpjml_calc <- .as_LPJmLDataCalc(lpjml_dat)
 
   expect_true(inherits(lpjml_calc, "LPJmLDataCalc"))
 })
@@ -37,7 +37,7 @@ test_that("conversion LPJ unit of the wild to format of units package works", {
   path_to_data <- test_path("../testdata", "soiln.rds")
   soil_n <- readRDS(path_to_data)
 
-  soil_n_calc <- as_LPJmLDataCalc(soil_n)
+  soil_n_calc <- .as_LPJmLDataCalc(soil_n)
   x <- soil_n_calc$.data_with_unit
 
   expect_equal(attr(x, "units")$numerator, "gN")
@@ -202,6 +202,45 @@ test_that("multiplication with scalar unit object works", {
   lpjml_calc2 <- lpjml_calc1 * multiplier
   expect_equal(lpjml_calc2$data, array1 * 2, ignore_attr = TRUE)
 })
+
+test_that("multiplication with vector works", {
+  array1 <- c(1, 1, 1, 1)
+  dim(array1) <- c(2, 2, 1)
+
+  # test 1 apply to cells
+  array2 <- c(3, 4)
+  dim(array2) <- c(2, 1, 1)
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  product <- lpjml_calc1 * array2
+  result <- array(c(3, 4, 3, 4), dim = c(2, 2, 1))
+  expect_equal(product$data, result, ignore_attr = TRUE)
+
+  # test 2 apply to time
+  array2 <- c(3, 4)
+  dim(array2) <- c(1, 2, 1)
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  product <- lpjml_calc1 * array2
+  result <- array(c(3, 3, 4, 4), dim = c(2, 2, 1))
+  expect_equal(product$data, result, ignore_attr = TRUE)
+
+  # test 3 apply to bands with not matching dims
+  array2 <- c(3, 4)
+  dim(array2) <- c(1, 1, 2)
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  expect_error(lpjml_calc1 * array2, "Dimensions")
+
+  # test 4 apply to bands with matching dims
+  array1 <- c(1, 1, 1, 1, 1, 1, 1, 1)
+  dim(array1) <- c(2, 2, 2)
+  array2 <- c(3, 4)
+  dim(array2) <- c(1, 1, 2)
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  product <- lpjml_calc1 * array2
+  result <- array(c(3, 3, 3, 3, 4, 4, 4, 4), dim = c(2, 2, 2))
+  expect_equal(product$data, result, ignore_attr = TRUE)
+
+})
+
 
 test_that("correct units and value results from division", {
   lpjml_calc1 <- create_LPJmLDataCalc(2, "gN")
