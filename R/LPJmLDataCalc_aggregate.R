@@ -18,36 +18,40 @@
 #'  defaults to `weighted_sum` and `mean` for the cell and time dimension,
 #'  respectively. If the value is itself a list, it must contain the
 #'  keys `to` and `stat` specifying the aggregation unit and method.
-#'  The aggregation units for the cell dimension can be either a string with
+#'  The aggregation units for the cell dimension can be either an
+#'  LPJmlRegionData object or a string with
 #'  the following options
-#'  - `countries`: The regions defined in the countries of the world file
-#'  - `global`: A dynamically created region that fully contains all cells
-#'  of the grid
-#'  or an [`LPJmLRegionData`] object specifying different regions as columns of
-#'  its region matrix.
-#'  For the time dimension the only available aggregation unit is `full` which
-#'  aggregates the data over the full simulation period.
+#'  * `countries`: The regions defined in the countries of the world file.
+#'  * `global`: A dynamically created region that fully contains all cells
+#'    of the grid or an [`LPJmLRegionData`] object specifying different
+#'    regions as columns of
+#'    its region matrix.
+#'
+#'  For the time dimension the only available aggregation unit is `sim_period`
+#'  which aggregates the data over the full simulation period.
 #'  The aggregation method for space has the following options:
-#'  - `sum`: The values of all cells belonging to each region are summed up.
+#'  * `sum`: The values of all cells belonging to each region are summed up.
 #'  If a cell belongs to a region only partially, we assume
 #'  that the quantity is distributed uniformly over the cell area and
 #'  multiply the value by the fraction of the cell that is part of the region
 #'  before summing up.
-#'  - `mean`: First sums up the values of all cells belonging to each region
+#'  * `mean`: First sums up the values of all cells belonging to each region
 #'  as described for `sum` and then divides by the number of cells belonging to
 #'  the region. Again we account for partial belonging of cells to regions
 #'  (if it exists) by only counting the fraction of the cell that is part of
 #'  the region in the divisor.
-#'  - `weighted_sum`: Similar to the `sum` option but multiplies the value of
+#'  * `weighted_sum`: Similar to the `sum` option but multiplies the value of
 #'  each cell by a reference area before summing up. The reference area
 #'  default is the `terr_area` output which needs to exist in the same directory
 #'  as the output to be aggregated. Other reference areas can be specified
 #'  by setting the `reference_area` parameter.
-#'  - `weighted_mean`: Similar to the `mean` option but multiplies the value of
+#'  * `weighted_mean`: Similar to the `mean` option but multiplies the value of
 #'  each cell by a reference area before summing up. Also,
 #'  the resulting sum is then divided by the total reference area of each
 #'  region instead of the number of cells.
 #'
+#'  For the time dimension the only available aggregation method is `mean`
+#'  which takes the mean.
 #'
 #' @return An aggregated [`LPJmLDataCalc`] object.
 #'
@@ -122,7 +126,7 @@ get_tar_aggregation_unit <- function(argument) {
       stop("Invalid aggregation unit for cell dimension")
     }
   } else if (dimension == "time") {
-    if (!to %in% c("full")) {
+    if (!to %in% c("sim_period")) {
       stop("Invalid aggregation unit for time dimension")
     }
   }
@@ -225,18 +229,33 @@ LPJmLDataCalc$set(
 
     # perform aggregation
     # only one option is possible
+
+    # save dimnames, dimensions
     dimnames <- dimnames(private$.data)
-    dim_space <- dim(private$.data)[1] # todo: string index
+    dim_space <- dim(private$.data)[1]
     dim_bands <- dim(private$.data)[3]
-    unit <- units(private$.data)
-    private$.data <- apply(private$.data, c(1, 3), mean) # names dimensions
-    private$.data <- set_units(private$.data, unit)
-    dim(private$.data) <- c(dim_space,
-                            time = 1,
-                            dim_bands)
-    dimnames(private$.data) <- c(dimnames[1],
-                                 list(time = "sim_period_mean"),
-                                 dimnames[3])
+
+    # fast temporal mean function
+    time_mean <- function(x) {
+      # move second dim to last dim
+      x <- base::aperm(x, c(1, 3, 2))
+      # use highly optimized rowMeans function
+      x <- base::rowMeans(x, dims = 2)
+      # restore lost dimension
+      dim(x) <- c(dim(x)[1], dim(x)[2], 1)
+      # restore original order of dimensions
+      x <- base::aperm(x, c(1, 3, 2))
+      return(x)
+    }
+
+    # perform aggregation without loosing units
+    private$.data <- units::keep_units(time_mean,
+                                       private$.data)
+
+    # restore dimnames, dimensions
+    dim(private$.data) <- c(dim_space, time = 1, dim_bands)
+    dimnames(private$.data) <-
+      c(dimnames[1], list(time = "sim_period"), dimnames[3])
 
 
 
@@ -404,7 +423,7 @@ calc_cellarea_wrapper <- function(lpjml_grid) {
   lpjml_calc$.__set_grid__(lpjml_grid)
 
   # coerce to LPJmLDataCalc
-  lpjml_calc <- lpjmlstats::.as_LPJmLDataCalc(lpjml_calc)
+  lpjml_calc <- .as_LPJmLDataCalc(lpjml_calc)
 
   return(lpjml_calc)
 }

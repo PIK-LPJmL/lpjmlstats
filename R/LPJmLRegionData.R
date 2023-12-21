@@ -5,6 +5,7 @@
 #' @importFrom abind abind
 #' @importFrom utils read.csv
 #' @importFrom methods as
+#' @importFrom jsonlite fromJSON
 #' @description A class that represents one or several regions in LPJmL.
 #' Based on an LPJmL grid, a region is defined as set of grid cells together
 #' with fractions. The fractions indicate the share of each grid cell that
@@ -127,8 +128,7 @@ read_cow_regions <- function() {
     grid <- read_def_grid()
 
     # ------- combine grid and region matrix to LPJmLRegionData object
-    lpjml_cow_regions <-
-      lpjmlstats:::LPJmLRegionData$new(grid, region_matrix)
+    lpjml_cow_regions <- LPJmLRegionData$new(grid, region_matrix)
 
     # ------- save LPJmLRegionData object
     saveRDS(lpjml_cow_regions, "./inst/lpjml_cow_regions.rds")
@@ -162,7 +162,7 @@ build_global_region <- function(grid) {
                                   sparse = TRUE)
   region_matrix <- as(as(region_matrix, "generalMatrix"), "CsparseMatrix")
   dimnames(region_matrix) <- list(c("global"), NULL)
-  return(lpjmlstats:::LPJmLRegionData$new(grid, region_matrix))
+  return(LPJmLRegionData$new(grid, region_matrix))
 }
 
 
