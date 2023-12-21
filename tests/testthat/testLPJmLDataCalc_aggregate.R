@@ -13,7 +13,7 @@ test_that("aggregate regions via sum produces correct values and metadata", {
       dimnames = list(c("R1", "R2"), NULL),
       sparse = TRUE
     )
-  regions <- lpjmlstats:::LPJmLRegionData$new(grid, region_matrix)
+  regions <- LPJmLRegionData$new(grid, region_matrix)
 
   # ------ create LPJmLDataCalc object
   data <- array(rep(c(1, 2, 3, 4, 5, 6), 2),
@@ -54,8 +54,8 @@ test_that("aggregation speed is fast enough", {
   regions <- generate_random_region_matrix(cells_per_region = 560,
                                            nregions = 237,
                                            ncells = 67420)
-  reg_dat <- lpjmlstats:::LPJmLRegionData$new(soiln$grid, regions)
-  soiln_calc <- lpjmlstats:::.as_LPJmLDataCalc(soiln)
+  reg_dat <- LPJmLRegionData$new(soiln$grid, regions)
+  soiln_calc <- .as_LPJmLDataCalc(soiln)
 
   # do aggregation
   start_time <- Sys.time()
@@ -85,7 +85,7 @@ test_that("if grids do not match an error is thrown", {
       dimnames = list(c("R1", "R2"), NULL),
       sparse = TRUE
     )
-  regions <- lpjmlstats:::LPJmLRegionData$new(grid, region_matrix)
+  regions <- LPJmLRegionData$new(grid, region_matrix)
 
   # ------ modify grid
   gridarray[1, 1] <- 20.25
@@ -362,7 +362,7 @@ test_that("temporal aggregation produces correct result", {
   lpjml_calc_agg <-
     aggregate(
       lpjml_calc,
-      time = list(to = "full", stat = "mean")
+      time = list(to = "sim_period", stat = "mean")
     )
 
   # check correct values
@@ -372,7 +372,7 @@ test_that("temporal aggregation produces correct result", {
   expect_equal(names(dim(lpjml_calc_agg$data)), c("cell", "time", "band"))
   # check correct dimnames
   expect_equal(dimnames(lpjml_calc_agg$data)[["cell"]],  c("cell1", "cell2"))
-  expect_equal(dimnames(lpjml_calc_agg$data)[["time"]],  c("sim_period_mean"))
+  expect_equal(dimnames(lpjml_calc_agg$data)[["time"]],  c("sim_period"))
   expect_equal(dimnames(lpjml_calc_agg$data)[["band"]],  c("band1", "band2"))
   #check aggregate_time meta data
   expect_equal(lpjml_calc_agg$meta$time_aggregation, "mean")

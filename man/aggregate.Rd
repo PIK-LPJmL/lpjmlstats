@@ -23,17 +23,21 @@ is a string, it is interpreted as the target aggregation unit and the method
 defaults to \code{weighted_sum} and \code{mean} for the cell and time dimension,
 respectively. If the value is itself a list, it must contain the
 keys \code{to} and \code{stat} specifying the aggregation unit and method.
-The aggregation units for the cell dimension can be either a string with
+The aggregation units for the cell dimension can be either an
+LPJmlRegionData object or a string with
 the following options
 \itemize{
-\item \code{countries}: The regions defined in the countries of the world file
+\item \code{countries}: The regions defined in the countries of the world file.
 \item \code{global}: A dynamically created region that fully contains all cells
-of the grid
-or an \code{\link{LPJmLRegionData}} object specifying different regions as columns of
+of the grid or an \code{\link{LPJmLRegionData}} object specifying different
+regions as columns of
 its region matrix.
-For the time dimension the only available aggregation unit is \code{full} which
-aggregates the data over the full simulation period.
+}
+
+For the time dimension the only available aggregation unit is \code{sim_period}
+which aggregates the data over the full simulation period.
 The aggregation method for space has the following options:
+\itemize{
 \item \code{sum}: The values of all cells belonging to each region are summed up.
 If a cell belongs to a region only partially, we assume
 that the quantity is distributed uniformly over the cell area and
@@ -53,7 +57,10 @@ by setting the \code{reference_area} parameter.
 each cell by a reference area before summing up. Also,
 the resulting sum is then divided by the total reference area of each
 region instead of the number of cells.
-}}
+}
+
+For the time dimension the only available aggregation method is \code{mean}
+which takes the mean.}
 }
 \value{
 An aggregated \code{\link{LPJmLDataCalc}} object.

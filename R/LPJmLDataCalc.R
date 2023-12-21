@@ -123,8 +123,6 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     }
   ),
 
-
-
   active = list(
     #' @field data the data array
     data = function() {
@@ -158,21 +156,9 @@ LPJmLDataCalc$set(
     if (!(nbands_meta == nbands_array)) {
       stop("Number of bands in meta data is inconsistent with data array")
     }
-    # check if data and meta number of cells is consistent
-    ncells_meta <- private$.meta$ncell
-    ncells_array <- dim(private$.data)["cell"]
-    if (!(ncells_meta == ncells_array)) {
-      stop("Number of cells in meta data is inconsistent with data array")
-    }
-    # check if data and meta number of timesteps is consistent
-    ntimesteps_meta <- private$.meta$nyear * private$.meta$nstep
-    ntimesteps_array <- dim(private$.data)["time"]
-    if (!(ntimesteps_meta == ntimesteps_array)) {
-      stop("Total number of timesteps in meta data
-           is inconsistent with data array") #nolint
-    }
 
     #check internal consistency of grid or region data object
+    ncells_meta <- private$.meta$ncell
     if (inherits(private$.grid, "LPJmLGridData")) {
       if (!(private$.grid$meta$ncell == ncells_meta)) {
         stop("Number of cells in grid meta data
@@ -303,14 +289,14 @@ LPJmLDataCalc$set(
   "private",
   ".__add__",
   function(sec_operand) {
-    if (inherits(sec_operand, "LPJmLDataCalc")) {
-      sec_operand <- sec_operand$.data_with_unit
-    }
     if (is.numeric(sec_operand)) {
       sec_operand <- units::set_units(sec_operand,
                                       units(private$.data))
-      print("The added numeric is assumed to
-            have the same unit as the LPJmLDataCalc object")
+      print("The added numeric vector is assumed to have the
+             same unit as the LPJmLDataCalc object")
+    }
+    if (inherits(sec_operand, "LPJmLDataCalc")) {
+      sec_operand <- sec_operand$.data_with_unit
     }
     private$.data <- private$.__apply_operator__(sec_operand, `+`)
     private$copy_unit_array2meta()
@@ -339,14 +325,14 @@ LPJmLDataCalc$set(
   "private",
   ".__subtract__",
   function(sec_operand) {
-    if (inherits(sec_operand, "LPJmLDataCalc")) {
-      sec_operand <- sec_operand$.data_with_unit
-    }
     if (is.numeric(sec_operand)) {
       sec_operand <- units::set_units(sec_operand,
                                       units(private$.data))
-      print("The subtracted numeric is assumed to
-             have the same unit as the LPJmLDataCalc object")
+      print("The subtracted numeric vector is assumed
+            to have the same unit as the LPJmLDataCalc object")
+    }
+    if (inherits(sec_operand, "LPJmLDataCalc")) {
+      sec_operand <- sec_operand$.data_with_unit
     }
     private$.data <- private$.__apply_operator__(sec_operand, `-`)
     private$copy_unit_array2meta()
@@ -437,8 +423,7 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
 
 
   # Create a new meta enhanced LPJmLMetaDataCalc object
-  meta_calc <-
-    lpjmlstats:::LPJmLMetaDataCalc$new(lpjml_data$meta)
+  meta_calc <- LPJmLMetaDataCalc$new(lpjml_data$meta)
 
   # Copy the data from the provided LPJmLData object
   private$.data <- lpjml_data$data
@@ -563,9 +548,9 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
       stop("Array must have 3 dimensions. 1. space, 2. time, 3. band.")
     }
 
-    header <- lpjmlkit:::create_header(ncell = dim(obj)[1],
-                                       nstep = dim(obj)[2],
-                                       nbands = dim(obj)[3])
+    header <- lpjmlkit::create_header(ncell = dim(obj)[1],
+                                      nstep = dim(obj)[2],
+                                      nbands = dim(obj)[3])
 
     meta <- lpjmlkit:::LPJmLMetaData$new(header)
 

@@ -14,7 +14,10 @@ Imports:
     lpjmlkit,
     Matrix,
     abind,
-    methods
+    methods,
+    memoise,
+    rlang,
+    jsonlite
 Suggests: 
     testthat (>= 3.0.0),
     raster,
