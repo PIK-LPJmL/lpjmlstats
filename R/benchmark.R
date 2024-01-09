@@ -75,7 +75,7 @@ retrieve_summaries <- function(metric_list, var, paths) {
 
   # process under test files
   for (ut_dir in paths$ut_dirs) {
-    process_file(metric_list, paths$ut_dir, filename, "ut")
+    process_file(metric_list, ut_dir, filename, "ut")
   }
 
   # remove memoised cache of aggregate function
