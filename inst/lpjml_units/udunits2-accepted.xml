@@ -91,6 +91,30 @@ Units accepted for use with the SI
             <aliases> <name><singular>tonne</singular></name> </aliases>
             <definition>unit of weight equal to 1000 kilograms</definition>
         </unit>
+        <unit>
+            <def>1e6 gC</def>
+            <name><singular>tonne_carbon</singular></name>
+            <symbol>tC</symbol>
+            <definition>unit of weight equal to 1000 kilograms C</definition>
+        </unit>
+        <unit>
+            <def>1e6 gN</def>
+            <name><singular>tonne_nitrogen</singular></name>
+            <symbol>tN</symbol>
+            <definition>unit of weight equal to 1000 kilograms N</definition>
+        </unit>
+        <!-- <unit>
+            <def>1e3 gC</def>
+            <name><singular>kilogramm_carbon</singular></name>
+            <symbol>kgC</symbol>
+            <definition>unit of weight equal to 1 kilogram C</definition>
+        </unit>
+        <unit>
+            <def>1e3 gN</def>
+            <name><singular>kilogramm_nitrogen</singular></name>
+            <symbol>kgN</symbol>
+            <definition>unit of weight equal to 1 kilogram N</definition>
+        </unit> -->
 
     <!-- Units whose values are obtained experimentally -->
         <unit>

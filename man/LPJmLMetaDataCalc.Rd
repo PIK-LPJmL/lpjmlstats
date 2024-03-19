@@ -28,6 +28,8 @@ subject to time aggregation.}
 \item \href{#method-LPJmLMetaDataCalc-.__set_space_aggregation__}{\code{LPJmLMetaDataCalc$.__set_space_aggregation__()}}
 \item \href{#method-LPJmLMetaDataCalc-.__set_time_aggregation__}{\code{LPJmLMetaDataCalc$.__set_time_aggregation__()}}
 \item \href{#method-LPJmLMetaDataCalc-print}{\code{LPJmLMetaDataCalc$print()}}
+\item \href{#method-LPJmLMetaDataCalc-.__set_sim_identifier__}{\code{LPJmLMetaDataCalc$.__set_sim_identifier__()}}
+\item \href{#method-LPJmLMetaDataCalc-.__get_sim_identifier__}{\code{LPJmLMetaDataCalc$.__get_sim_identifier__()}}
 \item \href{#method-LPJmLMetaDataCalc-clone}{\code{LPJmLMetaDataCalc$clone()}}
 }
 }
@@ -117,6 +119,37 @@ Wrapper for \code{\link{LPJmLMetaData}} print method.
 \item{\code{...}}{additional arguments passed to \code{\link{LPJmLMetaData}} print method}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLMetaDataCalc-.__set_sim_identifier__"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-.__set_sim_identifier__}{}}}
+\subsection{Method \code{.__set_sim_identifier__()}}{
+Set the simulation identifier
+!Internal method only to be used for package development!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$.__set_sim_identifier__(sim_identifier)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{sim_identifier}}{string, simulation identifier}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLMetaDataCalc-.__get_sim_identifier__"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-.__get_sim_identifier__}{}}}
+\subsection{Method \code{.__get_sim_identifier__()}}{
+!Internal method only to be used for package development!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$.__get_sim_identifier__()}\if{html}{\out{</div>}}
+}
+
+\subsection{Returns}{
+string, simulation identifier
 }
 }
 \if{html}{\out{<hr>}}

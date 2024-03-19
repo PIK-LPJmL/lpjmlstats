@@ -9,35 +9,34 @@ aggregate(x, ref_area = "terr_area", ...)
 \arguments{
 \item{x}{\code{\link{LPJmLDataCalc}} object to be aggregated.}
 
-\item{ref_area}{Specifies the reference area to be used as
+\item{ref_area, }{string either \code{terr_area} or \code{cell_area}.
+Specifies the reference area to be used as
 a multiplier for the \code{weighted_sum} and \code{weighted_mean} aggregation methods.
-If the data is given as an area density (i.e. per m2) the reference area
-should be the area of each cell on which this area density "lives", assuming
-it has the given value only on that area and the value zero elsewhere
-(mathematically this is the support of the area density).}
+Should be the area of each cell on which the value "lives",
+assuming it has the given value only on that area and the value zero
+elsewhere (see mathematical support).}
 
-\item{...}{One or several key-value combinations where keys represent the
-dimension names and values specify the target aggregation units
-and optionally also the summary statistic to be used. If the value
-is a string, it is interpreted as the target aggregation unit and the method
-defaults to \code{weighted_sum} and \code{mean} for the cell and time dimension,
-respectively. If the value is itself a list, it must contain the
-keys \code{to} and \code{stat} specifying the aggregation unit and method.
+\item{...}{one or several key-value pairs. Keys represent the
+dimension to be aggregated and values specify the target aggregation units
+and the desired summary statistic.
+
+Aggregation unit and statistic are given in a list,
+by the syntax \verb{list(to = [aggregation unit], stat = [summary statistic])}.
+
+If only a string is given instead of a list it is used as
+the aggregation unit and the summary statistic defualts to \code{mean} for time
+and \code{weighted_sum} for cell.
+
+\strong{Options for the cell dimension}
+
 The aggregation units for the cell dimension can be either an
 LPJmlRegionData object or a string with
 the following options
 \itemize{
 \item \code{countries}: The regions defined in the countries of the world file.
 \item \code{global}: A dynamically created region that fully contains all cells
-of the grid or an \code{\link{LPJmLRegionData}} object specifying different
-regions as columns of
-its region matrix.
-}
-
-For the time dimension the only available aggregation unit is \code{sim_period}
-which aggregates the data over the full simulation period.
+of the grid.
 The aggregation method for space has the following options:
-\itemize{
 \item \code{sum}: The values of all cells belonging to each region are summed up.
 If a cell belongs to a region only partially, we assume
 that the quantity is distributed uniformly over the cell area and
@@ -59,8 +58,16 @@ the resulting sum is then divided by the total reference area of each
 region instead of the number of cells.
 }
 
-For the time dimension the only available aggregation method is \code{mean}
-which takes the mean.}
+\strong{Options for the time dimension}
+
+For the time dimension these aggregation units are available:
+\itemize{
+\item \code{sim_period}: The full simulation period.
+\item \code{years}: Aggregates the data to annual values.
+}
+
+The only available aggregation method is \code{mean}
+which takes the unweighted mean of the values.}
 }
 \value{
 An aggregated \code{\link{LPJmLDataCalc}} object.
@@ -68,4 +75,37 @@ An aggregated \code{\link{LPJmLDataCalc}} object.
 \description{
 Function to aggregate the full data of an \code{\link{LPJmLDataCalc}} object by
 applying summary statistics along the cell and/or time dimensions.
+}
+\examples{
+\dontrun{
+# Example 1
+# Load an example LPJmLDataCalc object
+soiln <- load_soiln_calc()
+
+# Aggregate the data to countries of the world
+soiln_countries <- aggregate(soiln, cell = "countries")
+
+soiln_countries$data # look at country time series
+
+# Example 2
+# Load an example LPJmLDataCalc object
+soiln <- load_soiln_calc()
+
+# Aggregate the to global region
+soiln <- aggregate(soiln, cell = list(to = "global", stat = "weighted_sum"))
+
+soiln$data # look at global time series
+
+# Example 3
+# Load an example LPJmLDataCalc object
+soiln <- load_soiln_calc()
+
+# Take the mean of the data over the full simulation period
+# and a weighted mean over the cells
+soiln <- aggregate(soiln, time = "sim_period",
+                   cell = list(to = "global", stat = "weighted_mean"))
+
+# Look at the resulting value
+soiln$data
+}
 }
