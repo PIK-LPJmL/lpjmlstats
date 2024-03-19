@@ -6,4 +6,7 @@
                                     package = "lpjmlstats")
   # TODO: install more LPJmL units next to gC gN?
   units::load_units_xml(unit_database_path)
+
+  # configure the default settings
+  options(lpjmlstats.file_extension = ".bin.json")
 }

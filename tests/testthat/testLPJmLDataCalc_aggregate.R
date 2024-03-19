@@ -46,7 +46,7 @@ test_that("aggregate regions via sum produces correct values and metadata", {
 
 
 test_that("aggregation speed is fast enough", {
-  path_to_soil_n_json <- test_path("../testdata/", "soiln.bin.json")
+  path_to_soil_n_json <- test_path("../testdata/path1", "soiln.bin.json")
   soiln <- lpjmlkit::read_io(path_to_soil_n_json)
   soiln$add_grid()
 
@@ -132,7 +132,7 @@ test_that("aggregation is recorded in meta data", {
 
 test_that("usecases of aggregation with cow and plotting runs error free", {
   # load test data
-  path_to_soil_n_json <- test_path("../testdata/", "soiln.bin.json")
+  path_to_soil_n_json <- test_path("../testdata/path1", "soiln.bin.json")
   soiln <- read_io(path_to_soil_n_json)
   soiln$add_grid()
 
@@ -153,7 +153,7 @@ test_that("usecases of aggregation with cow integral on multiple timesteps ",
           {
             # load test data
             path_to_soil_n_json <-
-              test_path("../testdata/", "soiln.bin.json")
+              test_path("../testdata/path1", "soiln.bin.json")
             soiln <- read_io(path_to_soil_n_json)
             soiln$add_grid()
 
@@ -331,7 +331,7 @@ test_that("area mean aggregation works for edge cases", {
 
 test_that("grid for aggregation is loaded automatically", {
   path_to_soil_n_json <-
-    test_path("../testdata/", "soiln.bin.json")
+    test_path("../testdata/path1", "soiln.bin.json")
   soiln <- read_io(path_to_soil_n_json)
   expect_no_error(soiln %>% aggregate(cell = list(to = "global", stat = "sum")))
 })
@@ -339,7 +339,7 @@ test_that("grid for aggregation is loaded automatically", {
 
 # ----- temporal aggregation tests -----
 
-test_that("temporal aggregation produces correct result", {
+test_that("temporal aggregation over whole simulation period correct result", {
   # create test data
   data <- array(rep(c(2, 4), 2, each = 2) * rep(c(1, 2), each = 4) +
                   rep(c(0, 1), 4), dim = c(2, 2, 2))
@@ -376,4 +376,16 @@ test_that("temporal aggregation produces correct result", {
   expect_equal(dimnames(lpjml_calc_agg$data)[["band"]],  c("band1", "band2"))
   #check aggregate_time meta data
   expect_equal(lpjml_calc_agg$meta$time_aggregation, "mean")
+})
+
+
+test_that("temporal aggregation over each year runs through", {
+  skip("uses data of davids personal dir")
+
+  mst <- read_io("C:/Users/davidho/Desktop/LPJmLG/example_outputs/msoiltemp2.bin.json") # nolint
+
+  mst$aggregate(time = list(to = "years", stat = "mean"))
+
+  expect_equal(mst$data[1, 1, 1], 25.44759)
+
 })

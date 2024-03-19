@@ -7,8 +7,8 @@ test_that("when initializing with non LPJmLData object an error is thrown", {
 
 test_that("when initializing with LPJmLData the content arrives", {
   header <- lpjmlkit::create_header(ncell = 6, verbose = FALSE)
-  lpjml_meta <- lpjmlkit:::LPJmLMetaData$new(header)
-  lpjml_dat <- lpjmlkit:::LPJmLData$new(1, meta_data = lpjml_meta)
+  lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header)
+  lpjml_dat <- lpjmlkit::LPJmLData$new(1, meta_data = lpjml_meta)
 
   lpjml_calc <- LPJmLDataCalc$new(lpjml_dat)
 
@@ -25,16 +25,16 @@ test_that("the object returned when calling obj$data doesn't have class", {
 test_that(".as_LPJmLDataCalc returns LPJmLDataCalc object", {
   header <- create_header(ncell = 1, verbose = FALSE)
   lpjml_meta <-
-    lpjmlkit:::LPJmLMetaData$new(header, list(unit = "g"))
+    lpjmlkit::LPJmLMetaData$new(header, list(unit = "g"))
 
-  lpjml_dat <- lpjmlkit:::LPJmLData$new(c(1), lpjml_meta)
+  lpjml_dat <- lpjmlkit::LPJmLData$new(c(1), lpjml_meta)
   lpjml_calc <- .as_LPJmLDataCalc(lpjml_dat)
 
   expect_true(inherits(lpjml_calc, "LPJmLDataCalc"))
 })
 
 test_that("conversion LPJ unit of the wild to format of units package works", {
-  path_to_data <- test_path("../testdata", "soiln.rds")
+  path_to_data <- test_path("../testdata/path1", "soiln.rds")
   soil_n <- readRDS(path_to_data)
 
   soil_n_calc <- .as_LPJmLDataCalc(soil_n)
@@ -288,4 +288,46 @@ test_that("meta from multiplicand is used", {
 test_that("consistency check fails if band number is not consistent", {
   expect_error(create_LPJmLDataCalc(1, "gN", nyear = 1, nband = 2),
                "inconsistent")
+})
+
+# ------ test unit conversion ------
+
+test_that("conversion from gN to GtN works", {
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "gN", nyear = 1)
+
+  lpjml_calc1$.convert_unit("GtN")
+
+  expect_equal(lpjml_calc1$meta$unit, "GtN")
+  expect_equal(lpjml_calc1$data, 1 / 1e9, ignore_attr = TRUE)
+})
+
+test_that("applying conversions of conversion table does correct converion", {
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "gN", nyear = 1)
+
+  lpjml_calc1$apply_unit_conversion_table()
+
+  expect_equal(lpjml_calc1$meta$unit, "GtN")
+  expect_equal(lpjml_calc1$data, 1 / 1e9, ignore_attr = TRUE)
+})
+
+test_that("applying conversion table does nothing for unspecified conversion", {
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "g", nyear = 1)
+
+  lpjml_calc1$apply_unit_conversion_table()
+
+  expect_equal(lpjml_calc1$meta$unit, "g")
+  expect_equal(lpjml_calc1$data, 1, ignore_attr = TRUE)
+})
+
+test_that("keep dimnames works as expected", {
+  array1 <- c(1, 1, 1, 1)
+  dim(array1) <- c(x = 2, y = 2, z = 1)
+  dimnames(array1) <- list(c("a", "b"), c("c", "d"), NULL)
+
+  array1 <- keep_dimnames_and_dims(array1, units::set_units, "gN")
+
+  expect_equal(dimnames(array1), list(c("a", "b"), c("c", "d"), NULL))
+  expect_equal(deparse_unit(array1), "gN")
+  expect_equal(dim(array1), c(x = 2, y = 2, z = 1))
+
 })

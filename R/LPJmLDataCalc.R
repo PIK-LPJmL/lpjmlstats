@@ -14,7 +14,7 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
 
   classname = "LPJmLDataCalc",
 
-  inherit = lpjmlkit:::LPJmLData,
+  inherit = lpjmlkit::LPJmLData,
 
   public = list(
     #' @description
@@ -120,6 +120,44 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     #' @param lpjml_calc_obj An `LPJmLData` object.
     .divide = function(lpjml_calc_obj) {
       private$.__divide__(lpjml_calc_obj)
+    },
+
+    #' @description
+    #' Unit conversion of LPJmLDataCalc object
+    #' !Internal method only to be used for package development!
+    #' @param unit A string with the unit to convert to.
+    .convert_unit = function(unit) {
+      private$.__convert_unit__(unit)
+    },
+
+    #' @description
+    #' Apply unit conversion from conversion table
+    #' @param path_to_table A string with the path to the conversion table.
+    apply_unit_conversion_table = function(path_to_table = NULL) {
+      private$.__apply_unit_conversion_table__(path_to_table)
+    },
+
+    #' @description
+    #' !Internal method only to be used for package development!
+    #' Set the simulation identifier to the LPJmLDataCalc object.
+    #' @param identifier A string with the identifier to set.
+    set_sim_identifier = function(identifier) {
+      private$.meta$.__set_sim_identifier__(identifier)
+    },
+
+    #' @description
+    #' !Internal method only to be used for package development!
+    #' Get the simulation identifier of the LPJmLDataCalc object.
+    #' @return A string with the simulation identifier.
+    get_sim_identifier = function() {
+      private$.meta$.__get_sim_identifier__()
+    },
+
+    #' @description
+    #' Add a grid to the LPJmLDataCalc object
+    #' Wrapper for the `add_grid` method of the `LPJmLData` class.
+    add_grid = function() {
+      private$.__add_grid__()
     }
   ),
 
@@ -208,6 +246,59 @@ LPJmLDataCalc$set("private", "copy_unit_array2meta",
                     deparsed_unit <- units::deparse_unit(private$.data)
                     private$.meta$.__set_attribute__("unit", deparsed_unit)
                   })
+
+# Convert the units of the data array
+LPJmLDataCalc$set("private", ".__convert_unit__",
+                  function(unit) {
+                    private$.data <- keep_dimnames_and_dims(private$.data,
+                                                            units::set_units,
+                                                            as_units(unit))
+                    private$copy_unit_array2meta()
+                  })
+
+# function that allow to apply a function to array while keeping the
+# dimnames and dims
+keep_dimnames_and_dims <- function(x, fun, ...) {
+  dimnames <- dimnames(x)
+  dims <- dim(x)
+  x <- fun(x, ...)
+  dim(x) <- dims
+  dimnames(x) <- dimnames
+  return(x)
+}
+
+# Apply unit conversions of conversion table to data array
+LPJmLDataCalc$set(
+  "private",
+  ".__apply_unit_conversion_table__",
+  function(path_to_table) {
+
+    # if no path to table is given, use the default table
+    if (is.null(path_to_table)) {
+      path_to_table <-
+        getOption(
+          "LPJmLDataCalc.unit_conversion_table",
+          system.file("unit_conversions.csv",
+                      package = "lpjmlstats")
+        )
+    }
+
+    # Read the conversion table
+    conversions <- read.csv(path_to_table, stringsAsFactors = FALSE)
+
+    # Get the current unit of the data array
+    current_unit <- units::deparse_unit(private$.data)
+    # Check if current unit is in the table
+    if (current_unit %in% conversions$original_unit) {
+      # Get the corresponding converted unit
+      converted_unit <-
+        conversions$converted_unit[conversions$original_unit == current_unit]
+      # Convert the unit
+      private$.__convert_unit__(converted_unit)
+    }
+  }
+)
+
 
 
 # ----------------- basic arithmetic operations ------------------------------ #
@@ -413,13 +504,13 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
     stop("Currently only cell format is supported")
   }
 
-  # TODO: check if data has the correct dimension order
-  # something alogn the lines of:
-  # if (!names(dim(lpjml_data$data))[1] == "cell" || #nolint
-  #     !names(dim(lpjml_data$data))[2] == "time" || #nolint
-  #     !names(dim(lpjml_data$data))[3] == "band"){  #nolint
-  #   stop("Currently data must have the following order of dimensions: 1. cell, 2. time, 3. band") #nolint
-  # }
+  # Ensure the data has the correct format
+  # TODO: modify tests such that they run through with this
+  # if (!names(dim(lpjml_data$data))[1] == "cell" || # nolint start
+  #     !names(dim(lpjml_data$data))[2] == "time" ||
+  #     !names(dim(lpjml_data$data))[3] == "band"){
+  #    stop("The data must have the following order of dimensions: 1. cell, 2. time, 3. band")
+  # } # nolint end
 
 
   # Create a new meta enhanced LPJmLMetaDataCalc object
@@ -463,7 +554,7 @@ LPJmLDataCalc$set("private", ".__plot__",
                     } else {
                       # plotting of aggregated data
                       lpjml_dat <-
-                        lpjmlkit:::LPJmLData$new(self$data, self$meta)
+                        lpjmlkit::LPJmLData$new(self$data, self$meta)
                       lpjml_dat$.__set_grid__(self$grid)
                       lpjml_dat$plot(...)
                     }
@@ -493,11 +584,11 @@ LPJmLDataCalc$set("private", ".__plot_aggregated__", #nolint:object_name_linter
 
                     # create dummy LPJmLData only for purpose of plotting
                     plot_obj <-
-                      lpjmlkit:::LPJmLData$new(disaggr_data, private$.meta)
+                      lpjmlkit::LPJmLData$new(disaggr_data, private$.meta)
                     plot_obj$.__set_grid__(private$.grid$grid)
 
                     # plot
-                    lpjmlkit:::plot.LPJmLData(plot_obj, ...)
+                    lpjmlkit::plot.LPJmLData(plot_obj, ...)
                   })
 
 # ----- read_io -----
@@ -552,9 +643,9 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
                                       nstep = dim(obj)[2],
                                       nbands = dim(obj)[3])
 
-    meta <- lpjmlkit:::LPJmLMetaData$new(header)
+    meta <- lpjmlkit::LPJmLMetaData$new(header)
 
-    obj <- lpjmlkit:::LPJmLData$new(obj, meta)
+    obj <- lpjmlkit::LPJmLData$new(obj, meta)
   } else if (inherits(obj, "LPJmLData")) {
     obj <- obj
   } else {
@@ -569,7 +660,7 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
 #'
 #' Function to subset an LPJmLDataCalc object. The function acts as a wrapper
 #' of \link[lpjmlkit]{subset.LPJmLData} from lpjmlkit, but outputs an
-#' [`LPJmLDataCalc`] object.
+#' [`LPJmLDataCalc`] object, in particular keeping its unit.
 
 #' @param x LPJmLDataCalc object.
 #' @param ... Parameters that are passed to \link[lpjmlkit]{subset.LPJmLData}.
@@ -578,6 +669,72 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
 #' @export
 
 subset.LPJmLDataCalc <- function(x, ...) {
-  lpjml_dat <- lpjmlkit:::subset.LPJmLData(x, ...)
+  lpjml_dat <- lpjmlkit::subset.LPJmLData(x, ...)
   return(.as_LPJmLDataCalc(lpjml_dat))
+}
+
+
+
+# ----- add_grid -----
+
+LPJmLDataCalc$set(
+  "private", ".__add_grid__",
+  function(...) {
+
+    # Skip if grid is already attached
+    if (!is.null(private$.grid)) {
+      return(invisible(self))
+    }
+
+    if (...length() == 0) {
+      lpjml_data_orig <- read_grid(private$.meta$._data_dir_,
+                                   self$dimnames()[["cell"]],
+                                   private$.meta$._subset_space_)
+      # make a copy to avoid modifying tho original
+      lpjml_data <- lpjml_data_orig$clone(deep = TRUE)
+    } else {
+      # All arguments have to be provided manually to read_io.
+      #   Ellipsis (...) does that.
+
+      # Add support for cell subsets. This is a rough filter since $subset
+      #   does not say if cell is subsetted - but ok for now.
+      if (private$.meta$._subset_space_) {
+        lpjml_data <- read_io(...,
+                              subset = list(cell = self$dimnames()[["cell"]]))
+      } else {
+        lpjml_data <- read_io(...)
+      }
+    }
+
+    # Create LPJmLData object and bring together data and meta_data
+    lpjml_grid <- lpjmlkit::LPJmLGridData$new(lpjml_data)
+
+    # set grid attribute
+    self$.__set_grid__(lpjml_grid)
+  }
+)
+
+read_grid <- function(dir, cells, subset) {
+  # If user has not supplied any parameters try to find a grid file in the
+  # same directory as data. This throws an error if no suitable file is
+  # found.
+  find_gridfile <- utils::getFromNamespace("find_gridfile", "lpjmlkit")
+  filename <- find_gridfile(dir)
+
+  message(paste0(cli::col_blue("grid"),
+                 " read from ",
+                 sQuote(basename(filename))))
+
+  # Add support for cell subsets. This is a rough filter since $subset
+  #   does not say if cell is subsetted - but ok for now.
+  if (subset) {
+    lpjml_data <- read_io(
+      filename = filename,
+      subset = list(cell = cells),
+      silent = TRUE
+    )
+  } else {
+    lpjml_data <- read_io(filename = filename, silent = TRUE)
+  }
+  return(lpjml_data)
 }
