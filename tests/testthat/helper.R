@@ -48,7 +48,7 @@ generate_random_region_matrix <-
   }
 
 load_test_grid <- function() {
-  soiln_path <- testthat::test_path("../testdata", "soiln.rds")
+  soiln_path <- testthat::test_path("../testdata/path1", "soiln.rds")
   soiln <- readRDS(soiln_path)
   soiln$add_grid()
   grid <- soiln$grid
@@ -99,8 +99,8 @@ create_LPJmLDataCalc <- function(data, # nolint:object_name_linter
       ...
     )
   lpjml_meta <-
-    lpjmlkit:::LPJmLMetaData$new(header, list(unit = my_unit))
-  lpjml_dat <- lpjmlkit:::LPJmLData$new(data, lpjml_meta)
+    lpjmlkit::LPJmLMetaData$new(header, list(unit = my_unit))
+  lpjml_dat <- lpjmlkit::LPJmLData$new(data, lpjml_meta)
   if (!is.null(grid)) {
     lpjml_dat$.__set_grid__(grid)
   }
@@ -113,15 +113,15 @@ create_LPJmLGridData <- # nolint:object_name_linter
   function(gridarray) {
     # nolint:object_name_linter
     header <-
-      lpjmlkit:::create_header(ncell = dim(gridarray)[1],
-                               verbose = FALSE,
-                               name = "GRID")
-    lpjml_meta <- lpjmlkit:::LPJmLMetaData$new(header)
+      lpjmlkit::create_header(ncell = dim(gridarray)[1],
+                              verbose = FALSE,
+                              name = "GRID")
+    lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header)
     dimnames(gridarray) <-
       list(cell = as.character(seq_len(dim(gridarray)[1])),
            band = c("lon", "lat"))
-    grid <- lpjmlkit:::LPJmLData$new(gridarray, lpjml_meta)
-    grid <- lpjmlkit:::LPJmLGridData$new(grid)
+    grid <- lpjmlkit::LPJmLData$new(gridarray, lpjml_meta)
+    grid <- lpjmlkit::LPJmLGridData$new(grid)
     return(grid)
   }
 
@@ -142,7 +142,8 @@ create_test_global_LPJmLDataCalc <- function(unit = "gN", value = NULL) { # noli
 }
 
 load_soiln_calc <- function() {
-  path_to_soil_n_json <- testthat::test_path("../testdata/", "soiln.bin.json")
+  path_to_soil_n_json <-
+    testthat::test_path("../testdata/path1", "soiln.bin.json")
   soiln <- lpjmlstats::read_io(path_to_soil_n_json)
   soiln$add_grid()
   return(soiln)

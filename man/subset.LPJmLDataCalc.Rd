@@ -17,5 +17,5 @@ An \code{\link{LPJmLDataCalc}} object.
 \description{
 Function to subset an LPJmLDataCalc object. The function acts as a wrapper
 of \link[lpjmlkit]{subset.LPJmLData} from lpjmlkit, but outputs an
-\code{\link{LPJmLDataCalc}} object.
+\code{\link{LPJmLDataCalc}} object, in particular keeping its unit.
 }

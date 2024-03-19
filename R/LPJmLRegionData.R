@@ -187,5 +187,5 @@ read_def_grid <- function() {
     stop("grid does not exist as package data")
   }
 
-  return(lpjmlkit:::LPJmLGridData$new(lpjmlkit::read_io(path_to_grid)))
+  return(lpjmlkit::LPJmLGridData$new(lpjmlkit::read_io(path_to_grid)))
 }

@@ -5,30 +5,31 @@
 #' applying summary statistics along the cell and/or time dimensions.
 #'
 #' @param x [`LPJmLDataCalc`] object to be aggregated.
-#' @param ref_area Specifies the reference area to be used as
+#' @param ref_area, string either `terr_area` or `cell_area`.
+#'  Specifies the reference area to be used as
 #'  a multiplier for the `weighted_sum` and `weighted_mean` aggregation methods.
-#'  If the data is given as an area density (i.e. per m2) the reference area
-#'  should be the area of each cell on which this area density "lives", assuming
-#'  it has the given value only on that area and the value zero elsewhere
-#'  (mathematically this is the support of the area density).
-#' @param ... One or several key-value combinations where keys represent the
-#'  dimension names and values specify the target aggregation units
-#'  and optionally also the summary statistic to be used. If the value
-#'  is a string, it is interpreted as the target aggregation unit and the method
-#'  defaults to `weighted_sum` and `mean` for the cell and time dimension,
-#'  respectively. If the value is itself a list, it must contain the
-#'  keys `to` and `stat` specifying the aggregation unit and method.
+#'  Should be the area of each cell on which the value "lives",
+#'  assuming it has the given value only on that area and the value zero
+#'  elsewhere (see mathematical support).
+#' @param ... one or several key-value pairs. Keys represent the
+#'  dimension to be aggregated and values specify the target aggregation units
+#'  and the desired summary statistic.
+#'
+#'  Aggregation unit and statistic are given in a list,
+#'  by the syntax `list(to = [aggregation unit], stat = [summary statistic])`.
+#'
+#'  If only a string is given instead of a list it is used as
+#'  the aggregation unit and the summary statistic defualts to `mean` for time
+#'  and `weighted_sum` for cell.
+#'
+#'  **Options for the cell dimension**
+#'
 #'  The aggregation units for the cell dimension can be either an
 #'  LPJmlRegionData object or a string with
 #'  the following options
 #'  * `countries`: The regions defined in the countries of the world file.
 #'  * `global`: A dynamically created region that fully contains all cells
-#'    of the grid or an [`LPJmLRegionData`] object specifying different
-#'    regions as columns of
-#'    its region matrix.
-#'
-#'  For the time dimension the only available aggregation unit is `sim_period`
-#'  which aggregates the data over the full simulation period.
+#'    of the grid.
 #'  The aggregation method for space has the following options:
 #'  * `sum`: The values of all cells belonging to each region are summed up.
 #'  If a cell belongs to a region only partially, we assume
@@ -50,11 +51,49 @@
 #'  the resulting sum is then divided by the total reference area of each
 #'  region instead of the number of cells.
 #'
-#'  For the time dimension the only available aggregation method is `mean`
-#'  which takes the mean.
+#'  **Options for the time dimension**
+#'
+#'  For the time dimension these aggregation units are available:
+#'  * `sim_period`: The full simulation period.
+#'  * `years`: Aggregates the data to annual values.
+#'
+#'  The only available aggregation method is `mean`
+#'  which takes the unweighted mean of the values.
 #'
 #' @return An aggregated [`LPJmLDataCalc`] object.
 #'
+#' @examples
+#' \dontrun{
+#' # Example 1
+#' # Load an example LPJmLDataCalc object
+#' soiln <- load_soiln_calc()
+#'
+#' # Aggregate the data to countries of the world
+#' soiln_countries <- aggregate(soiln, cell = "countries")
+#'
+#' soiln_countries$data # look at country time series
+#'
+#' # Example 2
+#' # Load an example LPJmLDataCalc object
+#' soiln <- load_soiln_calc()
+#'
+#' # Aggregate the to global region
+#' soiln <- aggregate(soiln, cell = list(to = "global", stat = "weighted_sum"))
+#'
+#' soiln$data # look at global time series
+#'
+#' # Example 3
+#' # Load an example LPJmLDataCalc object
+#' soiln <- load_soiln_calc()
+#'
+#' # Take the mean of the data over the full simulation period
+#' # and a weighted mean over the cells
+#' soiln <- aggregate(soiln, time = "sim_period",
+#'                    cell = list(to = "global", stat = "weighted_mean"))
+#'
+#' # Look at the resulting value
+#' soiln$data
+#' }
 #' @export
 aggregate <-
   function(x, ref_area = "terr_area", ...) {
@@ -126,7 +165,7 @@ get_tar_aggregation_unit <- function(argument) {
       stop("Invalid aggregation unit for cell dimension")
     }
   } else if (dimension == "time") {
-    if (!to %in% c("sim_period")) {
+    if (!to %in% c("sim_period", "years")) {
       stop("Invalid aggregation unit for time dimension")
     }
   }
@@ -227,37 +266,79 @@ LPJmLDataCalc$set(
   function(temporal_agg_units,
            temporal_agg_method) {
 
-    # perform aggregation
-    # only one option is possible
+    if (temporal_agg_units == "sim_period") {
 
-    # save dimnames, dimensions
-    dimnames <- dimnames(private$.data)
-    dim_space <- dim(private$.data)[1]
-    dim_bands <- dim(private$.data)[3]
+      # save dimnames, dimensions
+      dimnames <- dimnames(private$.data)
+      dim_space <- dim(private$.data)[1]
+      dim_bands <- dim(private$.data)[3]
 
-    # fast temporal mean function
-    time_mean <- function(x) {
-      # move second dim to last dim
-      x <- base::aperm(x, c(1, 3, 2))
-      # use highly optimized rowMeans function
-      x <- base::rowMeans(x, dims = 2)
-      # restore lost dimension
-      dim(x) <- c(dim(x)[1], dim(x)[2], 1)
-      # restore original order of dimensions
-      x <- base::aperm(x, c(1, 3, 2))
-      return(x)
+      # fast temporal mean function
+      time_mean <- function(x) {
+        # move second dim to last dim
+        x <- base::aperm(x, c(1, 3, 2))
+        # use highly optimized rowMeans function
+        x <- base::rowMeans(x, dims = 2)
+        # restore lost dimension
+        dim(x) <- c(dim(x)[1], dim(x)[2], 1)
+        # restore original order of dimensions
+        x <- base::aperm(x, c(1, 3, 2))
+        return(x)
+      }
+
+      # perform aggregation without loosing units
+      private$.data <- units::keep_units(time_mean,
+                                         private$.data)
+
+      # restore dimnames, dimensions
+      dim(private$.data) <- c(dim_space, time = 1, dim_bands)
+      dimnames(private$.data) <-
+        c(dimnames[1], list(time = "sim_period"), dimnames[3])
+    } else if (temporal_agg_units == "years") {
+
+      if (self$meta$nstep > 1) {
+        # convert data array to one with dimension for year, month and day
+        self$transform(to = "year_month_day")
+
+        # restore the unit
+        private$copy_unit_meta2array()
+
+        data <- private$.data
+
+        # function to average over years
+        year_mean <- function(data) {
+          # get the dimensions
+          dims <- names(dimnames(data))
+          # define the dimensions to keep
+          dims_to_keep <- which(dims %in% c("region", "cell", "year", "band"))
+          # create reordering of dimensions
+          # the dimensions to keep should be at the beginning
+          dim_order <- c(dims_to_keep, setdiff(1:length(dims), dims_to_keep)) # nolint
+          # apply the reordering
+          data <- aperm(data, dim_order)
+          # use highly optimized rowMeans function to average away the
+          # last dimensions not to keep
+          data <- base::rowMeans(data, dims = 3)
+          return(data)
+        }
+
+        # perform aggregation without loosing units
+        data_agg <- units::keep_units(year_mean, data)
+
+        # restore dimnames
+        index <- which(names(dimnames(data_agg)) == "year")
+        names(dimnames(data_agg))[index] <- "time"
+
+        # TODO: Adjust meta data. In particular adjust nstep, format of the time
+        # dimname and the time time_format attribute
+        # This will also allow plotting on a map etc
+
+        private$.data <- data_agg
+      } else {
+        return()
+      }
+
     }
-
-    # perform aggregation without loosing units
-    private$.data <- units::keep_units(time_mean,
-                                       private$.data)
-
-    # restore dimnames, dimensions
-    dim(private$.data) <- c(dim_space, time = 1, dim_bands)
-    dimnames(private$.data) <-
-      c(dimnames[1], list(time = "sim_period"), dimnames[3])
-
-
 
     # record aggregation in meta data
     private$.meta$.__set_time_aggregation__(temporal_agg_method)
@@ -327,16 +408,10 @@ LPJmLDataCalc$set(
       if (is.null(private$.meta$._data_dir_)) {
         stop("The data directory must be set to read the terr_area")
       }
-      terr_area_path <- find_terr_area(private$.meta$._data_dir_)
-      message(
-        paste0(
-          lpjmlkit:::col_var("terr_area"),
-          " read from ",
-          sQuote(basename(terr_area_path))
-        )
-      )
-      terr_area <- read_io(terr_area_path)
-      terr_area$add_grid()
+      terr_area_orig <- read_terr_area(private$.meta$._data_dir_)
+      # make a new copy of the original terr_area, such that modifications
+      # do not affect the original R6 object
+      terr_area <- terr_area_orig$clone(deep = TRUE)
       cell_areas <- terr_area
     } else if (ref_area == "cell_area") {
       if (!inherits(self$grid, "LPJmLGridData")) {
@@ -351,7 +426,8 @@ LPJmLDataCalc$set(
   }
 )
 
-find_terr_area <- function(searchdir) {
+read_terr_area <- function(searchdir) {
+  # find path of terr_area file
   terr_area_files <- list.files(
     path = searchdir,
     pattern = "^terr_area",
@@ -359,11 +435,11 @@ find_terr_area <- function(searchdir) {
   )
   if (length(terr_area_files) > 0) {
     terr_area_types <- sapply(terr_area_files, lpjmlkit::detect_io_type) # nolint
-    # Prefer "meta" file_type if present
+    # Prefer "meta" file_extension if present
     if (length(which(terr_area_types == "meta")) == 1) {
       filename <- terr_area_files[match("meta", terr_area_types)]
     } else if (length(which(terr_area_types == "clm")) == 1) {
-      # Second priority "clm" file_type
+      # Second priority "clm" file_extension
       filename <- terr_area_files[match("clm", terr_area_types)]
     } else {
       # Stop if either multiple files per file type or not the right type have
@@ -379,9 +455,60 @@ find_terr_area <- function(searchdir) {
     )
   }
 
-  filename
+  # read terr_area file
+  message(paste0(
+    cli::col_blue("terr_area"),
+    " read from ",
+    sQuote(basename(filename))
+  ))
+  terr_area <- read_io(filename)
+  terr_area$add_grid()
 
+  return(terr_area)
 }
+
+read_cft_frac <- function(searchdir) {
+  # find path of terr_area file
+  cft_frac_files <- list.files(
+    path = searchdir,
+    pattern = "^cftfrac",
+    full.names = TRUE
+  )
+  if (length(cft_frac_files) > 0) {
+    cft_frac_types <- sapply(cft_frac_files, lpjmlkit::detect_io_type) # nolint
+    # Prefer "meta" file_extension if present
+    if (length(which(cft_frac_types == "meta")) == 1) {
+      filename <- cft_frac_files[match("meta", cft_frac_types)]
+    } else if (length(which(cft_frac_types == "clm")) == 1) {
+      # Second priority "clm" file_extension
+      filename <- cft_frac_files[match("clm", cft_frac_types)]
+    } else {
+      # Stop if either multiple files per file type or not the right type have
+      # been detected
+      stop(
+        "Cannot detect cft_frac file automatically",
+      )
+    }
+  } else {
+    # Stop if no file name matching pattern detected
+    stop(
+      "Cannot detect cft_frac file automatically",
+    )
+  }
+
+  # read cft_frac file
+  message(paste0(
+    cli::col_blue("cft_frac"),
+    " read from ",
+    sQuote(basename(filename))
+  ))
+  cft_frac <- read_in_time_subsetted(NULL, filename)
+  cft_frac$add_grid()
+
+  return(cft_frac)
+}
+
+
 
 
 
@@ -413,11 +540,11 @@ calc_cellarea_wrapper <- function(lpjml_grid) {
     nbands = 1,
     verbose = FALSE
   )
-  meta <- lpjmlkit:::LPJmLMetaData$new(header, list(unit = "m2",
-                                                    variable = "cell area"))
+  meta <- lpjmlkit::LPJmLMetaData$new(header, list(unit = "m2",
+                                                   variable = "cell area"))
 
   # combine array and metadata to LPJmLData object
-  lpjml_calc <- lpjmlkit:::LPJmLData$new(cell_areas, meta)
+  lpjml_calc <- lpjmlkit::LPJmLData$new(cell_areas, meta)
 
   # add grid
   lpjml_calc$.__set_grid__(lpjml_grid)

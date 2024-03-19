@@ -11,9 +11,9 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
 
   lock_objects = FALSE,
 
-  inherit = lpjmlkit:::LPJmLMetaData,
+  inherit = lpjmlkit::LPJmLMetaData,
 
-  public = list( # TODO: Must be possible to do this better
+  public = list(
 
     #' @description
     #' Initialize the LPJmLMetaDataCalc object by copying all
@@ -66,11 +66,11 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
       cat(
         paste0(
           spaces,
-          lpjmlkit:::col_var("$space_aggregation"),
+          cli::col_blue("$space_aggregation"),
           " ",
           # Color red if aggregated
           ifelse(!is.null(self$space_aggregation),
-                 lpjmlkit:::col_warn(self$space_aggregation),
+                 cli::col_red(self$space_aggregation),
                  "FALSE"),
           "\n"
         )
@@ -80,15 +80,41 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
       cat(
         paste0(
           spaces,
-          lpjmlkit:::col_var("$time_aggregation"),
+          cli::col_blue("$time_aggregation"),
           " ",
           # Color red if aggregated
           ifelse(!is.null(self$time_aggregation),
-                 lpjmlkit:::col_warn(self$time_aggregation),
+                 cli::col_red(self$time_aggregation),
                  "FALSE"),
           "\n"
         )
       )
+
+      # print sim path abbreviation
+      cat(
+        paste0(
+          spaces,
+          cli::col_blue("$sim_identifier"),
+          " ",
+          self$.__get_sim_identifier__(),
+          "\n"
+        )
+      )
+    },
+
+    #' @description
+    #' Set the simulation identifier
+    #' !Internal method only to be used for package development!
+    #' @param sim_identifier string, simulation identifier
+    .__set_sim_identifier__ = function(sim_identifier) {
+      private$.sim_identifier <- sim_identifier
+    },
+
+    #' @description
+    #' !Internal method only to be used for package development!
+    #' @return string, simulation identifier
+    .__get_sim_identifier__ = function() {
+      return(private$.sim_identifier)
     }
   ),
 
@@ -108,6 +134,8 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
 
   private = list(
     .space_aggregation = NULL,
-    .time_aggregation = NULL
+    .time_aggregation = NULL,
+    .sim_identifier = "notset"
+
   )
 )
