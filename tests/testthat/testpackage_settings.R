@@ -1,11 +1,15 @@
 test_that("years subset option should produce ouputs with the configured
            years",
           {
+            skip("Two benchmarkable files are needed to run this test,
+       blows up the package size")
+
             # configure a subset of years
             set_lpjmlstats_settings(year_subset = 1:5)
 
             baseline_dir <- testthat::test_path("../testdata/path1")
-            under_test_dir <- testthat::test_path("../testdata/path2")
+            under_test_dir <-
+              testthat::test_path("../testdata/path2")
 
             settings <- list(soiln = list(GlobSumTimeseries))
 

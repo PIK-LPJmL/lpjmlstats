@@ -1,4 +1,6 @@
 test_that("benchmark produces correct results", {
+  skip("Two benchmarkable files are needed to run this test,
+       blows up the package size")
 
   set_lpjmlstats_settings(year_subset = NULL) # restore default settings
 
@@ -40,6 +42,10 @@ test_that("benchmark produces correct results", {
 
 test_that("retrieve summaries produces correct result for global sum", {
   skip("TODO: sim ident table need to be created in a different way")
+
+    skip("Two benchmarkable files are needed to run this test,
+       blows up the package size")
+
 
   # prepare paths
   baseline_dir <- testthat::test_path("../testdata/path1")
