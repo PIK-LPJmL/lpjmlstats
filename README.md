@@ -31,15 +31,6 @@ Package updates can be installed using `update.packages` (make sure that the add
 update.packages()
 ```
 
-## Tutorial
-
-The package comes with vignettes describing the basic functionality of the package and how to use it. You can load them with the following command (the package needs to be installed):
-
-```r
-vignette("benchmark-change-settings") # benchmark-change-settings
-vignette("benchmark")                 # benchmark
-```
-
 ## Questions / Problems
 
 In case of questions / problems please contact David Hötten <davidho@pik-potsdam.de>.
