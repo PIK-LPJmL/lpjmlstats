@@ -1,8 +1,6 @@
 test_that("years subset option should produce ouputs with the configured
            years",
           {
-            skip("Two benchmarkable files are needed to run this test,
-       blows up the package size")
 
             # configure a subset of years
             set_lpjmlstats_settings(year_subset = 1:5)

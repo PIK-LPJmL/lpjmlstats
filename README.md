@@ -1,8 +1,8 @@
 # Statistical tools for LPJmL data analysis
 
-R package **lpjmlstats**, version **0.1.0**
+R package **lpjmlstats**, version **0.1.1**
 
-[![CRAN status](https://www.r-pkg.org/badges/version/lpjmlstats)](https://cran.r-project.org/package=lpjmlstats)  [![R build status](https://github.com/PIK-LPJmL/lpjmlstats/workflows/check/badge.svg)](https://github.com/PIK-LPJmL/lpjmlstats/actions) [![codecov](https://codecov.io/gh/PIK-LPJmL/lpjmlstats/branch/master/graph/badge.svg)](https://app.codecov.io/gh/PIK-LPJmL/lpjmlstats) 
+[![CRAN status](https://www.r-pkg.org/badges/version/lpjmlstats)](https://cran.r-project.org/package=lpjmlstats)  [![R build status](https://github.com/PIK-LPJmL/lpjmlstats/workflows/check/badge.svg)](https://github.com/PIK-LPJmL/lpjmlstats/actions) [![codecov](https://codecov.io/gh/PIK-LPJmL/lpjmlstats/branch/master/graph/badge.svg)](https://app.codecov.io/gh/PIK-LPJmL/lpjmlstats) [![r-universe](https://pik-piam.r-universe.dev/badges/lpjmlstats)](https://pik-piam.r-universe.dev/builds)
 
 ## Purpose and Functionality
 
@@ -31,6 +31,15 @@ Package updates can be installed using `update.packages` (make sure that the add
 update.packages()
 ```
 
+## Tutorial
+
+The package comes with vignettes describing the basic functionality of the package and how to use it. You can load them with the following command (the package needs to be installed):
+
+```r
+vignette("benchmark-change-settings") # benchmark-change-settings
+vignette("benchmark")                 # benchmark
+```
+
 ## Questions / Problems
 
 In case of questions / problems please contact David Hötten <davidho@pik-potsdam.de>.
@@ -39,7 +48,7 @@ In case of questions / problems please contact David Hötten <davidho@pik-potsda
 
 To cite package **lpjmlstats** in publications use:
 
-Hötten D, Breier J (2024). _lpjmlstats: Statistical tools for LPJmL data analysis_. R package version 0.1.0.
+Hötten D, Breier J (2024). _lpjmlstats: Statistical tools for LPJmL data analysis_. R package version 0.1.1.
 
 A BibTeX entry for LaTeX users is
 
@@ -48,6 +57,6 @@ A BibTeX entry for LaTeX users is
   title = {lpjmlstats: Statistical tools for LPJmL data analysis},
   author = {David Hötten and Jannes Breier},
   year = {2024},
-  note = {R package version 0.1.0},
+  note = {R package version 0.1.1},
 }
 ```
