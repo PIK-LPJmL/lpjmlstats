@@ -1,6 +1,6 @@
 Package: lpjmlstats
 Title: Statistical tools for LPJmL data analysis
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(person("David","Hötten", email = "davidho@pik-potsdam.de", role = c("aut", "cre")),
              person("Jannes","Breier", email = "jannes.breier@pik-potsdam.de", role = c("aut")))
 Description: This package provides statistical tools for LPJmL data analysis
