@@ -1,0 +1,295 @@
+---
+title: "benchmark"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{benchmark}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+
+This vignette guides you through using the benchmark function 
+of lpjmlstats in a typical LPJmL development workflow. 
+
+Say you have been working on a change in the LPJmL setup, tweaking some settings 
+in the config or making changes to the source code. 
+A global run with the new setup has been 
+performed and the output was sucessfully written to the output directory. 
+At this point, the natural question arises: 'How have the modifications affected the results?'
+The benchmarking system helps find an answer by  
+systematically comparing the outputs of the modified, currently "under test," LPJmL 
+setup against the outputs of a stable "baseline" setup.
+
+
+Results from different baseline LPJmL versions can be found in the 
+`p/projects/lpjml/benchmark_run_outputs/` directory on the cluster.
+
+This package is a component of the PIAM cluster module. It is recommended to load
+this module via `module load piam` before starting the R session, ensuring that 
+all necessary packages are loaded.
+
+
+# Using the benchmark function
+
+In this vignette we will evaluate how the results 
+of LPJmL changed, going from version 5.7.1 to version 5.8.6. 
+
+Start by loading the package.
+``` {r load_package}
+library(lpjmlstats)
+```
+
+For a quick completion of the tutorial, we will only look at 
+the first five years of all LPJmL outputs, which significantly 
+reduces computation time. If you prefer a full comparison, 
+skip the following modification to the package settings.
+```{r set_year_subset}
+set_lpjmlstats_settings(year_subset = 1:5)
+```
+Remember to restore the default settings after the completion
+of the tutorial with `set_lpjmlstats_settings(year_subset = NULL)`.
+
+The basic usage of the benchmarking function is simple. Enter the paths of 
+the under test and baseline output directories, along with some meta-information.
+``` {r perform-first-benchmark}
+benchmark_obj <-
+  benchmark(
+    baseline_dir = "/p/projects/lpjml/benchmark_run_outputs/5.7.1/output",
+    # it is recommended to use absolute paths
+    under_test_dirs = "/p/projects/lpjml/benchmark_run_outputs/5.8.6/output",
+    author = "David",
+    settings = list(vegc = c(GlobAvgAnnAvgTimeseries)),
+    description = "Evaluate the changes from version 5.7.1 to 5.8.6",
+    output_file = "benchmark_vignette.pdf"
+  )
+```
+
+This will create a PDF report in the working directory and stores the numerical results 
+in the `benchmark_obj` object.
+The process usually takes several minutes. 
+It will summarize and compare the typically most 
+relevant LPJmL outputs. 
+Note that the console output
+highlights the currently processed output variable in 
+blue. After the core numerical benchmarking is completed, it will start 
+to generate the PDF report, which visualizes the numerical results in 
+different plots and tables.
+
+Use `?benchmark` to see how the output directory for the PDF report as well as other 
+function arguments can be 
+defined. In the details section of the function documentation you can also see the 
+requirements for the function to work properly.
+
+One of the most important other arguments that can be passed to the benchmark 
+function is the `settings` list.
+It defines the full protocol of the benchmarking process, including which outputs are 
+considered, how they are processed, compared and visualized, and what the order of the 
+processing and output PDF is.  If no settings are passed, the default as given in the
+`R\default_settings.R` package file is used. Here is an excerpt of that 
+file:
+
+``` {r, eval=FALSE}
+default_settings <- list(
+  vegc  = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
+  soilc = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
+  litc = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
+  ...
+)
+```
+
+The settings list reads as follows: Each line corresponds to an output variable.
+The left hand side of the equality sign defines *which output is processed*
+and the right hand side defines *how this output is processed*.
+
+More specifically the right hand side defines which metrics are used for the evaluation 
+of the output.
+A metric is a generic pipeline to summarize, compare and visualize 
+output data. It is generic because the same metric can be applied to different outputs. 
+The metrics are the cornerstone of the benchmarking process.
+See `?Metric` for technical details. 
+
+The metric `GlobSumTimeAvgTable` globally sums up all cellular values weighted by reference area, 
+and then averages over time. The resulting scalar values are compared and displayed in a table.
+The metric `GlobSumAnnAvgTimeseries` also computes a weighted sum, but only averages
+over each year (if the output is not already given anually). The resulting time series are 
+displayed in a plot. Finally, `TimeAvgMap` only averages over time, 
+and plots the differences from under-test to baseline as maps. Type `?GlobSumTimeAvgTable` for details. 
+
+Often it is needed to change these settings, for example when new outputs should be evaluated. 
+Read the 
+[benchmark-change-settings](benchmark-change-settings.html) vignette for
+a tutorial.
+
+Benchmarking multiple under test runs against a baseline is also possible.
+For example, it could be interesting to compare the 5.8.1 version with several 
+older versions.
+``` {r bechmark_multiple_under_test, eval = F}
+benchmark(
+  "/p/projects/lpjml/benchmark_run_outputs/5.8.1/output",
+  list(
+    "/p/projects/lpjml/benchmark_run_outputs/5.7.7/output",
+    # note that older versions than 5.7.1 can at the moment not be benchmarked due 
+    # to missing terr_area output
+    "/p/projects/lpjml/benchmark_run_outputs/5.7.1/output"
+  ),
+  author = "David",
+  description = "Check how newer lpjml versions compare to older versions",
+  output_file = "benchmark_vignette_multiple_ut.pdf"
+)
+```
+
+Comparing more than two under test to the baseline may result in display problems in the 
+PDF report.
+
+
+# Working with the benchmark results
+
+## The PDF report
+The PDF report offers a visualization of the numerical benchmarking results.
+It is structured by the different metrics used in the settings. Each metric has its own
+section where the result from all outputs using this metric are displayed. 
+
+The front page shows some meta information on the benchmarking. 
+Of particular importance is the simulation table, that maps short simulation 
+identifiers to the runs considered in the benchmarking. Usually 
+these identifier are abbreviations of the simulation names, 
+as defined in the lpjml config. If these names are not unique, abbreviations
+of the simulation paths are used.
+The identifiers are employed because the simulation names 
+and paths are often quite long,
+making it more convenient to use short abbreviations to refer to 
+the different runs in the report, especially when comparing the baseline with 
+multiple under test runs.
+
+## The benchmark data object
+The benchmarking function also outputs its numerical results as a benchmark 
+data object. 
+Accessing this data is a bit technical, so skip this section if 
+you are only interested in the PDF report.
+
+The benchmark object behaves similarly to a nested R list. The top layer is again
+structured by the different metrics. The data that is generated by a metric
+is stored in its
+var_grp_list attribute. It contains the results for all 
+the variables that the metric evaluated as a list of so called variable groups.  
+Each variable group consists of the processed baseline and (possibly multiple) 
+under test outputs of that variable, as well as the comparisons of all under 
+test outputs against the baseline. 
+See `?Metric` for details on how the metrics organize their 
+processed data.
+
+Say we are interested in how the time series of global vegetation carbon 
+has changed in the newer version.
+The data from the baseline run can be accessed via
+```{r acess_baseline_vegc}
+vegc_old_ts <- benchmark_obj$GlobSumAnnAvgTimeseries$var_grp_list$vegc$baseline
+vegc_old_ts
+```
+Note that this is an LPJmLData object of `lpjmlkit`. Evaluating an LPJmLData 
+object in the R Console will provide you with a lot of useful meta data,
+about the origin and processing history of the object. Note that 
+subset is `TRUE` and space aggregation is `weighted_sum`, which reflects the 
+processing steps done by the benchmarking function.
+
+You will encounter several elements of the `lpjmlkit` package in `lpjmlstats` - 
+in fact `lpjmlstats` completly builds upon `lpjmlkit`. 
+
+This also means that we can employ the functionality of this latter package 
+to work with the benchmark results. 
+For example, to output the first 5 years of `vegc_old_ts` we use 
+```{r subset_vegc}
+subset(vegc_old_ts, time = 1:5)$data
+```
+
+For under test results the simulation identifiers are used to access the data.
+This is needed to differentiate the under test outputs if multiple runs 
+are benchmarked against a baseline run. 
+
+The simulation table that relates the identifiers to simulation names, as well as 
+other meta data can be accessed via: 
+```{r get_metadata}
+get_benchmark_meta_data(benchmark_obj)
+```
+
+Note that the simulation with the new version has the identifier `5.8.`.
+Thus, to access the new vegc time series of the new LPJmL version we use 
+```{r access_under_test_metadata}
+vegc_new_ts <- benchmark_obj$GlobSumAnnAvgTimeseries$var_grp_list$vegc$under_test$`5.8.`
+```
+To check the difference between the two time series we use 
+```{r calculate_vegc_difference}
+subset(vegc_new_ts, time = 1:5)$data - subset(vegc_old_ts, time = 1:5)$data
+```
+Observe that the newer version produced less vegetation carbon 
+in the first five years. 
+
+The data from the benchmarking object in combination with the functionality of 
+lpjmlkit is also useful to make comparisons
+to literature data. Say we have a reference dataset of global soil nitrogen 
+given as a terra object. 
+Again the tools from lpjmlkit come in handy to convert the benchmark data 
+to terra: 
+
+```{r convert_to_terra}
+soiln_lpjmldata <- benchmark_obj$TimeAvgMap$var_grp_list$soiln$under_test$`5.8.`
+
+soiln_terra <- lpjmlkit::as_terra(soiln_lpjmldata)
+
+soiln_terra
+
+# read in validation data terra
+
+# ...
+```
+
+
+Another convenient feature of the benchmark data object is that all plot
+functions used for the report generation can also be called individually from here. 
+For example the table of the `GlobSumTimeAvgTable` metric can be generated via
+```{r output_table}
+benchmark_obj$GlobSumTimeAvgTable$plot()
+```
+This enables a terminal-only benchmarking without generating plots 
+or reports. See `?benchmark` for how to skip the PDF report generation in the benchmarking.
+
+Sometimes individual plots of the benchmarking may be needed in another context. 
+The following chunk generates the vegc plot.
+```{r plot_vegc, fig.width=8, fig.height=6}
+benchmark_obj$TimeAvgMap$plot()[[1]] # vegc is the first output defined in the settings
+```
+
+With the exception of the table, all plots generated in the benchmarking are ggplot objects,
+which enables modifications of all visual plot elements. 
+For example a different title can be added to the litter carbon plot with the following code.
+```{r plot_litc, fig.width=8, fig.height=6}
+vegc_map <- benchmark_obj$TimeAvgMap$plot()[[3]] # litc is the third output of the settings
+
+vegc_map + ggplot2::ggtitle("Difference in litter carbon; lpjml 5.8.6 - lpjml 5.7.1")
+```
+
+Maybe the preceding discussion convinced you that working with the benchmark object is 
+fun and useful. It provides a lot of interfaces to further processing steps and functionality. 
+It may thus be valuable to save the object for later analysis. This last step of the tutorial
+can be done for example with
+```{r save_benchmark_object, eval = FALSE}
+saveRDS(benchmark_obj, file = "benchmark_obj_vignette.rds")
+```
+
+This file can also be used to recreate the benchmark report. See `?create_pdf_report`
+for details.
+Don't forget to restore the default package settings with
+```{r}
+set_lpjmlstats_settings(year_subset = NULL)
+```
+
+
+
+

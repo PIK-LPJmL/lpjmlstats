@@ -1,0 +1,123 @@
+---
+title: "benchmark-change-settings"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{benchmark-change-settings}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  eval = FALSE
+)
+```
+
+
+This vignette explains how to incorporate new outputs into the benchmarking by modifying its settings.
+
+```{r load_package}
+library(lpjmlstats)
+```
+
+For a quick completion, we again only look at 
+the first five years of all LPJmL outputs.
+Skip the following modification to the package settings,
+if you prefer to run the full benchmarking.
+```{r set_year_subset}
+set_lpjmlstats_settings(year_subset = 1:5)
+```
+
+It is a common theme in model development 
+that new specific model outputs, not included in standard benchmarking,
+need to be evaluated.
+These new model outputs often also require 
+new types of evaluations, that is new metrics.
+
+For example, say we are adjusting the soil temperature routine of lpjml and want to 
+check the effects that our modification has on the temperature of the top soil layer.
+Unfortunatly soil temperature is not part of the standard benchmarking. It is also not adequate
+to use a normal global sum to aggregate this output. Instead, a global temperature average is 
+needed. 
+
+To meet these requirements, a new benchmarking settings list is needed. 
+The structure of the lpjml settings list is as follows:
+``` {r, eval=FALSE}
+settings <- list(
+  output_var1  = c(metric1, metric2, metric3),
+  output_var2  = c(metric2),
+  output_var3  = c(metric1, metric4),
+  ...
+)
+```
+Each line corresponds to an lpjml output variable. The left hand side defines *which output is processed*, 
+while the right hand side defines *how this output is processed*, 
+that is which metrics are used.
+
+All the available metrics are defined in the `R/metric_subclasses.R` file. We can see that 
+the `GlobAvgTimeAvgTable` and `GlobAvgAnnAvgTimeseries` metric provide what we need, as they 
+perform global weighted averages. 
+Additionally, the `GlobAvgTimeseries` may be useful for examining the temperature amplitude 
+within each year, while the `TimeAvgMap` can aid in understanding the spatial distribution.
+
+Therefore, we define the following settings:
+```{r create_settings_extension}
+soil_temp_settings <- list(
+  # first top layer is evaluated by all mentioned metrics
+  msoiltemp1  = c(
+    GlobAvgTimeAvgTable,
+    GlobAvgAnnAvgTimeseries,
+    GlobAvgTimeseries,
+    TimeAvgMap
+  ),
+  # third layer is also evaulated but only by an annual time series
+  msoiltemp3  = c(GlobAvgAnnAvgTimeseries)
+)
+```
+
+These are already valid settings that could be used in the benchmark function,
+to have a benchmark that only evaluates soil temperature.
+However, we are also interested in how our adjustment effects other relevant 
+lpjml variables, and thus we extend 
+the default settings with this addition. 
+
+```{r extend_settings}
+extended_default <- c(default_settings, soil_temp_settings)
+```
+
+Since the report focuses on soil temperature, 
+we would like to feature a larger map showing the spatial distribution for this variable.
+We check our options via `?TimeAvgMap` and see that this can 
+be achieved with the `highlight` metric option: 
+
+```{r create_metric_options}
+metric_opt <- list(TimeAvgMap = list(highlight = c("soiltemp1")))
+```
+
+Now we are ready to start the benchmarking, 
+with the new extended settings as an additional argument:
+```{r start_adjusted_benchmark}
+benchmark_results <-
+  benchmark(
+    "/p/projects/lpjml/benchmark_run_outputs/5.7.1/output",
+    "/p/projects/lpjml/benchmark_run_outputs/5.8.6/output",
+    settings = extended_default,
+    metric_options = metric_opt,
+    author = "David",
+    description = "Evaluate changes to soil temperature",
+    output_file = "benchmark_soiltemp.pdf"
+  )
+```
+
+In the benchmark report you will find new sections that display the results for 
+the new metrics. 
+Also note the large map highlighting the time averaged soil temperature
+distribution at the beginning of the "Time Average" section.
+
+This concludes the vignette. Remember to restore the default settings via
+
+```{r}
+set_lpjmlstats_settings(year_subset = NULL)
+```
