@@ -1,4 +1,4 @@
-#TODO deal with double documentation of functions (here and method)
+#NTODO deal with double documentation of functions (here and method)
 #' Aggregate an LPJmLDataCalc object
 #'
 #' Function to aggregate the full data of an [`LPJmLDataCalc`] object by
@@ -105,7 +105,7 @@ aggregate <-
     return(y)
   }
 
-# TODO: automatic selection of referencne area base on meta data json
+# NTODO: automatic selection of referencne area base on meta data json
 LPJmLDataCalc$set(
   "private",
   ".__aggregate__",
@@ -329,7 +329,7 @@ LPJmLDataCalc$set(
         index <- which(names(dimnames(data_agg)) == "year")
         names(dimnames(data_agg))[index] <- "time"
 
-        # TODO: Adjust meta data. In particular adjust nstep, format of the time
+        # NTODO: Adjust meta data. In particular adjust nstep, format of the time
         # dimname and the time time_format attribute
         # This will also allow plotting on a map etc
 

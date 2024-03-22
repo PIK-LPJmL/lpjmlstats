@@ -4,31 +4,36 @@
 \alias{set_lpjmlstats_settings}
 \title{Set the package settings for lpjmlstats}
 \usage{
-set_lpjmlstats_settings(
-  year_subset = NULL,
-  graphics_device = NULL,
-  pdf_plot_dpi = NULL,
-  unit_table_path = NULL
-)
+set_lpjmlstats_settings(...)
 }
 \arguments{
-\item{year_subset}{vector of years passed to the subset argument of the
-\link{read_io} function to read in the output files for the
-benchmarking. The default is to read in all years.
-Note that the benchmarking will run much faster if
-only a subset of years needs to be read in and processed.}
+\item{...}{Variable arguments to specify settings. The function accepts
+the following options:
+\itemize{
+\item \code{year_subset}: A vector of years passed to the
+subset argument of the \link{read_io} function. Defaults to reading
+all years. Specifying a subset of years can improve performance.
 
-\item{graphics_device}{character string, the graphics device to be used for
-plotting the benchmarking results. The default is "png".
-Using "pdf" will result in plots using vector graphics, which
-allow infinite zooming without loss of quality.}
+\item \code{graphics_device}:  A character string specifying
+the graphics device to be used for plotting the benchmarking results.
+Defaults to "png". Use "pdf" for vector graphics.
 
-\item{pdf_plot_dpi}{numeric, the dpi that is used for the graphics device.}
+\item \code{pdf_plot_dpi}:  A numeric value specifying the
+DPI for the PDF document.
 
-\item{unit_table_path}{character string, the path to the unit
-conversion table. The table must be a .csv file. The default is to use
-the conversion table in the inst folder of the package.}
+\item \code{unit_table_path}: A character string specifying
+the path to the unit conversion table (a .csv file). Defaults to the
+conversion table in the package's \code{inst} folder. The specified
+file must exist and be a .csv file.
+}}
 }
 \description{
-Set the package settings for lpjmlstats
+This function configures various settings for the lpjmlstats package.
+}
+\examples{
+\dontrun{
+set_lpjmlstats_settings(year_subset = 1:5, graphics_device = "pdf")
+set_lpjmlstats_settings(unit_table_path = "path/to/my_table.csv", pdf_plot_dpi = 300)
+}
+
 }

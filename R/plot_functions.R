@@ -5,7 +5,7 @@
 # ----- table plot -----
 
 create_table_plot <- function(var_grp_list,
-                              options) {
+                              m_options) {
   # ------ prepare table in tidy format, that is rows are observations
   table <- prepare_tibble_for_table(var_grp_list)
 
@@ -16,7 +16,7 @@ create_table_plot <- function(var_grp_list,
   # round all numerics of table
   table <- table %>%
     dplyr::mutate(dplyr::across(dplyr::where(is.numeric),
-                                round, digits = options$decimal_places))
+                                round, digits = m_options$decimal_places))
 
   # merge the columns type and sim_name
   # will be the colnames of the displayed tibble
@@ -61,7 +61,7 @@ create_table_plot <- function(var_grp_list,
     dplyr::mutate_all(kableExtra::linebreak)
 
   # escape all underscores in the table
-  # TODO: Make esacaping characters systematic, i.e. refactor in function
+  # NTODO: Make esacaping characters systematic, i.e. refactor in function
   table <- table %>%
     dplyr::mutate_all(function(x) stringr::str_replace_all(x, "_", "\\\\_")) %>%
     dplyr::mutate_all(function(x) stringr::str_replace_all(x, "\\$", "\\\\$"))
@@ -230,18 +230,18 @@ prepare_var_grp_tibble <- function(var_grp) {
 
 # ----- map functions -----
 create_map_plots <- function(var_grp_list,
-                             options,
+                             m_options,
                              modification_descr) {
   # prepare empty list of all plots
   plot_list <- list()
 
   # loop over all eval groups
   for (var_grp in var_grp_list) {
-    limits <- var_grp$get_limits(type = "compare", quantile = options$quantile)
+    limits <- var_grp$get_limits(type = "compare", quantile = m_options$quantile)
 
     # use the first comparison object to get the band names
     band_names <- dimnames(var_grp$compare[[1]][[1]])[["band"]]
-    band_names_short <- shorten_names(band_names, options$name_trunc)
+    band_names_short <- shorten_names(band_names, m_options$name_trunc)
 
     # loop over all comparisons in eval group
     # this plot assumes there is only on comparison type per eval group given
@@ -268,7 +268,7 @@ create_map_plots <- function(var_grp_list,
         tibble <- prepare_tibble_for_map(compare_band)
         plot <- create_ggplot_map(tibble,
                                   plot_title,
-                                  font_size = options$font_size,
+                                  font_size = m_options$font_size,
                                   limits = limits)
         plot_list[[plot_title]] <- plot
       }
@@ -390,7 +390,7 @@ prepare_tibble_for_map <- function(lpjml_calc) {
 
 # ----- time series functions -----
 create_time_series_plots <- function(var_grp_list,
-                                     options) {
+                                     m_options) {
 
   plot_list <- list()
 
@@ -404,7 +404,7 @@ create_time_series_plots <- function(var_grp_list,
     # take the bandnames of the first baseline object, assuming the bands
     # of all compare objects are the same
     band_names <- dimnames(var_grp$baseline$data)[["band"]]
-    band_names_short <- shorten_names(band_names, options$name_trunc)
+    band_names_short <- shorten_names(band_names, m_options$name_trunc)
     for (band in seq_along(band_names)) {
       if (length(band_names) == 1) {
         plot_title <- var_grp$var_name
@@ -423,7 +423,7 @@ create_time_series_plots <- function(var_grp_list,
       p <- create_ggplot_timeseries(tibble,
                                     plot_title,
                                     limits = limits,
-                                    font_size = options$font_size)
+                                    font_size = m_options$font_size)
 
       # add plot to list
       plot_list[[plot_title]] <- p
@@ -537,7 +537,7 @@ insert_linebreaks <- function(text_vect, max_length = 18) {
 }
 
 
-# TODO: needs refactoring
+# NTODO: needs refactoring
 shorten_names <- function(names, trunc = 9) {
 
   # find index until which all strings are equal

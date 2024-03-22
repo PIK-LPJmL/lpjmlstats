@@ -59,7 +59,7 @@ information.
 
 The data structure of the benchmark object is depicted here:
 \if{html}{
-  \out{<div style="text-align: center">}\figure{benchmark_obj_struc.png}{options: style="width:500px;max-width:50\%;"}\out{</div>}
+  \out{<div style="text-align: center">}\figure{benchmark_obj_struc.png}{options: style="width:500px;max-width:50\%;"}\out{</div>} #nolint
 }
 }
 \description{

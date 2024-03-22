@@ -1,4 +1,4 @@
-arrange_table_plot <- function(plotlist, options) {
+arrange_table_plot <- function(plotlist, m_options) {
 
   print(
     knitr::kable(
@@ -11,14 +11,14 @@ arrange_table_plot <- function(plotlist, options) {
       col.names = kableExtra::linebreak(names(plotlist), align = "l")
     ) %>%
       kableExtra::kable_styling(
-        font_size = options$font_size,
+        font_size = m_options$font_size,
         latex_options = c("repeat_header", "HOLD_position"),
       )
   )
 }
 
-arrange_map_plots <- function(plotlist, options) {
-  add_highlighted_maps(plotlist, options$highlight)
+arrange_map_plots <- function(plotlist, m_options) {
+  add_highlighted_maps(plotlist, m_options$highlight)
 
   n_plots <- length(plotlist)
 

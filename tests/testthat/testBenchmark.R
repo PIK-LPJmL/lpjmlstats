@@ -39,7 +39,7 @@ test_that("benchmark produces correct results", {
 })
 
 test_that("benchmark report generation runs through without warnings", {
-  skip("TODO: Currently crahses testing of devtools::check()")
+  skip("NTODO: Currently crahses testing of devtools::check()")
   baseline_dir <- testthat::test_path("../testdata/path1")
   under_test_dir <- testthat::test_path("../testdata/path2")
   settings <-
