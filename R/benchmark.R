@@ -256,6 +256,7 @@ create_pdf_report <- function(data, output_file = "benchmark.pdf", output_dir = 
     envir = environment(),
     output_dir = output_dir,
     knit_root_dir = tempdir(),
+    intermediates_dir = tempdir(),
     ...
   )
 }
