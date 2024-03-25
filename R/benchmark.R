@@ -245,7 +245,7 @@ benchmark <-
 #' @md
 #' @export
 #'
-create_pdf_report <- function(data, output_file = "benchmark.pdf", output_dir = getwd(), knit_root_dir = tempdir(), intermediates_dir = tempdir(), ...) {
+create_pdf_report <- function(data, output_file = "benchmark.pdf", output_dir = getwd(), ...) {
   # this variable is used in the Rmd file
   # it is assigned to the current environment, which will be passed to the .Rmd
   bench_data <- data #nolint
@@ -255,8 +255,6 @@ create_pdf_report <- function(data, output_file = "benchmark.pdf", output_dir = 
     # pass over current environment
     envir = environment(),
     output_dir = output_dir,
-    knit_root_dir = tempdir(),
-    intermediates_dir = tempdir(),
     ...
   )
 }
