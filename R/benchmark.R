@@ -223,9 +223,7 @@ benchmark <-
 #'
 #' @param data benchmark data object created by the \code{\link{benchmark}}
 #' function
-#' @param output_file filename of the output pdf, will be passed to
-#' \code{\link[rmarkdown]{render}}
-#' @param output_dir dir for the output pdf, will be passed to
+#' @param output_file file of the output pdf, including filename and directory
 #' \code{\link[rmarkdown]{render}}
 #' @param ... additional arguments passed to \code{\link[rmarkdown]{render}}
 #'
@@ -245,20 +243,31 @@ benchmark <-
 #' @md
 #' @export
 #'
-create_pdf_report <- function(data, output_file = "benchmark.pdf", output_dir = getwd(), ...) {
+create_pdf_report <- function(data, output_file = "benchmark.pdf", ...) {
   # this variable is used in the Rmd file
   # it is assigned to the current environment, which will be passed to the .Rmd
   bench_data <- data #nolint
+
+  # copy input Rmd to output and processing dirctory
+  path_to_rmd <- system.file("Benchmark_markdown.Rmd", package = "lpjmlstats")
+  process_and_out_dir <- dirname(output_file)
+  path_to_rmd_copy <- file.path(process_and_out_dir, "Benchmark_markdown.Rmd")
+  file.copy(path_to_rmd, path_to_rmd_copy)
+
+  # render markdown
   rmarkdown::render(
-    system.file("Benchmark_markdown.Rmd", package = "lpjmlstats"),
-    output_file = output_file,
+    path_to_rmd_copy,
+    output_file = basename(output_file),
     # pass over current environment
     envir = environment(),
-    output_dir = output_dir,
-    knit_root_dir = tempdir(),
-    intermediates_dir = tempdir(),
+    output_dir = process_and_out_dir,
+    knit_root_dir = process_and_out_dir,
+    intermediates_dir = process_and_out_dir,
     ...
   )
+
+  # remove input Rmd
+  unlink(path_to_rmd_copy)
 }
 
 # ----- utitly functions -----

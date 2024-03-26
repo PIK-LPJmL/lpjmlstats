@@ -4,21 +4,13 @@
 \alias{create_pdf_report}
 \title{Generate a pdf report from a benchmark object.}
 \usage{
-create_pdf_report(
-  data,
-  output_file = "benchmark.pdf",
-  output_dir = getwd(),
-  ...
-)
+create_pdf_report(data, output_file = "benchmark.pdf", ...)
 }
 \arguments{
 \item{data}{benchmark data object created by the \code{\link{benchmark}}
 function}
 
-\item{output_file}{filename of the output pdf, will be passed to
-\code{\link[rmarkdown]{render}}}
-
-\item{output_dir}{dir for the output pdf, will be passed to
+\item{output_file}{file of the output pdf, including filename and directory
 \code{\link[rmarkdown]{render}}}
 
 \item{...}{additional arguments passed to \code{\link[rmarkdown]{render}}}
