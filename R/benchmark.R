@@ -36,9 +36,9 @@
 #' The function \link{get_benchmark_meta_data} can be used to retrieve the meta
 #' information.
 #'
-#' The data structure of the benchmark object is depicted here: 
+#' The data structure of the benchmark object is depicted here:
 #' \if{html}{
-#'   \out{<div style="text-align: center">}\figure{benchmark_obj_struc.png}{options: style="width:500px;max-width:50\%;"}\out{</div>}
+#'   \out{<div style="text-align: center">}\figure{benchmark_obj_struc.png}{options: style="width:500px;max-width:50\%;"}\out{</div>} #nolint
 #' }
 #'
 #' @details
@@ -185,7 +185,9 @@ benchmark <-
     set_options(all_metrics, metric_options)
 
     for (var in names(settings)) {
-      metric_names_of_var <- sapply(settings[[var]], function(x) x$classname)
+      metric_names_of_var <- vapply(settings[[var]],
+                                    function(x) x$classname,
+                                    character(1))
       metrics_of_var <- all_metrics[metric_names_of_var]
 
       retrieve_summaries(metrics_of_var, var, paths, sim_table)
@@ -221,9 +223,7 @@ benchmark <-
 #'
 #' @param data benchmark data object created by the \code{\link{benchmark}}
 #' function
-#' @param output_file filename of the output pdf, will be passed to
-#' \code{\link[rmarkdown]{render}}
-#' @param output_dir dir for the output pdf, will be passed to
+#' @param output_file file of the output pdf, including filename and directory
 #' \code{\link[rmarkdown]{render}}
 #' @param ... additional arguments passed to \code{\link[rmarkdown]{render}}
 #'
@@ -243,18 +243,31 @@ benchmark <-
 #' @md
 #' @export
 #'
-create_pdf_report <- function(data, output_file = "benchmark.pdf", output_dir = getwd(), ...) {
+create_pdf_report <- function(data, output_file = "benchmark.pdf", ...) {
   # this variable is used in the Rmd file
   # it is assigned to the current environment, which will be passed to the .Rmd
   bench_data <- data #nolint
+
+  # copy input Rmd to output and processing dirctory
+  path_to_rmd <- system.file("Benchmark_markdown.Rmd", package = "lpjmlstats")
+  process_and_out_dir <- dirname(output_file)
+  path_to_rmd_copy <- file.path(process_and_out_dir, "Benchmark_markdown.Rmd")
+  file.copy(path_to_rmd, path_to_rmd_copy)
+
+  # render markdown
   rmarkdown::render(
-    system.file("Benchmark_markdown.Rmd", package = "lpjmlstats"),
-    output_file = output_file,
+    path_to_rmd_copy,
+    output_file = basename(output_file),
     # pass over current environment
     envir = environment(),
-    output_dir = output_dir,
+    output_dir = process_and_out_dir,
+    knit_root_dir = process_and_out_dir,
+    intermediates_dir = process_and_out_dir,
     ...
   )
+
+  # remove input Rmd
+  unlink(path_to_rmd_copy)
 }
 
 # ----- utitly functions -----
@@ -372,13 +385,13 @@ create_unique_sim_path_abrev <- function(sim_paths) {
 }
 
 # Function to assign metric options to metric objects
-set_options <- function(metrics, options) {
-  if (!is.null(options)) {
-    for (metric_names in names(options)) {
+set_options <- function(metrics, m_options) {
+  if (!is.null(m_options)) {
+    for (metric_names in names(m_options)) {
       metric <- metrics[[metric_names]]
-      metric_opt <- options[[metric_names]]
+      metric_opt <- m_options[[metric_names]]
       for (opt in names(metric_opt)) {
-        metric$options[[opt]] <- metric_opt[[opt]]
+        metric$m_options[[opt]] <- metric_opt[[opt]]
       }
     }
   }

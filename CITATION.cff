@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: If you use this software, please cite it using the metadata from this file.
+type: software
+title: 'lpjmlstats: Statistical tools for LPJmL data analysis'
+version: 0.1.5
+date-released: '2024-03-26'
+abstract: This package provides statistical tools for LPJmL data analysis to be used
+  for benchmarking LPJmL outputs.
+authors:
+- family-names: Hötten
+  given-names: David
+  email: davidho@pik-potsdam.de
+- family-names: Breier
+  given-names: Jannes
+  email: jannes.breier@pik-potsdam.de
+license: AGPL-3.0
+
