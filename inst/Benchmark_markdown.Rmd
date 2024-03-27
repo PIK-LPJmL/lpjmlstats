@@ -22,13 +22,6 @@ knitr::opts_chunk$set(
   dev = getOption("lpjmlstats.graphics_device", "png"),
   crop = NULL
 )
-
-# retrieve meta data from the benchmark object
-baseline_dir <- attr(bench_data, "baseline_dir")
-under_test_dirs <- attr(bench_data, "ut_dir")
-description <- attr(bench_data, "description")
-sim_table <- attr(bench_data, "sim_table")
-
 ```
 
 
@@ -47,11 +40,14 @@ sim_table <- attr(bench_data, "sim_table")
 \vspace{2cm}
 \textbf{Description} 
 \par
-`r description`
+`r attr(bench_data, "description")`
 \par
 \vspace{2cm}
 \textbf{Simulation Table}
+
 ```{r print-simulation-table, results='asis'}
+sim_table <- attr(bench_data, "sim_table")
+
 # manually escape special character ":" and "_"
 sim_table <-
   sim_table %>%

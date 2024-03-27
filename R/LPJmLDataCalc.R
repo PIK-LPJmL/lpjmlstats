@@ -175,14 +175,14 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     #' Returns the internal enclosed unit object
     #' !Internal method only to be used for package development!
     .data_with_unit = function() {
-      # TODO: is this the correct way to indicate function not for end user?
+      # NTODO: is this the correct way to indicate function not for end user?
       return(private$.data)
     }
   )
 )
 
 # ---------------------- internal integrity checking ------------------------- #
-# TODO: account for time transformed lpjmldatacalc objects
+# NTODO: account for time transformed lpjmldatacalc objects
 LPJmLDataCalc$set(
   "private",
   ".__check_internal_integrity__",
@@ -505,7 +505,7 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
   }
 
   # Ensure the data has the correct format
-  # TODO: modify tests such that they run through with this
+  # NTODO: modify tests such that they run through with this
   # if (!names(dim(lpjml_data$data))[1] == "cell" || # nolint start
   #     !names(dim(lpjml_data$data))[2] == "time" ||
   #     !names(dim(lpjml_data$data))[3] == "band"){

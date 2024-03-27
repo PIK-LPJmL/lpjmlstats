@@ -48,14 +48,3 @@ test_that("initialization only accepts grid", {
 
   expect_error(LPJmLRegionData$new(region_matrix, region_matrix), "grid")
 })
-
-
-test_that("plot regions runs silently", {
-  skip("plotting of LPJmLRegionData objects is not yet implemented")
-  grid <- load_test_grid()
-  region_matrix <-
-    generate_random_region_matrix(3, 10, grid$meta$ncell)
-  lpjml_region_data <- LPJmLRegionData$new(grid, region_matrix)
-
-  expect_silent(lpjml_region_data$plot_regions())
-})

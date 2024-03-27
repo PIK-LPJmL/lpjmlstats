@@ -41,7 +41,7 @@ GlobSumTimeAvgTable <- # nolint:object_linter_name
       plot = function() {
         create_table_plot(
           self$var_grp_list,
-          self$options
+          self$m_options
         )
       },
 
@@ -49,18 +49,18 @@ GlobSumTimeAvgTable <- # nolint:object_linter_name
       #' Style the table to be displayed in the report.
       #' @param table A tibble with the results
       arrange_plots = function(table) {
-        arrange_table_plot(table, self$options)
+        arrange_table_plot(table, self$m_options)
       },
 
-      #' @field options
-      #' List of options for the table plot
+      #' @field m_options
+      #' List of metric options for this metric
       #' - `font_size`: integer, font size of the table
       #' - `name_trunc`: integer, number of characters to display in the table
       #' band names
       #' - `decimal_places`: integer, number of decimal places to display
       #'
       #' band names
-      options = list(
+      m_options = list(
         font_size = 8,
         name_trunc = 1,
         decimal_places = 3
@@ -136,7 +136,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint:object_linter_name
     plot = function() {
       create_time_series_plots(
         self$var_grp_list,
-        self$options
+        self$m_options
       )
     },
 
@@ -148,13 +148,13 @@ GlobSumTimeseries <- R6::R6Class( # nolint:object_linter_name
       arrange_timeseries_plots(plotlist)
     },
 
-    #' @field options
-    #' List of options for the time series plot
+    #' @field m_options
+    #' List of metric options for this metric
     #' - `font_size` integer, font size of the table
     #' - `name_trunc` integer, indicating when to truncate the band names
     #' band names
-    options = list(font_size = 7,
-                   name_trunc = 1),
+    m_options = list(font_size = 7,
+                     name_trunc = 1),
 
     #' @field title
     #' Section header used in the report
@@ -307,7 +307,7 @@ TimeAvgMap <- # nolint:object_linter_name
         mod_descr <- paste0("- ", baseline_ident)
         create_map_plots(
           self$var_grp_list,
-          self$options,
+          self$m_options,
           mod_descr
         )
       },
@@ -316,18 +316,18 @@ TimeAvgMap <- # nolint:object_linter_name
       #' Arrange the map plots side by side
       #' @param plotlist List of map ggplots
       arrange_plots = function(plotlist) {
-        arrange_map_plots(plotlist, self$options)
+        arrange_map_plots(plotlist, self$m_options)
       },
 
-      #' @field options
+      #' @field m_options
       #' List of options for the map plot
-      #' - `options$font_size` integer, font size of the map plot
-      #' - `options$name_trunc` integer, indicating when to truncate the
+      #' - `m_options$font_size` integer, font size of the map plot
+      #' - `m_options$name_trunc` integer, indicating when to truncate the
       #' band names
-      #' - `options$highlight` vector of strings, indicating which variables
+      #' - `m_options$highlight` vector of strings, indicating which variables
       #' should receive a larger full width plot
       #'
-      options = list(
+      m_options = list(
         font_size = 7,
         name_trunc = 1,
         highlight = NULL,

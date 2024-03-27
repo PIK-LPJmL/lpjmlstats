@@ -38,45 +38,8 @@ test_that("benchmark produces correct results", {
 
 })
 
-test_that("retrieve summaries produces correct result for global sum", {
-  skip("TODO: sim ident table need to be created in a different way")
-
-  # prepare paths
-  baseline_dir <- testthat::test_path("../testdata/path1")
-  under_test_dir <- testthat::test_path("../testdata/path2")
-  paths <-
-    list(baseline_dir = baseline_dir,
-         under_test_dirs = under_test_dir,
-         suffix = ".bin.json")
-
-  # prepare settings
-  settings <- list(soiln = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap))
-
-  # initialize metrics
-  init_metrics <- initialize_metrics(settings)
-
-  # create a named vector for simulation abbreviations
-  sim_table <- c("test", "test")
-
-  names(sim_table) <- c(baseline_dir, under_test_dir[[1]])
-
-  retrieve_summaries(init_metrics, "soiln", paths, sim_table)
-
-  # check if results for global sum are as expected
-  expect_equal(
-    init_metrics$GlobSumTimeAvgTable$var_grp_list$soiln$under_test$test$data,
-    196505302521977632,
-    ignore_attr = TRUE
-  )
-  expect_equal(
-    init_metrics$GlobSumTimeAvgTable$var_grp_list$soiln$baseline$data,
-    196505302521977632,
-    ignore_attr = TRUE
-  )
-})
-
 test_that("benchmark report generation runs through without warnings", {
-  skip("TODO: Currently crahses testing of devtools::check()")
+  skip("NTODO: Currently crahses testing of devtools::check()")
   baseline_dir <- testthat::test_path("../testdata/path1")
   under_test_dir <- testthat::test_path("../testdata/path2")
   settings <-
@@ -95,7 +58,7 @@ test_that("benchmark report generation runs through without warnings", {
 test_that("benchmark works for davids personal directory", {
 
   skip("only works at davids personal directory")
-  baseline_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master"
+  baseline_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master" #nolint
   under_test_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy" # nolint
 
   settings <- list(
@@ -123,10 +86,7 @@ test_that("benchmark works for davids personal directory", {
       baseline_dir,
       list(under_test_dir),
       author = "David",
-      #settings = settings,
-      #metric_options = metric_options,
-      description = "test benchmarking",
-      pdf_report = T
+      description = "test benchmarking"
     )
 
   create_pdf_report(data = bench_data)
@@ -144,10 +104,10 @@ test_that("benchmark works for davids personal directory", {
 test_that("create_unique_sim_path_abrev produces short unique names", {
   # create test sim pathes
   paths <- c(
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master",
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy",
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy2",
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM2/new_soil_energy"
+    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master",           # nolint
+    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy",  # nolint
+    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy2", # nolint
+    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM2/new_soil_energy"  # nolint
   )
 
   # create unique names

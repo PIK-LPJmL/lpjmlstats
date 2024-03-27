@@ -1,38 +1,62 @@
-# Project: New Benchmark System
+# Statistical tools for LPJmL data analysis
 
-based on ideas documented [HERE](https://hackmd.io/TXPM45ZVQdq5c6u2oIdV_w) 
+R package **lpjmlstats**, version **0.1.5**
 
+[![CRAN status](https://www.r-pkg.org/badges/version/lpjmlstats)](https://cran.r-project.org/package=lpjmlstats)  [![R build status](https://github.com/PIK-LPJmL/lpjmlstats/workflows/check/badge.svg)](https://github.com/PIK-LPJmL/lpjmlstats/actions) [![codecov](https://codecov.io/gh/PIK-LPJmL/lpjmlstats/branch/master/graph/badge.svg)](https://app.codecov.io/gh/PIK-LPJmL/lpjmlstats) [![r-universe](https://pik-piam.r-universe.dev/badges/lpjmlstats)](https://pik-piam.r-universe.dev/builds)
 
-### Objective
+## Purpose and Functionality
 
-The aim of this project is to develop a new software to benchmark LPJmL with available data sources that is able to
-* easily calculate different statistics based on LPJmL and available data for comparison
-* summarize data in pre defined metrics (global sums table, global sums time series, country maps, etc.)
-* visualize these metrics
-* generate reports
-
-**What we mean by benchmarking in the LPJmL community:**   
-Check out [the LPJmL wiki](https://gitlab.pik-potsdam.de/lpjml/LPJmL_internal/-/wikis/Benchmarking) and recent merge requests for LPJmL where in most cases a benchmark is mandatory for a successfull merge into the master. 
+This package provides statistical tools for LPJmL data analysis
+    to be used for benchmarking LPJmL outputs.
 
 
-### Requirements
+## Installation
 
-* [*lpjmlkit*](https://gitlab.pik-potsdam.de/lpjml/lpjmlkit) is the base for this project
-* Make usage of the [R6 class object oriented programming system](https://r6.r-lib.org) (more info in the first issue) to natively inherit from *lpjmlkit*'s data classes
-* Follow [the guidelines and conventions defined in the lpjmlkit project](https://gitlab.pik-potsdam.de/lpjml/lpjmlkit/-/wikis/How-To/Code-Style-Guide)
-* Complete the tasks in the issue board in the given order, starting with issue 1.1
+For installation of the most recent package version an additional repository has to be added in R:
 
+```r
+options(repos = c(CRAN = "@CRAN@", pik = "https://rse.pik-potsdam.de/r/packages"))
+```
+The additional repository can be made available permanently by adding the line above to a file called `.Rprofile` stored in the home folder of your system (`Sys.glob("~")` in R returns the home directory).
 
-### Instructions
+After that the most recent version of the package can be installed using `install.packages`:
 
-* The issue board is enumarated with tasks corresponding to each Milestone (also defined)
-* Use each issue to document the status of your work and ask questions/start discussions if something is unclear or problems arise
-* If necessary new issues can be added for each Milestone
+```r 
+install.packages("lpjmlstats")
+```
 
-### Reference data
+Package updates can be installed using `update.packages` (make sure that the additional repository has been added before running that command):
 
-* there's a collection of possible reference data sets [here](https://gitlab.pik-potsdam.de/lpjml/LPJmL_internal/-/wikis/Future-benchmarking)
-* reference data should be downloaded, processed, stored and used in a strucutured manner, such as with the MADRAT universe
+```r 
+update.packages()
+```
 
-### Contact
-For any questions add @jannesbr to the corresponding question or write a mail at [jannesbr@pik-potsdam.de](mailto:jannesbr@pik-potsdam.de)
+## Tutorial
+
+The package comes with vignettes describing the basic functionality of the package and how to use it. You can load them with the following command (the package needs to be installed):
+
+```r
+vignette("benchmark-change-settings") # benchmark-change-settings
+vignette("benchmark")                 # benchmark
+```
+
+## Questions / Problems
+
+In case of questions / problems please contact David Hötten <davidho@pik-potsdam.de>.
+
+## Citation
+
+To cite package **lpjmlstats** in publications use:
+
+Hötten D, Breier J (2024). _lpjmlstats: Statistical tools for LPJmL data analysis_. R package version 0.1.5.
+
+A BibTeX entry for LaTeX users is
+
+ ```latex
+@Manual{,
+  title = {lpjmlstats: Statistical tools for LPJmL data analysis},
+  author = {David Hötten and Jannes Breier},
+  year = {2024},
+  note = {R package version 0.1.5},
+}
+```

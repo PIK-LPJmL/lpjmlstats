@@ -12,12 +12,12 @@ TimeAvgMap metric
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{options}}{List of options for the map plot
+\item{\code{m_options}}{List of options for the map plot
 \itemize{
-\item \code{options$font_size} integer, font size of the map plot
-\item \code{options$name_trunc} integer, indicating when to truncate the
+\item \code{m_options$font_size} integer, font size of the map plot
+\item \code{m_options$name_trunc} integer, indicating when to truncate the
 band names
-\item \code{options$highlight} vector of strings, indicating which variables
+\item \code{m_options$highlight} vector of strings, indicating which variables
 should receive a larger full width plot
 }}
 

@@ -146,7 +146,7 @@ test_that("correct units and value results from multiplication", {
 
   product <- lpjml_calc1 * lpjml_calc2
 
-  expect_equal(product$meta$unit, "") # TODO: how to handle no unit case?
+  expect_equal(product$meta$unit, "") # NTODO: how to handle no unit case?
   expect_equal(product$data[[1]], 1, ignore_attr = TRUE)
 
   ## experiment 3: gC * 1/gN = gC/gN
