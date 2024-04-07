@@ -300,15 +300,17 @@ create_simulation_table <- function(paths) {
     }
 
     # create identifier from file paths
-    sim_names <- unlist(create_unique_short_sim_paths(sim_paths))
+    sim_identifier <- unlist(create_unique_short_sim_paths(sim_paths))
+  } else {
+    sim_identifier <- sim_names
   }
 
   # remove underscores if it doesnt inflict uniqueness
-  if (length(sim_names) == length(unique(gsub("_", "", sim_names)))) {
-    sim_names_sub <- gsub("_", " ", sim_names)
+  if (length(sim_identifier) == length(unique(gsub("_", "", sim_identifier)))) {
+    sim_identifier <- gsub("_", " ", sim_identifier)
   }
 
-  sim_identifier <- abbreviate(sim_names_sub, minlength = 4, method = "both.sides")
+  sim_identifier <- abbreviate(sim_identifier, minlength = 4, method = "both.sides")
 
   lpjml_version <- gsub("LPJmL C Version", "", lpjml_version)
 
