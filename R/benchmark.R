@@ -16,8 +16,8 @@
 #' @param metric_options List that defines options for the metrics.
 #'  The list has to have the following structure:
 #'  \itemize{
-#'  \item \code{metric1} = Vector of options for metric \code{metric1}
-#'  \item \code{metric2} = Vector of options for metric \code{metric2}
+#'  \item \code{metric1} = List of options for metric \code{metric1}
+#'  \item \code{metric2} = List of options for metric \code{metric2}
 #'  }
 #' @param author Name of the author of the benchmark.
 #' @param description Description of the purpose of the benchmark.
@@ -135,8 +135,8 @@
 #' # Example 6
 #' # Benchmark with custom metric options
 #' metric_options <- list(
-#'   "GlobSumTimeAvgTable" = c(font_size = 12), # use larger font size in table
-#'   "TimeAvgMap" = c(highlight = "soilc")      # plots a larger map for soilc
+#'   GlobSumTimeAvgTable = list(font_size = 12), # use larger font size in table
+#'   TimeAvgMap = list(highlight = "soilc")      # plots a larger map for soilc
 #' )
 #' BM_data <- benchmark("path_to_baseline_results",
 #'                      "path_to_under_test_results",
@@ -300,15 +300,15 @@ create_simulation_table <- function(paths) {
     }
 
     # create identifier from file paths
-    sim_identifier <- unlist(create_unique_sim_path_abrev(sim_paths))
-  } else {
-    # remove underscores if it doesnt inflict uniqueness
-    if (length(sim_names) == length(unique(gsub("_", "", sim_names)))) {
-      sim_names_sub <- gsub("_", " ", sim_names)
-    }
-
-    sim_identifier <- abbreviate(sim_names_sub, minlength = 4)
+    sim_names <- unlist(create_unique_short_sim_paths(sim_paths))
   }
+
+  # remove underscores if it doesnt inflict uniqueness
+  if (length(sim_names) == length(unique(gsub("_", "", sim_names)))) {
+    sim_names_sub <- gsub("_", " ", sim_names)
+  }
+
+  sim_identifier <- abbreviate(sim_names_sub, minlength = 4, method = "both.sides")
 
   lpjml_version <- gsub("LPJmL C Version", "", lpjml_version)
 
@@ -327,10 +327,10 @@ create_simulation_table <- function(paths) {
 }
 
 
-# Function to create unique abbreviations for the simulation paths
+# Function to create unique short versions for the simulation paths
 # that can be used to differentiate between
 # different simulations used in the benchmarking
-create_unique_sim_path_abrev <- function(sim_paths) {
+create_unique_short_sim_paths <- function(sim_paths) {
   # function to split a path into a vector of strings
   split_path <- function(x) {
     if (dirname(x) == x) x
@@ -366,22 +366,9 @@ create_unique_sim_path_abrev <- function(sim_paths) {
     if (i > 100) {
       continue <- FALSE
     }
-
   }
 
-  path_abbrev <- collapsed_paths
-
-  # remove underscores if it doesnt inflict uniqueness
-  if (length(path_abbrev) == length(unique(gsub("_", "", path_abbrev)))) {
-    path_abbrev <- gsub("_", "", path_abbrev)
-  }
-
-  path_abbrev <-
-    abbreviate(path_abbrev, minlength = 4, method = "both.sides")
-
-  names(path_abbrev) <- sim_paths
-
-  return(path_abbrev)
+  return(collapsed_paths)
 }
 
 # Function to assign metric options to metric objects

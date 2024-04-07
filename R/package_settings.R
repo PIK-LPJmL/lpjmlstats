@@ -44,18 +44,24 @@ set_lpjmlstats_settings <- function(...) {
         options(lpjmlstats.year_subset = option_value) # nolint
       },
       "graphics_device" = {
-        if (!is.character(option_value)) stop("graphics_device must be a character string")
+        if (!(is.character(option_value) | is.null(option_value)))
+          stop("graphics_device must be a character string")
         options(lpjmlstats.graphics_device = option_value) # nolint
       },
       "pdf_plot_dpi" = {
-        if (!is.numeric(option_value)) stop("pdf_plot_dpi must be a numeric value")
+        if (!(is.numeric(option_value) | is.null(option_value)))
+          stop("pdf_plot_dpi must be a numeric value")
         options(lpjmlstats.pdf_plot_dpi = option_value) # nolint
       },
       "unit_table_path" = {
-        if (!is.character(option_value)) stop("unit_table_path must be a string")
-        if (!file.exists(option_value)) stop("unit_table_path does not exist")
-        if (tools::file_ext(option_value) != "csv") stop("unit_table_path must be a .csv file")
-        options(lpjmlstats.unit_conversion_table = option_value) # nolint
+        if (is.null(option_value)) {
+          options(lpjmlstats.unit_conversion_table = NULL) # nolint
+        } else {
+          if (!is.character(option_value)) stop("unit_table_path must be a string")
+          if (!file.exists(option_value)) stop("unit_table_path does not exist")
+          if (tools::file_ext(option_value) != "csv") stop("unit_table_path must be a .csv file")
+          options(lpjmlstats.unit_conversion_table = option_value) # nolint
+        }
       },
       stop(paste("Invalid option:", option_name))
     )

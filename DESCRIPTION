@@ -27,10 +27,10 @@ Imports:
     kableExtra,
     patchwork,
     tibble,
-    cli
+    cli,
+    raster
 Suggests: 
     testthat (>= 3.0.0),
-    raster,
     maps,
     sf,
     covr

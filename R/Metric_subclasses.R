@@ -326,6 +326,8 @@ TimeAvgMap <- # nolint:object_linter_name
       #' band names
       #' - `m_options$highlight` vector of strings, indicating which variables
       #' should receive a larger full width plot
+      #' - `m_options$quantiles` quantiles used to determine the lower an upper
+      #' limits for the values in th map plot
       #'
       m_options = list(
         font_size = 7,

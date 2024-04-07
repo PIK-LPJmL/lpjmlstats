@@ -101,7 +101,7 @@ test_that("benchmark works for davids personal directory", {
 
 # ----- test benchmark utitlity functions
 
-test_that("create_unique_sim_path_abrev produces short unique names", {
+test_that("create_unique_short_sim_path produces unique names", {
   # create test sim pathes
   paths <- c(
     "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master",           # nolint
@@ -111,12 +111,12 @@ test_that("create_unique_sim_path_abrev produces short unique names", {
   )
 
   # create unique names
-  unique_names <- create_unique_sim_path_abrev(paths)
+  unique_names <- create_unique_short_sim_paths(paths)
 
   # check if names are unique
   expect_equal(unique(unique_names), unname(unique_names))
 
   # check if names are short
-  expect_true(all(nchar(unique_names) <= 8))
+  expect_true(all(nchar(unique_names) <= 40))
 
 })
