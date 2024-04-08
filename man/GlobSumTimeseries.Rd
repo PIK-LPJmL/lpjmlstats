@@ -12,7 +12,7 @@ GlobSumTimeseries metric
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of metric options for this metric
+\item{\code{m_options}}{List of metric options specific to this metric
 \itemize{
 \item \code{font_size} integer, font size of the table
 \item \code{name_trunc} integer, indicating when to truncate the band names

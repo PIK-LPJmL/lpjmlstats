@@ -277,7 +277,7 @@ Maybe the preceding discussion convinced you that working with the benchmark obj
 fun and useful. It provides a lot of interfaces to further processing steps and functionality. 
 It may thus be valuable to save the object for later analysis. This last step of the tutorial
 can be done for example with
-```{r save_benchmark_object, eval = FALSE}
+```{r save_benchmark_res_obj, eval = FALSE}
 saveRDS(benchmark_obj, file = "benchmark_obj_vignette.rds")
 ```
 

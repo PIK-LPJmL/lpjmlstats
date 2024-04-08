@@ -200,7 +200,8 @@ benchmark <-
 
     apply_unit_conversion_table(all_metrics)
 
-    benchmark <- create_benchmark_object(all_metrics,
+    # put together metric data and meta data into a benchmark object
+    benchmark <- create_benchmark_res_obj(all_metrics,
                                          baseline_dir,
                                          under_test_dirs,
                                          author,
@@ -270,9 +271,10 @@ create_pdf_report <- function(data, output_file = "benchmark.pdf", ...) {
   unlink(path_to_rmd_copy)
 }
 
-# ----- utitly functions -----
-# Function to create unique sim identifier
+# ----- utitily functions -----
 
+# Function to create simulation table
+# including unique simulation identifiers
 create_simulation_table <- function(paths) {
   sim_paths <- c(paths$baseline_dir, unlist(paths$under_test_dirs))
   sim_names <- c()
@@ -409,7 +411,7 @@ apply_unit_conversion_table <- function(metrics) {
 
 # Function to consolidate metrics and meta information in a comprehensive
 # benchmark object, storing the result of the benchmarking
-create_benchmark_object <- function(metrics,
+create_benchmark_res_obj <- function(metrics,
                                     baseline_dir,
                                     under_test_dirs,
                                     author,
@@ -457,8 +459,23 @@ initialize_metrics <- function(settings) {
     metric_objs[[m_class$classname]] <- m_class$new()
   }
 
+  metric_objs <- reorder_metrics(metric_objs)
+
   return(metric_objs)
 }
+
+# Function to reorder the metrics based on the user specified prioritization
+reorder_metrics <- function(all_metrics) {
+  if(!is.null(getOption("lpjmlstats.metrics_at_start"))) {
+    fig_to_start <- getOption("lpjmlstats.metrics_at_start")
+    # get all metric names that contain the string
+    fig_to_start <- stringr::str_detect(names(all_metrics), fig_to_start)
+    metric_order <- c(which(fig_to_start), which(!fig_to_start))
+    all_metrics <- all_metrics[metric_order]
+  }
+  return(all_metrics)
+}
+
 
 # Function to create and store the summaries that all the metrics need
 retrieve_summaries <-

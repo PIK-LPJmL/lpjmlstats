@@ -75,13 +75,20 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     },
 
     #' @description
-    #' Function to arrgange all plots of the metric in the respective
+    #' Function to arrange all plots of the metric in the respective
     #' section of the report.
     #' Will be overwritten by the individual metric subclasses.
     #' @param var_grp variable group
     arrange_plots = function(var_grp) {
       NULL
     },
+
+    #' @field m_options
+    #' List of metric options that apply to all metrics
+    #' - year_range: range of years to be considered
+    m_options = list(
+      year_range = NULL
+    ),
 
     #' @field var_grp_list
     #' List of variable groups. Each variable group contains the summaries
@@ -96,6 +103,11 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     #' @param var Variable name
     #' @param type Type of data ("baseline" or "under_test")
     capture_summary = function(data, var, type) {
+      if (!is.null(self$m_options$year_range)) {
+        data <- data %>% transform("year_month_day") %>%
+          subset(year = self$m_options$year_range) %>%
+          transform("time")
+      }
       summary <- self$summarize(data)
       self$store_summary(summary, var, type)
     },
