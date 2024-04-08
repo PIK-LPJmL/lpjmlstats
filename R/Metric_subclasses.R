@@ -359,7 +359,6 @@ TimeAvgMap <- # nolint:object_linter_name
   )
 
 
-
 # ------------ metrics for special outputs -------------------------------------
 
 #' @title GlobSumTimeAvgTablePFT_harvest
