@@ -25,25 +25,25 @@
 #'  the \link{create_pdf_report} function.
 #' @param ... additional arguments to be passed to \link{create_pdf_report}
 #'
-#' @return A benchmark object containing the numerical results of the
+#' @return A benchmark_res object containing the numerical results of the
 #' benchmarking. This data object is basically a list of all metrics
 #' used in the benchmarking. See \link{Metric} for the way a metric structures
-#' benchmarking results. In addition the benchmark object contains meta
+#' benchmarking results. In addition the benchmark_res object contains meta
 #' information. Of particular importance is the
 #' simulation table, which contains the simulation names, paths and
-#' the short simulation identifier that are used in the benchmark object.
+#' the short simulation identifier that are used in the benchmark_res object.
 #'
 #' The function \link{get_benchmark_meta_data} can be used to retrieve the meta
 #' information.
 #'
-#' The data structure of the benchmark object is depicted here:
+#' The data structure of the benchmark_res object is depicted here:
 #' \if{html}{
 #'   \out{<div style="text-align: center">}\figure{benchmark_obj_struc.png}{options: style="width:500px;max-width:50\%;"}\out{</div>} #nolint
 #' }
 #'
 #' @details
 #'
-#' In order for the benchmark to work, all the output files specified
+#' In order for the benchmarking to work, all the output files specified
 #' in the settings have to be present in the baseline and all under test
 #' directories. All output files need to be with ".bin" extension
 #' and with meta files of ".bin.json" format. All output paths given to
@@ -81,13 +81,15 @@
 #'
 #' # Example 2
 #' # Specifying author and description, as well as filename for pdf report
-#' # is recommended. Also, it can make sense to store the benchmark object
+#' # is recommended. Also, it can make sense to store the benchmark_res object
 #' # for later analysis.
-#' BM_data <- benchmark("path_to_baseline_results",
+#' BM_resu <- benchmark("path_to_baseline_results",
 #'                      "path_to_under_test_results",
 #'                      author = "anonymous",
 #'                      description = "This is a test",
 #'                      output_file = "myBenchmark.pdf")
+#'
+#' saveRDS(BM_resu, "bm_results.rds")
 #'
 #' # Example 3
 #' # Quick benchmarking that only looks at specific outputs with
@@ -200,29 +202,29 @@ benchmark <-
 
     apply_unit_conversion_table(all_metrics)
 
-    # put together metric data and meta data into a benchmark object
-    benchmark <- create_benchmark_res_obj(all_metrics,
-                                         baseline_dir,
-                                         under_test_dirs,
-                                         author,
-                                         description,
-                                         sim_table)
+    # put together metric data and meta data into a benchmark_res object
+    benchmark_res <- create_benchmark_res_obj(all_metrics,
+                                              baseline_dir,
+                                              under_test_dirs,
+                                              author,
+                                              description,
+                                              sim_table)
 
     cat(cli::col_green("Core numerical benchmarking completed. \n"))
 
     if (pdf_report) {
       cat(cli::col_blue("Start report generation ...\n"))
-      create_pdf_report(benchmark, ...)
+      create_pdf_report(benchmark_res, ...)
       cat(cli::col_green("Report generation completed.\n"))
     }
 
-    return(benchmark)
+    return(benchmark_res)
   }
 
-#' Generate a pdf report from a benchmark object.
+#' Generate a pdf report from a benchmark_res object.
 #'
 #'
-#' @param data benchmark data object created by the \code{\link{benchmark}}
+#' @param data benchmark_res object created by the \code{\link{benchmark}}
 #' function
 #' @param output_file file of the output pdf, including filename and directory
 #' \code{\link[rmarkdown]{render}}
@@ -399,14 +401,14 @@ apply_unit_conversion_table <- function(metrics) {
 }
 
 # Function to consolidate metrics and meta information in a comprehensive
-# benchmark object, storing the result of the benchmarking
+# benchmark results object, storing the result of the benchmarking
 create_benchmark_res_obj <- function(metrics,
                                     baseline_dir,
                                     under_test_dirs,
                                     author,
                                     description,
                                     sim_table) {
-  attr(metrics, "class") <- "benchmark"
+  attr(metrics, "class") <- "benchmark_res"
   attr(metrics, "baseline_dir") <- baseline_dir
   attr(metrics, "ut_dir") <- under_test_dirs
   attr(metrics, "author") <- author
@@ -415,18 +417,18 @@ create_benchmark_res_obj <- function(metrics,
   return(metrics)
 }
 
-#' Function that returns the meta data of a benchmark object
-#' @param benchmark A benchmark object
-#' @return A list with the meta data of the benchmark object.
+#' Function that returns the meta data of a benchmark_res object
+#' @param benchmark_res A benchmark_res object
+#' @return A list with the meta data of the benchmark_res object.
 #' The list contains the author, the description and a simulation
 #' identification table. The latter is a tibble with the columns
 #' sim_paths, lpjml_version, sim_names, sim_identifier and sim_type.
 #'
 #' @export
-get_benchmark_meta_data <- function(benchmark) {
-  return(list(author = attr(benchmark, "author"),
-              description = attr(benchmark, "description"),
-              sim_table = attr(benchmark, "sim_table")))
+get_benchmark_meta_data <- function(benchmark_res) {
+  return(list(author = attr(benchmark_res, "author"),
+              description = attr(benchmark_res, "description"),
+              sim_table = attr(benchmark_res, "sim_table")))
 }
 
 

@@ -64,7 +64,8 @@ GlobSumTimeAvgTable <- # nolint:object_linter_name
       m_options = list(
         font_size = 8,
         name_trunc = 1,
-        decimal_places = 3
+        decimal_places = 3,
+        year_range = NULL
       ),
 
       #' @field title
@@ -157,7 +158,8 @@ GlobSumTimeseries <- R6::R6Class( # nolint:object_linter_name
     #' - `name_trunc` integer, indicating when to truncate the band names
     #' band names
     m_options = list(font_size = 7,
-                     name_trunc = 1),
+                     name_trunc = 1,
+                     year_range = NULL),
 
     #' @field title
     #' Section header used in the report
@@ -340,7 +342,8 @@ TimeAvgMap <- # nolint:object_linter_name
         font_size = 7,
         name_trunc = 1,
         highlight = NULL,
-        quantiles = c(0.05, 0.95)
+        quantiles = c(0.05, 0.95),
+        year_range = NULL
       ),
 
       #' @field title

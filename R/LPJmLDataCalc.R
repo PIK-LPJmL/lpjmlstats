@@ -131,6 +131,15 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     },
 
     #' @description
+    #' Set unit of LPJmLDataCalc object
+    #' !Internal method only to be used for package development!
+    #' @param unit A string with the unit to be set.
+    .set_unit = function(unit_str) {
+      private$.data <- units::set_units(private$.data, unit_str)
+      private$copy_unit_array2meta()
+    },
+
+    #' @description
     #' Apply unit conversion from conversion table
     #' @param path_to_table A string with the path to the conversion table.
     apply_unit_conversion_table = function(path_to_table = NULL) {
@@ -211,6 +220,16 @@ LPJmLDataCalc$set(
 )
 
 # ----------------------------- unit handling  ------------------------------- #
+keep_units_lpjml_calc <- function(lpjml_calc, fun) {
+  # save units
+  unit <- deparse_unit(lpjml_calc$.data_with_unit)
+  # apply fun
+  lpjml_calc <- fun(lpjml_calc)
+  # restore unit
+  lpjml_calc$.set_unit(unit)
+  return(lpjml_calc)
+}
+
 # Copy the unit attribute from the meta data to the units data array
 LPJmLDataCalc$set("private", "copy_unit_meta2array",
                   function() {

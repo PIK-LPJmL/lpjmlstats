@@ -84,11 +84,9 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     },
 
     #' @field m_options
-    #' List of metric options that apply to all metrics
-    #' - year_range: range of years to be considered
-    m_options = list(
-      year_range = NULL
-    ),
+    #' List of metric options 
+    #' Will be overwritten by the individual metric subclasses.
+    m_options = list(),
 
     #' @field var_grp_list
     #' List of variable groups. Each variable group contains the summaries
@@ -102,13 +100,19 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     #' @param data Raw data to be summarized
     #' @param var Variable name
     #' @param type Type of data ("baseline" or "under_test")
-    capture_summary = function(data, var, type) {
+    capture_summary = function(lpjml_calc, var, type) {
       if (!is.null(self$m_options$year_range)) {
-        data <- data %>% transform("year_month_day") %>%
-          subset(year = self$m_options$year_range) %>%
-          transform("time")
+        subset_years <- function(lpjml_calc, years) {
+          lpjml_calc %>%
+            transform("year_month_day") %>%
+            subset(year = years) %>%
+            transform("time")
+        }
+        lpjml_calc <-
+          keep_units_lpjml_calc(lpjml_calc,
+                                function(x) subset_years(x, self$m_options$year_range))
       }
-      summary <- self$summarize(data)
+      summary <- self$summarize(lpjml_calc)
       self$store_summary(summary, var, type)
     },
 

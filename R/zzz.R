@@ -9,4 +9,5 @@
 
   # configure the default settings
   options(lpjmlstats.file_extension = ".bin.json") # nolint
+  set_lpjmlstats_settings(metrics_at_start = "Table")
 }
