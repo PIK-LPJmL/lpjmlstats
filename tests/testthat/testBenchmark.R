@@ -66,6 +66,29 @@ test_that("metric option year_range works", {
   expect_equal(length(under_test_data), 1)
 })
 
+
+test_that("metric reordering works", {
+
+  # priority is given to maps to appear at the start of the report
+  set_lpjmlstats_settings(year_subset = NULL, metrics_at_start = "Map")
+
+  baseline_dir <- testthat::test_path("../testdata/path1")
+  under_test_dir <- testthat::test_path("../testdata/path2")
+  settings <-
+    list(soiln = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap))
+
+
+  out <-
+    benchmark(
+      baseline_dir,
+      under_test_dir,
+      settings,
+      pdf_report = FALSE
+    )
+
+  expect_true(stringr::str_detect(names(out[1]), "Map"))
+})
+
 test_that("benchmark report generation runs through without warnings", {
   skip("NTODO: Currently crahses testing of devtools::check()")
   baseline_dir <- testthat::test_path("../testdata/path1")

@@ -32,8 +32,8 @@ The list has to have the following structure:
 \item{metric_options}{List that defines options for the metrics.
 The list has to have the following structure:
 \itemize{
-\item \code{metric1} = Vector of options for metric \code{metric1}
-\item \code{metric2} = Vector of options for metric \code{metric2}
+\item \code{metric1} = List of options for metric \code{metric1}
+\item \code{metric2} = List of options for metric \code{metric2}
 }}
 
 \item{author}{Name of the author of the benchmark.}
@@ -157,8 +157,8 @@ BM_data <- benchmark("path_to_baseline_results",
 # Example 6
 # Benchmark with custom metric options
 metric_options <- list(
-  "GlobSumTimeAvgTable" = c(font_size = 12), # use larger font size in table
-  "TimeAvgMap" = c(highlight = "soilc")      # plots a larger map for soilc
+  GlobSumTimeAvgTable = list(font_size = 12), # use larger font size in table
+  TimeAvgMap = list(highlight = "soilc")      # plots a larger map for soilc
 )
 BM_data <- benchmark("path_to_baseline_results",
                      "path_to_under_test_results",

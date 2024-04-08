@@ -4,7 +4,8 @@
 \alias{GlobSumTimeseries}
 \title{GlobSumTimeseries}
 \description{
-GlobSumTimeseries metric
+GlobSumTimeseries metric.
+See \link{Metric} for the documentation of metrics in general.
 }
 \section{Super class}{
 \code{\link[lpjmlstats:Metric]{lpjmlstats::Metric}} -> \code{GlobSumTimeseries}

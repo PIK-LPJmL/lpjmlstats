@@ -4,7 +4,7 @@
 \alias{GlobSumTimeAvgTable}
 \title{GlobSumTimeAvgTable}
 \description{
-GlobSumTimeAvgTable metric
+GlobSumTimeAvgTable metric.
 See \link{Metric} for the documentation of metrics in general.
 }
 \section{Super class}{

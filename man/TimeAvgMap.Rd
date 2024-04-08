@@ -4,7 +4,8 @@
 \alias{TimeAvgMap}
 \title{TimeAvgMap}
 \description{
-TimeAvgMap metric
+TimeAvgMap metric.
+See \link{Metric} for the documentation of metrics in general.
 }
 \section{Super class}{
 \code{\link[lpjmlstats:Metric]{lpjmlstats::Metric}} -> \code{TimeAvgMap}
@@ -19,6 +20,8 @@ TimeAvgMap metric
 band names
 \item \code{m_options$highlight} vector of strings, indicating which variables
 should receive a larger full width plot
+\item \code{m_options$quantiles} quantiles used to determine the lower an upper
+limits for the values in th map plot
 }}
 
 \item{\code{title}}{Section header used in the report}
