@@ -2,12 +2,12 @@
 % Please edit documentation in R/benchmark.R
 \name{create_pdf_report}
 \alias{create_pdf_report}
-\title{Generate a pdf report from a benchmark object.}
+\title{Generate a pdf report from a benchmark_res object.}
 \usage{
 create_pdf_report(data, output_file = "benchmark.pdf", ...)
 }
 \arguments{
-\item{data}{benchmark data object created by the \code{\link{benchmark}}
+\item{data}{benchmark_res object created by the \code{\link{benchmark}}
 function}
 
 \item{output_file}{file of the output pdf, including filename and directory
@@ -16,7 +16,7 @@ function}
 \item{...}{additional arguments passed to \code{\link[rmarkdown]{render}}}
 }
 \description{
-Generate a pdf report from a benchmark object.
+Generate a pdf report from a benchmark_res object.
 }
 \details{
 Each metric has its own section in the report. The content of the section

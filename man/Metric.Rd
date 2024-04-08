@@ -50,10 +50,8 @@ See \link{GlobSumTimeAvgTable} for a typical example of a metric.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of metric options that apply to all metrics
-\itemize{
-\item year_range: range of years to be considered
-}}
+\item{\code{m_options}}{List of metric options
+Will be overwritten by the individual metric subclasses.}
 
 \item{\code{var_grp_list}}{List of variable groups. Each variable group contains the summaries
 and the comparisons for one variable.}
@@ -157,13 +155,13 @@ Will be overwritten by the individual metric subclasses.
 \subsection{Method \code{capture_summary()}}{
 !Package internal method!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Metric$capture_summary(data, var, type)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Metric$capture_summary(lpjml_calc, var, type)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{Raw data to be summarized}
+\item{\code{lpjml_calc}}{Raw data to be summarized}
 
 \item{\code{var}}{Variable name}
 

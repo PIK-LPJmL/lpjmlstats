@@ -139,7 +139,7 @@ test_that("benchmark works for davids personal directory", {
       author = "David",
       settings = settings,
       description = "test benchmarking",
-      pdf_report = F
+      pdf_report = FALSE
     )
 
   create_pdf_report(data = bench_data)

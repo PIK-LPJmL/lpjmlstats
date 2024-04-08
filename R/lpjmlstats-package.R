@@ -6,4 +6,4 @@
 NULL
 
 # used to satify lintr binding
-utils::globalVariables(c("default_settings"))
+utils::globalVariables(c("default_settings")) # nolint

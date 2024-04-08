@@ -84,7 +84,7 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     },
 
     #' @field m_options
-    #' List of metric options 
+    #' List of metric options
     #' Will be overwritten by the individual metric subclasses.
     m_options = list(),
 
@@ -97,7 +97,7 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     # ---- package internal methods ----
     #' @description
     #' !Package internal method!
-    #' @param data Raw data to be summarized
+    #' @param lpjml_calc Raw data to be summarized
     #' @param var Variable name
     #' @param type Type of data ("baseline" or "under_test")
     capture_summary = function(lpjml_calc, var, type) {
@@ -211,7 +211,7 @@ VarGrp <- # nolint:object_linter_name
     public = list(
       # Function to retrieve the minimum and maximum of contained data
       # for the different types of data contained
-      get_limits = function(type, quantiles = c(0,1)) {
+      get_limits = function(type, quantiles = c(0, 1)) {
         get_min_max_of_lpjml_calc <- function(lpjml_calc) {
           return(c(min(lpjml_calc$data), max(lpjml_calc$data)))
         }
@@ -233,7 +233,7 @@ VarGrp <- # nolint:object_linter_name
         }
 
         get_quantiles_of_lpjml_calc_list <- function(list, quantiles) {
-          data <- sapply(c(unlist(list)), function(x) x$data)
+          data <- sapply(c(unlist(list)), function(x) x$data) # nolint
           lower_lim <- quantile(data, quantiles[1])
           upper_lim <- quantile(data, quantiles[2])
           return(c(lower_lim, upper_lim))

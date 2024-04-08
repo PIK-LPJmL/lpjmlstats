@@ -403,11 +403,11 @@ apply_unit_conversion_table <- function(metrics) {
 # Function to consolidate metrics and meta information in a comprehensive
 # benchmark results object, storing the result of the benchmarking
 create_benchmark_res_obj <- function(metrics,
-                                    baseline_dir,
-                                    under_test_dirs,
-                                    author,
-                                    description,
-                                    sim_table) {
+                                     baseline_dir,
+                                     under_test_dirs,
+                                     author,
+                                     description,
+                                     sim_table) {
   attr(metrics, "class") <- "benchmark_res"
   attr(metrics, "baseline_dir") <- baseline_dir
   attr(metrics, "ut_dir") <- under_test_dirs
@@ -438,6 +438,7 @@ empty_cache <- function() {
   # empty the grid and terrarrea cache
   memoise::forget(read_grid)
   memoise::forget(read_terr_area)
+  memoise::forget(read_cft_frac)
 }
 
 # Function to make instances, that is objects of all metric classes
@@ -457,7 +458,7 @@ initialize_metrics <- function(settings) {
 
 # Function to reorder the metrics based on the user specified prioritization
 reorder_metrics <- function(all_metrics) {
-  if(!is.null(getOption("lpjmlstats.metrics_at_start"))) {
+  if (!is.null(getOption("lpjmlstats.metrics_at_start"))) {
     fig_to_start <- getOption("lpjmlstats.metrics_at_start")
     # get all metric names that contain the string
     fig_to_start <- stringr::str_detect(names(all_metrics), fig_to_start)

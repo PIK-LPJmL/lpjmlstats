@@ -133,7 +133,7 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     #' @description
     #' Set unit of LPJmLDataCalc object
     #' !Internal method only to be used for package development!
-    #' @param unit A string with the unit to be set.
+    #' @param unit_str A string with the unit to be set.
     .set_unit = function(unit_str) {
       private$.data <- units::set_units(private$.data, unit_str)
       private$copy_unit_array2meta()

@@ -64,7 +64,7 @@ print_highlighted_maps <- function(plotlist, highlight) {
   for (plot_name in highlight) {
     # all plot names containing the plot_name string are set to true
     plots_to_add <- stringr::str_detect(names(plotlist), plot_name)
-    highlight_plots <- highlight_plots | plots_to_add 
+    highlight_plots <- highlight_plots | plots_to_add
   }
 
   # print the highlighted plots
