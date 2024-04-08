@@ -2,7 +2,8 @@
 
 #' @title GlobSumTimeAvgTable
 #' @description
-#' GlobSumTimeAvgTable metric
+#' GlobSumTimeAvgTable metric.
+#' See \link{Metric} for the documentation of metrics in general.
 #' @export
 GlobSumTimeAvgTable <- # nolint:object_linter_name
   R6::R6Class(
@@ -53,7 +54,7 @@ GlobSumTimeAvgTable <- # nolint:object_linter_name
       },
 
       #' @field m_options
-      #' List of metric options for this metric
+      #' List of metric options specific to this metric
       #' - `font_size`: integer, font size of the table
       #' - `name_trunc`: integer, number of characters to display in the table
       #' band names
@@ -81,7 +82,8 @@ GlobSumTimeAvgTable <- # nolint:object_linter_name
 
 #' @title GlobAvgTimeAvgTable
 #' @description
-#' GlobAvgTimeAvgTable metric
+#' GlobAvgTimeAvgTable metric.
+#' See \link{Metric} for the documentation of metrics in general.
 #' @export
 GlobAvgTimeAvgTable <- R6::R6Class( # nolint:object_linter_name
   "GlobAvgTimeAvgTable",
@@ -115,7 +117,8 @@ GlobAvgTimeAvgTable <- R6::R6Class( # nolint:object_linter_name
 
 #' @title GlobSumTimeseries
 #' @description
-#' GlobSumTimeseries metric
+#' GlobSumTimeseries metric.
+#' See \link{Metric} for the documentation of metrics in general.
 #' @export
 GlobSumTimeseries <- R6::R6Class( # nolint:object_linter_name
   "GlobSumTimeseries",
@@ -149,7 +152,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint:object_linter_name
     },
 
     #' @field m_options
-    #' List of metric options for this metric
+    #' List of metric options specific to this metric
     #' - `font_size` integer, font size of the table
     #' - `name_trunc` integer, indicating when to truncate the band names
     #' band names
@@ -170,7 +173,8 @@ GlobSumTimeseries <- R6::R6Class( # nolint:object_linter_name
 
 #' @title GlobAvgTimeseries
 #' @description
-#' GlobAvgTimeseries metric
+#' GlobAvgTimeseries metric.
+#' See \link{Metric} for the documentation of metrics in general.
 #' @export
 GlobAvgTimeseries <- R6::R6Class( # nolint:object_linter_name
   "GlobAvgTimeseries",
@@ -199,7 +203,8 @@ GlobAvgTimeseries <- R6::R6Class( # nolint:object_linter_name
 
 #' @title GlobSumAnnAvgTimeseries
 #' @description
-#' GlobSumAnnAvgTimeseries metric
+#' GlobSumAnnAvgTimeseries metric.
+#' See \link{Metric} for the documentation of metrics in general.
 #' @export
 GlobSumAnnAvgTimeseries <- # nolint:object_linter_name
   R6::R6Class(
@@ -231,7 +236,8 @@ GlobSumAnnAvgTimeseries <- # nolint:object_linter_name
 
 #' @title GlobAvgAnnAvgTimeseries
 #' @description
-#' GlobAvgAnnAvgTimeseries metric
+#' GlobAvgAnnAvgTimeseries metric.
+#' See \link{Metric} for the documentation of metrics in general.
 #' @export
 GlobAvgAnnAvgTimeseries <- R6::R6Class( # nolint:object_linter_name
   "GlobAvgAnnAvgTimeseries",
@@ -266,7 +272,8 @@ GlobAvgAnnAvgTimeseries <- R6::R6Class( # nolint:object_linter_name
 
 #' @title TimeAvgMap
 #' @description
-#' TimeAvgMap metric
+#' TimeAvgMap metric.
+#' See \link{Metric} for the documentation of metrics in general.
 #' @export
 TimeAvgMap <- # nolint:object_linter_name
   R6::R6Class(
@@ -320,7 +327,7 @@ TimeAvgMap <- # nolint:object_linter_name
       },
 
       #' @field m_options
-      #' List of options for the map plot
+      #' List of metric options specific to this metric
       #' - `m_options$font_size` integer, font size of the map plot
       #' - `m_options$name_trunc` integer, indicating when to truncate the
       #' band names
@@ -352,13 +359,13 @@ TimeAvgMap <- # nolint:object_linter_name
 
 # ------------ metrics for special outputs -------------------------------------
 
-#' @title GlobSumTimeAvgPFT_harvest
+#' @title GlobSumTimeAvgTablePFT_harvest
 #' @description
-#' GlobSumTimeAvgPFT_harvest metric
+#' GlobSumTimeAvgTablePFT_harvest metric
 #' @export
-GlobSumTimeAvgPFT_harvest <- # nolint:object_linter_name
+GlobSumTimeAvgTablePFT_harvest <- # nolint:object_linter_name
   R6::R6Class(
-    "GlobSumTimeAvgPFT_harvest",
+    "GlobSumTimeAvgTablePFT_harvest",
     inherit = GlobSumTimeAvgTable,
     public = list(
       #' @description
@@ -383,12 +390,12 @@ GlobSumTimeAvgPFT_harvest <- # nolint:object_linter_name
     )
   )
 
-#' @title GlobSumTimeAvgFPC
+#' @title GlobSumTimeAvgTableFPC
 #' @description
-#' GlobSumTimeAvgFPC metric
+#' GlobSumTimeAvgTableFPC metric
 #' @export
-GlobSumTimeAvgFPC <- R6::R6Class( # nolint:object_linter_name
-  "GlobSumTimeAvgFPC",
+GlobSumTimeAvgTableFPC <- R6::R6Class( # nolint:object_linter_name
+  "GlobSumTimeAvgTableFPC",
   inherit = GlobSumTimeAvgTable,
   public = list(
     #' @description

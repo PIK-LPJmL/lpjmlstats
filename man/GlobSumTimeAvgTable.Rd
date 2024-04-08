@@ -5,6 +5,7 @@
 \title{GlobSumTimeAvgTable}
 \description{
 GlobSumTimeAvgTable metric
+See \link{Metric} for the documentation of metrics in general.
 }
 \section{Super class}{
 \code{\link[lpjmlstats:Metric]{lpjmlstats::Metric}} -> \code{GlobSumTimeAvgTable}
@@ -12,7 +13,7 @@ GlobSumTimeAvgTable metric
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of metric options for this metric
+\item{\code{m_options}}{List of metric options specific to this metric
 \itemize{
 \item \code{font_size}: integer, font size of the table
 \item \code{name_trunc}: integer, number of characters to display in the table

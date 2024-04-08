@@ -38,6 +38,34 @@ test_that("benchmark produces correct results", {
 
 })
 
+
+test_that("metric option year_range works", {
+
+  set_lpjmlstats_settings(year_subset = NULL) # restore default settings
+
+  baseline_dir <- testthat::test_path("../testdata/path1")
+  under_test_dir <- testthat::test_path("../testdata/path2")
+  settings <-
+    list(soiln = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap),
+         terr_area = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap))
+
+  metric_options <- list(GlobSumTimeseries = list(year_range = 1:1))
+
+  out <-
+    benchmark(
+      baseline_dir,
+      under_test_dir,
+      settings,
+      pdf_report = FALSE,
+      metric_options = metric_options
+    )
+
+  under_test_data <-
+    out$GlobSumTimeseries$var_grp_list$soiln$under_test$pth2$data
+
+  expect_equal(length(under_test_data), 1)
+})
+
 test_that("benchmark report generation runs through without warnings", {
   skip("NTODO: Currently crahses testing of devtools::check()")
   baseline_dir <- testthat::test_path("../testdata/path1")
@@ -65,8 +93,8 @@ test_that("benchmark works for davids personal directory", {
     `pft_harvest.pft$rainfed rice;
     rainfed maize;
     rainfed oil crops soybean;
-    rainfed grassland`  = c(GlobSumTimeAvgPFT_harvest, TimeAvgMap),
-    fpc = c(GlobSumTimeAvgFPC, GlobSumTimeAvgTable, TimeAvgMap, GlobSumTimeseries)
+    rainfed grassland`  = c(TimeAvgMap, GlobSumTimeAvgTablePFT_harvest),
+    fpc = c(GlobSumTimeAvgTableFPC, GlobSumTimeAvgTable, TimeAvgMap, GlobSumTimeseries)
   )
 
   metric_options <- list(
@@ -86,7 +114,9 @@ test_that("benchmark works for davids personal directory", {
       baseline_dir,
       list(under_test_dir),
       author = "David",
-      description = "test benchmarking"
+      settings = settings,
+      description = "test benchmarking",
+      pdf_report = F
     )
 
   create_pdf_report(data = bench_data)

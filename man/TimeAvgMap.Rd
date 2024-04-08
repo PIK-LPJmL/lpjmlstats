@@ -12,7 +12,7 @@ TimeAvgMap metric
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of options for the map plot
+\item{\code{m_options}}{List of metric options specific to this metric
 \itemize{
 \item \code{m_options$font_size} integer, font size of the map plot
 \item \code{m_options$name_trunc} integer, indicating when to truncate the

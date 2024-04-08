@@ -67,3 +67,6 @@ set_lpjmlstats_settings <- function(...) {
     )
   }
 }
+
+# set some non NULL defaults
+# set_lpjmlstats_settings(metrics_at_start = "Table")
