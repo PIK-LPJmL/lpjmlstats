@@ -268,7 +268,7 @@ create_map_plots <- function(var_grp_list,
     # use the first comparison object to get the band names
     band_names <- var_grp$get_band_names()
     band_names_short <- shorten_names(band_names, m_options$name_trunc)
-        
+
     for (band in seq_along(band_names)) {
       # add comparison plots
       for (compare_item in var_grp$compare) {

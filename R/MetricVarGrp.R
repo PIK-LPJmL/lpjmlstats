@@ -227,14 +227,14 @@ VarGrp <- # nolint:object_linter_name
         return(limits)
       },
 
-    get_band_names = function() {
-      if (!is.null(self$baseline))
-        return(dimnames(self$baseline)[["band"]])
-      else if (!is.null(self$under_test[[1]]))
-        return(dimnames(self$under_test[[1]])[["band"]])
-      else if (!is.null(self$compare[[1]][[1]]))
-        return(dimnames(self$compare[[1]][[1]])[["band"]])
-    },
+      get_band_names = function() {
+        if (!is.null(self$baseline))
+          return(dimnames(self$baseline)[["band"]])
+        else if (!is.null(self$under_test[[1]]))
+          return(dimnames(self$under_test[[1]])[["band"]])
+        else if (!is.null(self$compare[[1]][[1]]))
+          return(dimnames(self$compare[[1]][[1]])[["band"]])
+      },
 
       under_test = NULL,
       # list of under test summaries
