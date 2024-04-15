@@ -22,6 +22,8 @@ band names
 should receive a larger full width plot
 \item \code{m_options$quantiles} quantiles used to determine the lower an upper
 limits for the values in th map plot
+\item \code{m_options$n_breaks} number of breaks for each arm of the diverging
+color scale
 }}
 
 \item{\code{title}}{Section header used in the report}

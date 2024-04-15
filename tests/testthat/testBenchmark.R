@@ -24,14 +24,6 @@ test_that("benchmark produces correct results", {
     out$GlobSumTimeAvgTable$var_grp_list$soiln$under_test$pth2$.data_with_unit
   expect_equal(mean(soiln_time_ser), soiln_time_mean, ignore_attr = TRUE)
 
-  # weighted mean of time average should be equal to the global sum time avg
-  soiln_time_avg <- out$TimeAvgMap$var_grp_list$soiln$under_test$pth2
-  soiln_time_avg$aggregate(cell = "global")
-
-  expect_equal(units::set_units(soiln_time_avg$.data_with_unit, "GtN"),
-               units::set_units(soiln_time_mean, "GtN"),
-               ignore_attr = TRUE)
-
   # compare of time avg should be zero since files are identical
   soiln_time_avg_compare <- out$TimeAvgMap$var_grp_list$soiln$compare$pth2$data
   expect_equal(sum(soiln_time_avg_compare), 0)

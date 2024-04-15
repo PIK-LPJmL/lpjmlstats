@@ -304,16 +304,18 @@ TimeAvgMap <- # nolint:object_linter_name
 
         # add grids for to all differences
         lapply(var_grp$compare$difference, function(x) x$add_grid())
+
+        var_grp$baseline <- NULL
+        var_grp$under_test <- NULL
       },
 
       #' @description
       #' Create a map plot with country border overlay.
       #' @return A list of map ggplots
       plot = function() {
-        # get identifier of baseline run
-        baseline_ident <- self$var_grp_list[[1]]$baseline$get_sim_identifier()
         # describe calculation that was applied to the data
-        mod_descr <- paste0("- ", baseline_ident)
+        mod_descr <- "- baseline"
+
         create_map_plots(
           self$var_grp_list,
           self$m_options,
@@ -337,13 +339,16 @@ TimeAvgMap <- # nolint:object_linter_name
       #' should receive a larger full width plot
       #' - `m_options$quantiles` quantiles used to determine the lower an upper
       #' limits for the values in th map plot
+      #' - `m_options$n_breaks` number of breaks for each arm of the diverging
+      #' color scale
       #'
       m_options = list(
         font_size = 7,
         name_trunc = 1,
         highlight = NULL,
         quantiles = c(0.05, 0.95),
-        year_range = NULL
+        year_range = NULL,
+        n_breaks = 3
       ),
 
       #' @field title

@@ -3,7 +3,7 @@ test_that("var_grp returns correct variable name", {
 
   soiln <- load_soiln_calc()
 
-  var_grp$compare <- list(soiln = soiln)
+  var_grp$compare[["diff"]] <- list(soiln = soiln)
 
   expect_equal(var_grp$var_name, "soiln")
 
