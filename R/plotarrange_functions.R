@@ -1,3 +1,7 @@
+#' @import patchwork
+# the import for the complete patchwork package is needed
+# to make the `+` operator work in all cases
+
 arrange_table_plot <- function(plotlist, m_options) {
 
   print(
