@@ -18,6 +18,10 @@ See \link{Metric} for the documentation of metrics in general.
 \item \code{font_size} integer, font size of the table
 \item \code{name_trunc} integer, indicating when to truncate the band names
 band names
+\item \code{year_range}: integer or character vector, defines the range
+of years that the metric considers. Integer indices can be between 1
+and \code{nyear}. Character vector is used to subset by actual calendar
+years (starting at \code{firstyear}).
 }}
 
 \item{\code{title}}{Section header used in the report}

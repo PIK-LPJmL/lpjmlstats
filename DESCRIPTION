@@ -1,6 +1,6 @@
 Package: lpjmlstats
 Title: Statistical tools for LPJmL data analysis
-Version: 0.1.6
+Version: 0.1.7
 Authors@R: c(person("David","Hötten", email = "davidho@pik-potsdam.de", role = c("aut", "cre")),
              person("Jannes","Breier", email = "jannes.breier@pik-potsdam.de", role = c("aut")))
 Description: This package provides statistical tools for LPJmL data analysis
@@ -38,4 +38,4 @@ Config/testthat/edition: 3
 VignetteBuilder: knitr
 Depends:
     R (>= 3.5.0)
-Date: 2024-04-16
+Date: 2024-04-25

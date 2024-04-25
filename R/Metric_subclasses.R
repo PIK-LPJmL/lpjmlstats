@@ -5,7 +5,7 @@
 #' GlobSumTimeAvgTable metric.
 #' See \link{Metric} for the documentation of metrics in general.
 #' @export
-GlobSumTimeAvgTable <- # nolint:object_linter_name
+GlobSumTimeAvgTable <- # nolint: object_name_linter.
   R6::R6Class(
     "GlobSumTimeAvgTable",
     inherit = Metric,
@@ -88,7 +88,7 @@ GlobSumTimeAvgTable <- # nolint:object_linter_name
 #' GlobAvgTimeAvgTable metric.
 #' See \link{Metric} for the documentation of metrics in general.
 #' @export
-GlobAvgTimeAvgTable <- R6::R6Class( # nolint:object_linter_name
+GlobAvgTimeAvgTable <- R6::R6Class( # nolint: object_name_linter.
   "GlobAvgTimeAvgTable",
   inherit = GlobSumTimeAvgTable,
   public = list(
@@ -123,7 +123,7 @@ GlobAvgTimeAvgTable <- R6::R6Class( # nolint:object_linter_name
 #' GlobSumTimeseries metric.
 #' See \link{Metric} for the documentation of metrics in general.
 #' @export
-GlobSumTimeseries <- R6::R6Class( # nolint:object_linter_name
+GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
   "GlobSumTimeseries",
   inherit = Metric,
   public = list(
@@ -184,7 +184,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint:object_linter_name
 #' GlobAvgTimeseries metric.
 #' See \link{Metric} for the documentation of metrics in general.
 #' @export
-GlobAvgTimeseries <- R6::R6Class( # nolint:object_linter_name
+GlobAvgTimeseries <- R6::R6Class( # nolint: object_name_linter.
   "GlobAvgTimeseries",
   inherit = GlobSumTimeseries,
   public = list(
@@ -214,7 +214,7 @@ GlobAvgTimeseries <- R6::R6Class( # nolint:object_linter_name
 #' GlobSumAnnAvgTimeseries metric.
 #' See \link{Metric} for the documentation of metrics in general.
 #' @export
-GlobSumAnnAvgTimeseries <- # nolint:object_linter_name
+GlobSumAnnAvgTimeseries <- # nolint: object_name_linter.
   R6::R6Class(
     "GlobSumAnnAvgTimeseries",
     inherit = GlobSumTimeseries,
@@ -247,7 +247,7 @@ GlobSumAnnAvgTimeseries <- # nolint:object_linter_name
 #' GlobAvgAnnAvgTimeseries metric.
 #' See \link{Metric} for the documentation of metrics in general.
 #' @export
-GlobAvgAnnAvgTimeseries <- R6::R6Class( # nolint:object_linter_name
+GlobAvgAnnAvgTimeseries <- R6::R6Class( # nolint: object_name_linter.
   "GlobAvgAnnAvgTimeseries",
   inherit = GlobSumTimeseries,
   public = list(
@@ -283,7 +283,7 @@ GlobAvgAnnAvgTimeseries <- R6::R6Class( # nolint:object_linter_name
 #' TimeAvgMap metric.
 #' See \link{Metric} for the documentation of metrics in general.
 #' @export
-TimeAvgMap <- # nolint:object_linter_name
+TimeAvgMap <- # nolint: object_name_linter.
   R6::R6Class(
     "TimeAvgMap",
     inherit = Metric,
@@ -379,7 +379,7 @@ TimeAvgMap <- # nolint:object_linter_name
 #' @description
 #' GlobSumTimeAvgTablePFT_harvest metric
 #' @export
-GlobSumTimeAvgTablePFT_harvest <- # nolint:object_linter_name
+GlobSumTimeAvgTablePFT_harvest <- # nolint: object_name_linter.
   R6::R6Class(
     "GlobSumTimeAvgTablePFT_harvest",
     inherit = GlobSumTimeAvgTable,
@@ -410,7 +410,7 @@ GlobSumTimeAvgTablePFT_harvest <- # nolint:object_linter_name
 #' @description
 #' GlobSumTimeAvgTableFPC metric
 #' @export
-GlobSumTimeAvgTableFPC <- R6::R6Class( # nolint:object_linter_name
+GlobSumTimeAvgTableFPC <- R6::R6Class( # nolint: object_name_linter.
   "GlobSumTimeAvgTableFPC",
   inherit = GlobSumTimeAvgTable,
   public = list(
@@ -442,7 +442,7 @@ GlobSumTimeAvgTableFPC <- R6::R6Class( # nolint:object_linter_name
 #' @description
 #' GlobSumAnnTimeseriesPFT_harvest metric
 #' @export
-GlobSumAnnTimeseriesPFT_harvest <- # nolint:object_linter_name
+GlobSumAnnTimeseriesPFT_harvest <- # nolint: object_name_linter.
   R6::R6Class(
     "GlobSumAnnTimeseriesPFT_harvest",
     inherit = GlobSumAnnAvgTimeseries,
@@ -473,7 +473,7 @@ GlobSumAnnTimeseriesPFT_harvest <- # nolint:object_linter_name
 #' @description
 #' GlobSumAnnTimeseriesFPC metric
 #' @export
-GlobSumAnnTimeseriesFPC <- R6::R6Class( # nolint:object_linter_name
+GlobSumAnnTimeseriesFPC <- R6::R6Class( # nolint: object_name_linter.
   "GlobSumAnnTimeseriesFPC",
   inherit = GlobSumAnnAvgTimeseries,
   public = list(

@@ -4,10 +4,10 @@
 \alias{get_benchmark_meta_data}
 \title{Function that returns the meta data of a benchmarkResult object}
 \usage{
-get_benchmark_meta_data(benchmarkResult)
+get_benchmark_meta_data(benchmark_result)
 }
 \arguments{
-\item{benchmarkResult}{A benchmarkResult object}
+\item{benchmark_result}{A benchmarkResult object}
 }
 \value{
 A list with the meta data of the benchmarkResult object.

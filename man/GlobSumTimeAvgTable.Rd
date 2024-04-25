@@ -17,11 +17,12 @@ See \link{Metric} for the documentation of metrics in general.
 \itemize{
 \item \code{font_size}: integer, font size of the table
 \item \code{name_trunc}: integer, number of characters to display in the table
-band names
 \item \code{decimal_places}: integer, number of decimal places to display
-}
-
-band names}
+\item \code{year_range}: integer or character vector, defines the range
+of years that the metric considers. Integer indices can be between 1
+and \code{nyear}. Character vector is used to subset by actual calendar
+years (starting at \code{firstyear}).
+}}
 
 \item{\code{title}}{Section header used in the report}
 

@@ -192,11 +192,10 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
 
 # ---------------------- internal integrity checking ------------------------- #
 # NTODO: account for time transformed lpjmldatacalc objects
-LPJmLDataCalc$set(
+LPJmLDataCalc$set( # nolint: object_name_linter.
   "private",
   ".__check_internal_integrity__",
   function() {
-    # nolint:object_name_linter
     # check if data and meta number of bands is consistent
     nbands_meta <- private$.meta$nbands
     nbands_array <- dim(private$.data)["band"]
@@ -579,7 +578,7 @@ LPJmLDataCalc$set("private", ".__plot__",
                     }
                   })
 
-LPJmLDataCalc$set("private", ".__plot_aggregated__", #nolint:object_name_linter
+LPJmLDataCalc$set("private", ".__plot_aggregated__", # nolint: object_name_linter.
                   function(...) {
                     region_matrix <- Matrix::t(private$.grid$region_matrix)
                     list_of_disaggr_bands <-

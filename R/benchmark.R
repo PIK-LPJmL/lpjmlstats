@@ -404,7 +404,7 @@ apply_unit_conversion_table <- function(metrics) {
 
 # Function to consolidate metrics and meta information in a comprehensive
 # benchmark results object, storing the result of the benchmarking
-create_benchmarkResult_obj <- function(metrics,
+create_benchmarkResult_obj <- function(metrics, # nolint: object_name_linter.
                                        baseline_dir,
                                        under_test_dirs,
                                        author,

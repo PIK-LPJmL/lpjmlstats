@@ -29,7 +29,7 @@ test_that("metric option year_range works with strings", {
   settings <-
     list(soiln = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap))
 
-  metric_options <- list(GlobSumTimeseries = list(year_range = c("2010") ))
+  metric_options <- list(GlobSumTimeseries = list(year_range = c("2010")))
 
   out <-
     benchmark(

@@ -4,10 +4,10 @@
 \alias{create_pdf_report}
 \title{Generate a pdf report from a benchmarkResult object.}
 \usage{
-create_pdf_report(data, output_file = "benchmark.pdf", ...)
+create_pdf_report(benchmark_result, output_file = "benchmark.pdf", ...)
 }
 \arguments{
-\item{data}{benchmarkResult object created by the \code{\link{benchmark}}
+\item{benchmark_result}{benchmarkResult object created by the \code{\link{benchmark}}
 function}
 
 \item{output_file}{file of the output pdf, including filename and directory
