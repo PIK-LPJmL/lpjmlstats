@@ -57,10 +57,12 @@ GlobSumTimeAvgTable <- # nolint:object_linter_name
       #' List of metric options specific to this metric
       #' - `font_size`: integer, font size of the table
       #' - `name_trunc`: integer, number of characters to display in the table
-      #' band names
       #' - `decimal_places`: integer, number of decimal places to display
+      #' - `year_range`: integer or character vector, defines the range
+      #' of years that the metric considers. Integer indices can be between 1
+      #' and `nyear`. Character vector is used to subset by actual calendar
+      #' years (starting at `firstyear`).
       #'
-      #' band names
       m_options = list(
         font_size = 8,
         name_trunc = 1,
@@ -157,6 +159,10 @@ GlobSumTimeseries <- R6::R6Class( # nolint:object_linter_name
     #' - `font_size` integer, font size of the table
     #' - `name_trunc` integer, indicating when to truncate the band names
     #' band names
+    #' - `year_range`: integer or character vector, defines the range
+    #' of years that the metric considers. Integer indices can be between 1
+    #' and `nyear`. Character vector is used to subset by actual calendar
+    #' years (starting at `firstyear`).
     m_options = list(font_size = 7,
                      name_trunc = 1,
                      year_range = NULL),
@@ -332,16 +338,19 @@ TimeAvgMap <- # nolint:object_linter_name
 
       #' @field m_options
       #' List of metric options specific to this metric
-      #' - `m_options$font_size` integer, font size of the map plot
-      #' - `m_options$name_trunc` integer, indicating when to truncate the
+      #' - `font_size` integer, font size of the map plot
+      #' - `name_trunc` integer, indicating when to truncate the
       #' band names
-      #' - `m_options$highlight` vector of strings, indicating which variables
+      #' - `highlight` vector of strings, indicating which variables
       #' should receive a larger full width plot
-      #' - `m_options$quantiles` quantiles used to determine the lower an upper
+      #' - `quantiles` quantiles used to determine the lower an upper
       #' limits for the values in th map plot
-      #' - `m_options$n_breaks` number of breaks for each arm of the diverging
+      #' - `n_breaks` number of breaks for each arm of the diverging
       #' color scale
-      #'
+      #' - `year_range`: integer or character vector, defines the range
+      #' of years that the metric considers. Integer indices can be between 1
+      #' and `nyear`. Character vector is used to subset by actual calendar
+      #' years (starting at `firstyear`).
       m_options = list(
         font_size = 7,
         name_trunc = 1,

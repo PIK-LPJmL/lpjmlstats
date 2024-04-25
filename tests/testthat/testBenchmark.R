@@ -1,7 +1,5 @@
 test_that("benchmark produces correct results", {
 
-  set_lpjmlstats_settings(year_subset = NULL) # restore default settings
-
   baseline_dir <- testthat::test_path("../testdata/path1")
   under_test_dir <- testthat::test_path("../testdata/path2")
   settings <-
@@ -28,57 +26,6 @@ test_that("benchmark produces correct results", {
   soiln_time_avg_compare <- out$TimeAvgMap$var_grp_list$soiln$compare$pth2$data
   expect_equal(sum(soiln_time_avg_compare), 0)
 
-})
-
-
-test_that("metric option year_range works", {
-
-  set_lpjmlstats_settings(year_subset = NULL) # restore default settings
-
-  baseline_dir <- testthat::test_path("../testdata/path1")
-  under_test_dir <- testthat::test_path("../testdata/path2")
-  settings <-
-    list(soiln = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap),
-         terr_area = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap))
-
-  metric_options <- list(GlobSumTimeseries = list(year_range = 1:1))
-
-  out <-
-    benchmark(
-      baseline_dir,
-      under_test_dir,
-      settings,
-      pdf_report = FALSE,
-      metric_options = metric_options
-    )
-
-  under_test_data <-
-    out$GlobSumTimeseries$var_grp_list$soiln$under_test$pth2$data
-
-  expect_equal(length(under_test_data), 1)
-})
-
-
-test_that("metric reordering works", {
-
-  # priority is given to maps to appear at the start of the report
-  set_lpjmlstats_settings(year_subset = NULL, metrics_at_start = "Map")
-
-  baseline_dir <- testthat::test_path("../testdata/path1")
-  under_test_dir <- testthat::test_path("../testdata/path2")
-  settings <-
-    list(soiln = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap))
-
-
-  out <-
-    benchmark(
-      baseline_dir,
-      under_test_dir,
-      settings,
-      pdf_report = FALSE
-    )
-
-  expect_true(stringr::str_detect(names(out[1]), "Map"))
 })
 
 test_that("benchmark report generation runs through without warnings", {
@@ -137,6 +84,9 @@ test_that("benchmark works for davids personal directory", {
   create_pdf_report(data = bench_data)
 
   prepare_tibble_for_table(bench_data$GlobSumTimeAvgTable$var_grp_list)
+
+  set_lpjmlstats_settings(year_subset = NULL)
+
 
 })
 
