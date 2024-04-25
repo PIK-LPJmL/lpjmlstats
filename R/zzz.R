@@ -7,7 +7,11 @@
   # NTODO: install more LPJmL units next to gC gN?
   units::load_units_xml(unit_database_path)
 
-  # configure the default settings
-  options(lpjmlstats.file_extension = ".bin.json") # nolint
+  # configure default settings
+  # the default needs to be manually set here if it is different
+  # from NULL (in the option list)
+
+  # the metrics_at_start default is "Table". NULL means that no reordering
+  # of metrics is done.
   set_lpjmlstats_settings(metrics_at_start = "Table")
 }
