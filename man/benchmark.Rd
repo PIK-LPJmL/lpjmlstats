@@ -46,18 +46,18 @@ the \link{create_pdf_report} function.}
 \item{...}{additional arguments to be passed to \link{create_pdf_report}}
 }
 \value{
-A benchmark_res object containing the numerical results of the
+A benchmarkResult object containing the numerical results of the
 benchmarking. This data object is basically a list of all metrics
 used in the benchmarking. See \link{Metric} for the way a metric structures
-benchmarking results. In addition the benchmark_res object contains meta
+benchmarking results. In addition the benchmarkResult object contains meta
 information. Of particular importance is the
 simulation table, which contains the simulation names, paths and
-the short simulation identifier that are used in the benchmark_res object.
+the short simulation identifier that are used in the benchmarkResult object.
 
 The function \link{get_benchmark_meta_data} can be used to retrieve the meta
 information.
 
-The data structure of the benchmark_res object is depicted here:
+The data structure of the benchmarkResult object is depicted here:
 \if{html}{
   \out{<div style="text-align: center">}\figure{benchmark_obj_struc.png}{options: style="width:500px;max-width:50\%;"}\out{</div>} #nolint
 }
@@ -103,7 +103,7 @@ benchmark("path_to_baseline_results", "path_to_under_test_results")
 
 # Example 2
 # Specifying author and description, as well as filename for pdf report
-# is recommended. Also, it can make sense to store the benchmark_res object
+# is recommended. Also, it can make sense to store the benchmarkResult object
 # for later analysis.
 BM_resu <- benchmark("path_to_baseline_results",
                      "path_to_under_test_results",
