@@ -4,7 +4,8 @@
 \alias{GlobAvgAnnAvgTimeseries}
 \title{GlobAvgAnnAvgTimeseries}
 \description{
-GlobAvgAnnAvgTimeseries metric
+GlobAvgAnnAvgTimeseries metric.
+See \link{Metric} for the documentation of metrics in general.
 }
 \section{Super classes}{
 \code{\link[lpjmlstats:Metric]{lpjmlstats::Metric}} -> \code{\link[lpjmlstats:GlobSumTimeseries]{lpjmlstats::GlobSumTimeseries}} -> \code{GlobAvgAnnAvgTimeseries}

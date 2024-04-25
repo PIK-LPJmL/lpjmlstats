@@ -75,13 +75,18 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     },
 
     #' @description
-    #' Function to arrgange all plots of the metric in the respective
+    #' Function to arrange all plots of the metric in the respective
     #' section of the report.
     #' Will be overwritten by the individual metric subclasses.
     #' @param var_grp variable group
     arrange_plots = function(var_grp) {
       NULL
     },
+
+    #' @field m_options
+    #' List of metric options
+    #' Will be overwritten by the individual metric subclasses.
+    m_options = list(),
 
     #' @field var_grp_list
     #' List of variable groups. Each variable group contains the summaries
@@ -92,11 +97,22 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     # ---- package internal methods ----
     #' @description
     #' !Package internal method!
-    #' @param data Raw data to be summarized
+    #' @param lpjml_calc Raw data to be summarized
     #' @param var Variable name
     #' @param type Type of data ("baseline" or "under_test")
-    capture_summary = function(data, var, type) {
-      summary <- self$summarize(data)
+    capture_summary = function(lpjml_calc, var, type) {
+      if (!is.null(self$m_options$year_range)) {
+        subset_years <- function(lpjml_calc, years) {
+          lpjml_calc %>%
+            transform("year_month_day") %>%
+            subset(year = years) %>%
+            transform("time")
+        }
+        lpjml_calc <-
+          keep_units_lpjml_calc(lpjml_calc,
+                                function(x) subset_years(x, self$m_options$year_range))
+      }
+      summary <- self$summarize(lpjml_calc)
       self$store_summary(summary, var, type)
     },
 
@@ -195,38 +211,29 @@ VarGrp <- # nolint:object_linter_name
     public = list(
       # Function to retrieve the minimum and maximum of contained data
       # for the different types of data contained
-      get_limits = function(type, quantiles = c(0,1)) {
-        get_min_max_of_lpjml_calc <- function(lpjml_calc) {
-          return(c(min(lpjml_calc$data), max(lpjml_calc$data)))
-        }
-
-        get_min_max_of_lpjml_calc_list <- function(list) {
-          vec <- unlist(list)
-          max <- -Inf
-          min <- Inf
-          for (run in vec) {
-            limits <- get_min_max_of_lpjml_calc(run)
-            if (limits[1] < min) {
-              min <- limits[1]
-            }
-            if (limits[2] > max) {
-              max <- limits[2]
-            }
-          }
-          return(c(min, max))
-        }
-
+      get_limits = function(type = "all", quantiles = c(0, 1)) {
         get_quantiles_of_lpjml_calc_list <- function(list, quantiles) {
-          data <- sapply(c(unlist(list)), function(x) x$data)
-          lower_lim <- quantile(data, quantiles[1])
-          upper_lim <- quantile(data, quantiles[2])
+          data <- sapply(c(unlist(list)), function(x) x$data) # nolint
+          lower_lim <- quantile(data, quantiles[1], na.rm = TRUE)
+          upper_lim <- quantile(data, quantiles[2], na.rm = TRUE)
           return(c(lower_lim, upper_lim))
         }
-
-        limits <- get_quantiles_of_lpjml_calc_list(self[[type]], quantiles)
-
-
+        if (type == "all") {
+          data <- list(self$under_test, self$compare, self$baseline)
+        } else {
+          data <- self[[type]]
+        }
+        limits <- get_quantiles_of_lpjml_calc_list(data, quantiles)
         return(limits)
+      },
+
+      get_band_names = function() {
+        if (!is.null(self$baseline))
+          return(dimnames(self$baseline)[["band"]])
+        else if (!is.null(self$under_test[[1]]))
+          return(dimnames(self$under_test[[1]])[["band"]])
+        else if (!is.null(self$compare[[1]][[1]]))
+          return(dimnames(self$compare[[1]][[1]])[["band"]])
       },
 
       under_test = NULL,
@@ -238,12 +245,13 @@ VarGrp <- # nolint:object_linter_name
 
     active = list(
       var_name = function() {
+
         if (!is.null(self$baseline)) {
           return(self$baseline$meta$variable)
         } else if (!is.null(self$under_test[[1]])) {
           return(self$under_test[[1]]$meta$variable)
-        } else if (!is.null(self$compare[[1]])) {
-          return(self$compare[[1]]$meta$variable)
+        } else if (!is.null(self$compare[[1]][[1]])) {
+          return(self$compare[[1]][[1]]$meta$variable)
         } else {
           stop("No data in var_grp")
         }

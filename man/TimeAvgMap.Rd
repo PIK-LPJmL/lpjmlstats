@@ -4,7 +4,8 @@
 \alias{TimeAvgMap}
 \title{TimeAvgMap}
 \description{
-TimeAvgMap metric
+TimeAvgMap metric.
+See \link{Metric} for the documentation of metrics in general.
 }
 \section{Super class}{
 \code{\link[lpjmlstats:Metric]{lpjmlstats::Metric}} -> \code{TimeAvgMap}
@@ -12,13 +13,21 @@ TimeAvgMap metric
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of options for the map plot
+\item{\code{m_options}}{List of metric options specific to this metric
 \itemize{
-\item \code{m_options$font_size} integer, font size of the map plot
-\item \code{m_options$name_trunc} integer, indicating when to truncate the
+\item \code{font_size} integer, font size of the map plot
+\item \code{name_trunc} integer, indicating when to truncate the
 band names
-\item \code{m_options$highlight} vector of strings, indicating which variables
+\item \code{highlight} vector of strings, indicating which variables
 should receive a larger full width plot
+\item \code{quantiles} quantiles used to determine the lower an upper
+limits for the values in th map plot
+\item \code{n_breaks} number of breaks for each arm of the diverging
+color scale
+\item \code{year_range}: integer or character vector, defines the range
+of years that the metric considers. Integer indices can be between 1
+and \code{nyear}. Character vector is used to subset by actual calendar
+years (starting at \code{firstyear}).
 }}
 
 \item{\code{title}}{Section header used in the report}

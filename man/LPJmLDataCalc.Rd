@@ -33,6 +33,7 @@ An extended LPJmLData class that enables arithmetic and statistics.
 \item \href{#method-LPJmLDataCalc-.multiply}{\code{LPJmLDataCalc$.multiply()}}
 \item \href{#method-LPJmLDataCalc-.divide}{\code{LPJmLDataCalc$.divide()}}
 \item \href{#method-LPJmLDataCalc-.convert_unit}{\code{LPJmLDataCalc$.convert_unit()}}
+\item \href{#method-LPJmLDataCalc-.set_unit}{\code{LPJmLDataCalc$.set_unit()}}
 \item \href{#method-LPJmLDataCalc-apply_unit_conversion_table}{\code{LPJmLDataCalc$apply_unit_conversion_table()}}
 \item \href{#method-LPJmLDataCalc-set_sim_identifier}{\code{LPJmLDataCalc$set_sim_identifier()}}
 \item \href{#method-LPJmLDataCalc-get_sim_identifier}{\code{LPJmLDataCalc$get_sim_identifier()}}
@@ -273,6 +274,24 @@ Unit conversion of LPJmLDataCalc object
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{unit}}{A string with the unit to convert to.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLDataCalc-.set_unit"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-.set_unit}{}}}
+\subsection{Method \code{.set_unit()}}{
+Set unit of LPJmLDataCalc object
+!Internal method only to be used for package development!
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$.set_unit(unit_str)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{unit_str}}{A string with the unit to be set.}
 }
 \if{html}{\out{</div>}}
 }

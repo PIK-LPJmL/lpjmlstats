@@ -20,7 +20,8 @@ knitr::opts_chunk$set(
   echo = FALSE,
   dpi = getOption("lpjmlstats.pdf_plot_dpi", 300),
   dev = getOption("lpjmlstats.graphics_device", "png"),
-  crop = NULL
+  crop = NULL,
+  fig.height = getOption("lpjmlstats.fig_height", 2.4)
 )
 ```
 
@@ -103,7 +104,7 @@ knitr::kable(
 <!---
 # Beginning of main report
 -->
-```{r generate-report-content, results='asis', fig.height=2.4}
+```{r generate-report-content, results='asis'}
 for (metric in bench_data) {
   # call plot and plot arrangement functions
   metric$generate_report_content()

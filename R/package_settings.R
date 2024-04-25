@@ -22,13 +22,18 @@
 #'   the path to the unit conversion table (a .csv file). Defaults to the
 #'   conversion table in the package's \code{inst} folder. The specified
 #'   file must exist and be a .csv file.
+#'
+#'   \item \code{metric_at_start}: A string to be matched against the
+#'   names of the metrics. The matched metrics will be run first
+#'   and displayed at the beginning of the report.
 #' }
 #'
 #'
 #' @examples
 #' \dontrun{
 #' set_lpjmlstats_settings(year_subset = 1:5, graphics_device = "pdf")
-#' set_lpjmlstats_settings(unit_table_path = "path/to/my_table.csv", pdf_plot_dpi = 300)
+#' set_lpjmlstats_settings(unit_table_path = "path/to/my_table.csv",
+#' pdf_plot_dpi = 300)
 #' }
 #'
 #' @export
@@ -44,18 +49,32 @@ set_lpjmlstats_settings <- function(...) {
         options(lpjmlstats.year_subset = option_value) # nolint
       },
       "graphics_device" = {
-        if (!is.character(option_value)) stop("graphics_device must be a character string")
+        if (!(is.character(option_value) | is.null(option_value)))
+          stop("graphics_device must be a character string")
         options(lpjmlstats.graphics_device = option_value) # nolint
       },
       "pdf_plot_dpi" = {
-        if (!is.numeric(option_value)) stop("pdf_plot_dpi must be a numeric value")
+        if (!(is.numeric(option_value) | is.null(option_value)))
+          stop("pdf_plot_dpi must be a numeric value")
         options(lpjmlstats.pdf_plot_dpi = option_value) # nolint
       },
       "unit_table_path" = {
-        if (!is.character(option_value)) stop("unit_table_path must be a string")
-        if (!file.exists(option_value)) stop("unit_table_path does not exist")
-        if (tools::file_ext(option_value) != "csv") stop("unit_table_path must be a .csv file")
-        options(lpjmlstats.unit_conversion_table = option_value) # nolint
+        if (is.null(option_value)) {
+          options(lpjmlstats.unit_conversion_table = NULL) # nolint
+        } else {
+          if (!is.character(option_value))
+            stop("unit_table_path must be a string")
+          if (!file.exists(option_value))
+            stop("unit_table_path does not exist")
+          if (tools::file_ext(option_value) != "csv")
+            stop("unit_table_path must be a .csv file")
+          options(lpjmlstats.unit_conversion_table = option_value) # nolint
+        }
+      },
+      "metrics_at_start" = {
+        if (!(is.character(option_value) | is.null(option_value)))
+          stop("metrics_at_start must be a character string")
+        options(lpjmlstats.metrics_at_start = option_value) # nolint
       },
       stop(paste("Invalid option:", option_name))
     )

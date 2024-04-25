@@ -5,4 +5,5 @@
 ## usethis namespace: end
 NULL
 
-utils::globalVariables(c("default_settings"))
+# used to satify lintr binding
+utils::globalVariables(c("default_settings")) # nolint

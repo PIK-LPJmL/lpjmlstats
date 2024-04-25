@@ -18,7 +18,7 @@ knitr::opts_chunk$set(
 This vignette explains how to incorporate new outputs into the benchmarking by modifying its settings.
 
 ```{r load_package}
-library(lpjmlstats)
+library(lpjmlstats) # nolint
 ```
 
 For a quick completion, we again only look at 
@@ -98,10 +98,10 @@ metric_opt <- list(TimeAvgMap = list(highlight = c("soiltemp1")))
 Now we are ready to start the benchmarking, 
 with the new extended settings as an additional argument:
 ```{r start_adjusted_benchmark}
-benchmark_results <-
+benchmark_result <-
   benchmark(
-    "/p/projects/lpjml/benchmark_run_outputs/5.7.1/output",
-    "/p/projects/lpjml/benchmark_run_outputs/5.8.6/output",
+    "/p/projects/lpjml/benchmark_run_outputs/5.7.1/output", # nolint
+    "/p/projects/lpjml/benchmark_run_outputs/5.8.6/output", # nolint
     settings = extended_default,
     metric_options = metric_opt,
     author = "David",

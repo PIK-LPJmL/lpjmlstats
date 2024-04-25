@@ -16,8 +16,8 @@
 #' @param metric_options List that defines options for the metrics.
 #'  The list has to have the following structure:
 #'  \itemize{
-#'  \item \code{metric1} = Vector of options for metric \code{metric1}
-#'  \item \code{metric2} = Vector of options for metric \code{metric2}
+#'  \item \code{metric1} = List of options for metric \code{metric1}
+#'  \item \code{metric2} = List of options for metric \code{metric2}
 #'  }
 #' @param author Name of the author of the benchmark.
 #' @param description Description of the purpose of the benchmark.
@@ -25,25 +25,25 @@
 #'  the \link{create_pdf_report} function.
 #' @param ... additional arguments to be passed to \link{create_pdf_report}
 #'
-#' @return A benchmark object containing the numerical results of the
+#' @return A benchmarkResult object containing the numerical results of the
 #' benchmarking. This data object is basically a list of all metrics
 #' used in the benchmarking. See \link{Metric} for the way a metric structures
-#' benchmarking results. In addition the benchmark object contains meta
+#' benchmarking results. In addition the benchmarkResult object contains meta
 #' information. Of particular importance is the
 #' simulation table, which contains the simulation names, paths and
-#' the short simulation identifier that are used in the benchmark object.
+#' the short simulation identifier that are used in the benchmarkResult object.
 #'
 #' The function \link{get_benchmark_meta_data} can be used to retrieve the meta
 #' information.
 #'
-#' The data structure of the benchmark object is depicted here:
+#' The data structure of the benchmarkResult object is depicted here:
 #' \if{html}{
 #'   \out{<div style="text-align: center">}\figure{benchmark_obj_struc.png}{options: style="width:500px;max-width:50\%;"}\out{</div>} #nolint
 #' }
 #'
 #' @details
 #'
-#' In order for the benchmark to work, all the output files specified
+#' In order for the benchmarking to work, all the output files specified
 #' in the settings have to be present in the baseline and all under test
 #' directories. All output files need to be with ".bin" extension
 #' and with meta files of ".bin.json" format. All output paths given to
@@ -81,13 +81,15 @@
 #'
 #' # Example 2
 #' # Specifying author and description, as well as filename for pdf report
-#' # is recommended. Also, it can make sense to store the benchmark object
+#' # is recommended. Also, it can make sense to store the benchmarkResult object
 #' # for later analysis.
-#' BM_data <- benchmark("path_to_baseline_results",
+#' BM_resu <- benchmark("path_to_baseline_results",
 #'                      "path_to_under_test_results",
 #'                      author = "anonymous",
 #'                      description = "This is a test",
 #'                      output_file = "myBenchmark.pdf")
+#'
+#' saveRDS(BM_resu, "bm_results.rds")
 #'
 #' # Example 3
 #' # Quick benchmarking that only looks at specific outputs with
@@ -135,8 +137,8 @@
 #' # Example 6
 #' # Benchmark with custom metric options
 #' metric_options <- list(
-#'   "GlobSumTimeAvgTable" = c(font_size = 12), # use larger font size in table
-#'   "TimeAvgMap" = c(highlight = "soilc")      # plots a larger map for soilc
+#'   GlobSumTimeAvgTable = list(font_size = 12), # use larger font size in table
+#'   TimeAvgMap = list(highlight = "soilc")      # plots a larger map for soilc
 #' )
 #' BM_data <- benchmark("path_to_baseline_results",
 #'                      "path_to_under_test_results",
@@ -175,7 +177,7 @@ benchmark <-
       list(
         baseline_dir = baseline_dir,
         under_test_dirs = under_test_dirs,
-        suffix = getOption("lpjmlstats.file_extension")
+        suffix = ".bin.json"
       )
 
     sim_table <- create_simulation_table(paths)
@@ -200,28 +202,29 @@ benchmark <-
 
     apply_unit_conversion_table(all_metrics)
 
-    benchmark <- create_benchmark_object(all_metrics,
-                                         baseline_dir,
-                                         under_test_dirs,
-                                         author,
-                                         description,
-                                         sim_table)
+    # put together metric data and meta data into a benchmarkResult object
+    benchmark_result <- create_benchmarkResult_obj(all_metrics,
+                                                   baseline_dir,
+                                                   under_test_dirs,
+                                                   author,
+                                                   description,
+                                                   sim_table)
 
     cat(cli::col_green("Core numerical benchmarking completed. \n"))
 
     if (pdf_report) {
       cat(cli::col_blue("Start report generation ...\n"))
-      create_pdf_report(benchmark, ...)
+      create_pdf_report(benchmark_result, ...)
       cat(cli::col_green("Report generation completed.\n"))
     }
 
-    return(benchmark)
+    return(benchmark_result)
   }
 
-#' Generate a pdf report from a benchmark object.
+#' Generate a pdf report from a benchmarkResult object.
 #'
 #'
-#' @param data benchmark data object created by the \code{\link{benchmark}}
+#' @param benchmark_result benchmarkResult object created by the \code{\link{benchmark}}
 #' function
 #' @param output_file file of the output pdf, including filename and directory
 #' \code{\link[rmarkdown]{render}}
@@ -243,10 +246,12 @@ benchmark <-
 #' @md
 #' @export
 #'
-create_pdf_report <- function(data, output_file = "benchmark.pdf", ...) {
+create_pdf_report <- function(benchmark_result,
+                              output_file = "benchmark.pdf",
+                              ...) {
   # this variable is used in the Rmd file
   # it is assigned to the current environment, which will be passed to the .Rmd
-  bench_data <- data #nolint
+  bench_data <- benchmark_result #nolint
 
   # copy input Rmd to output and processing dirctory
   path_to_rmd <- system.file("Benchmark_markdown.Rmd", package = "lpjmlstats")
@@ -270,9 +275,10 @@ create_pdf_report <- function(data, output_file = "benchmark.pdf", ...) {
   unlink(path_to_rmd_copy)
 }
 
-# ----- utitly functions -----
-# Function to create unique sim identifier
+# ----- utitily functions -----
 
+# Function to create simulation table
+# including unique simulation identifiers
 create_simulation_table <- function(paths) {
   sim_paths <- c(paths$baseline_dir, unlist(paths$under_test_dirs))
   sim_names <- c()
@@ -300,15 +306,17 @@ create_simulation_table <- function(paths) {
     }
 
     # create identifier from file paths
-    sim_identifier <- unlist(create_unique_sim_path_abrev(sim_paths))
+    sim_identifier <- unlist(create_unique_short_sim_paths(sim_paths))
   } else {
-    # remove underscores if it doesnt inflict uniqueness
-    if (length(sim_names) == length(unique(gsub("_", "", sim_names)))) {
-      sim_names_sub <- gsub("_", " ", sim_names)
-    }
-
-    sim_identifier <- abbreviate(sim_names_sub, minlength = 4)
+    sim_identifier <- sim_names
   }
+
+  # remove underscores if it doesnt inflict uniqueness
+  if (length(sim_identifier) == length(unique(gsub("_", "", sim_identifier)))) {
+    sim_identifier <- gsub("_", " ", sim_identifier)
+  }
+
+  sim_identifier <- abbreviate(sim_identifier, minlength = 4, method = "both.sides")
 
   lpjml_version <- gsub("LPJmL C Version", "", lpjml_version)
 
@@ -327,10 +335,10 @@ create_simulation_table <- function(paths) {
 }
 
 
-# Function to create unique abbreviations for the simulation paths
+# Function to create unique short versions for the simulation paths
 # that can be used to differentiate between
 # different simulations used in the benchmarking
-create_unique_sim_path_abrev <- function(sim_paths) {
+create_unique_short_sim_paths <- function(sim_paths) {
   # function to split a path into a vector of strings
   split_path <- function(x) {
     if (dirname(x) == x) x
@@ -366,22 +374,9 @@ create_unique_sim_path_abrev <- function(sim_paths) {
     if (i > 100) {
       continue <- FALSE
     }
-
   }
 
-  path_abbrev <- collapsed_paths
-
-  # remove underscores if it doesnt inflict uniqueness
-  if (length(path_abbrev) == length(unique(gsub("_", "", path_abbrev)))) {
-    path_abbrev <- gsub("_", "", path_abbrev)
-  }
-
-  path_abbrev <-
-    abbreviate(path_abbrev, minlength = 4, method = "both.sides")
-
-  names(path_abbrev) <- sim_paths
-
-  return(path_abbrev)
+  return(collapsed_paths)
 }
 
 # Function to assign metric options to metric objects
@@ -408,14 +403,14 @@ apply_unit_conversion_table <- function(metrics) {
 }
 
 # Function to consolidate metrics and meta information in a comprehensive
-# benchmark object, storing the result of the benchmarking
-create_benchmark_object <- function(metrics,
-                                    baseline_dir,
-                                    under_test_dirs,
-                                    author,
-                                    description,
-                                    sim_table) {
-  attr(metrics, "class") <- "benchmark"
+# benchmark results object, storing the result of the benchmarking
+create_benchmarkResult_obj <- function(metrics, # nolint: object_name_linter.
+                                       baseline_dir,
+                                       under_test_dirs,
+                                       author,
+                                       description,
+                                       sim_table) {
+  attr(metrics, "class") <- "benchmarkResult"
   attr(metrics, "baseline_dir") <- baseline_dir
   attr(metrics, "ut_dir") <- under_test_dirs
   attr(metrics, "author") <- author
@@ -424,18 +419,18 @@ create_benchmark_object <- function(metrics,
   return(metrics)
 }
 
-#' Function that returns the meta data of a benchmark object
-#' @param benchmark A benchmark object
-#' @return A list with the meta data of the benchmark object.
+#' Function that returns the meta data of a benchmarkResult object
+#' @param benchmark_result A benchmarkResult object
+#' @return A list with the meta data of the benchmarkResult object.
 #' The list contains the author, the description and a simulation
 #' identification table. The latter is a tibble with the columns
 #' sim_paths, lpjml_version, sim_names, sim_identifier and sim_type.
 #'
 #' @export
-get_benchmark_meta_data <- function(benchmark) {
-  return(list(author = attr(benchmark, "author"),
-              description = attr(benchmark, "description"),
-              sim_table = attr(benchmark, "sim_table")))
+get_benchmark_meta_data <- function(benchmark_result) {
+  return(list(author = attr(benchmark_result, "author"),
+              description = attr(benchmark_result, "description"),
+              sim_table = attr(benchmark_result, "sim_table")))
 }
 
 
@@ -445,6 +440,7 @@ empty_cache <- function() {
   # empty the grid and terrarrea cache
   memoise::forget(read_grid)
   memoise::forget(read_terr_area)
+  memoise::forget(read_cft_frac)
 }
 
 # Function to make instances, that is objects of all metric classes
@@ -457,8 +453,23 @@ initialize_metrics <- function(settings) {
     metric_objs[[m_class$classname]] <- m_class$new()
   }
 
+  metric_objs <- reorder_metrics(metric_objs)
+
   return(metric_objs)
 }
+
+# Function to reorder the metrics based on the user specified prioritization
+reorder_metrics <- function(all_metrics) {
+  if (!is.null(getOption("lpjmlstats.metrics_at_start"))) {
+    fig_to_start <- getOption("lpjmlstats.metrics_at_start")
+    # get all metric names that contain the string
+    fig_to_start <- stringr::str_detect(names(all_metrics), fig_to_start)
+    metric_order <- c(which(fig_to_start), which(!fig_to_start))
+    all_metrics <- all_metrics[metric_order]
+  }
+  return(all_metrics)
+}
+
 
 # Function to create and store the summaries that all the metrics need
 retrieve_summaries <-

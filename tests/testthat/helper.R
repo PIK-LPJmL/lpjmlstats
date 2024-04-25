@@ -57,20 +57,19 @@ load_test_grid <- function() {
 
 load_soiln_david_local <- function() {
   path_to_soil_layer_n_json <-
-    "C:\\Users\\davidho\\Desktop\\LPJmLG\\example_outputs\\soiln_layer.bin.json"
+    "C:\\Users\\davidho\\Desktop\\LPJmLG\\example_outputs\\soiln_layer.bin.json" # nolint: absolute_path_linter.
   soiln <- lpjmlkit::read_io(path_to_soil_layer_n_json)
   soiln$add_grid()
   return(soiln)
 }
 
-create_LPJmLDataCalc <- function(data, # nolint:object_name_linter
+create_LPJmLDataCalc <- function(data,  # nolint: object_name_linter.
                                  my_unit,
                                  grid = NULL,
                                  ncell = NULL,
                                  nyear = NULL,
                                  nbands = NULL,
                                  ...) {
-  # nolint:object_name_linter
   if (!is.array(data)) {
     data <- array(data, dim = c(cell = length(data), time = 1, band = 1))
   }
@@ -111,7 +110,6 @@ create_LPJmLDataCalc <- function(data, # nolint:object_name_linter
 
 create_LPJmLGridData <- # nolint:object_name_linter
   function(gridarray) {
-    # nolint:object_name_linter
     header <-
       lpjmlkit::create_header(ncell = dim(gridarray)[1],
                               verbose = FALSE,
@@ -125,7 +123,7 @@ create_LPJmLGridData <- # nolint:object_name_linter
     return(grid)
   }
 
-create_test_global_LPJmLDataCalc <- function(unit = "gN", value = NULL) { # nolint:object_name_linter
+create_test_global_LPJmLDataCalc <- function(unit = "gN", value = NULL) { # nolint: object_name_linter.
   if (is.null(value)) {
     data <- array(rep(0, 67420), dim = c(67420, 1, 1))
     data[2011, 1, 1] <- 1 # Canada, completely land

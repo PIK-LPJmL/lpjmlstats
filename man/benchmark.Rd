@@ -32,8 +32,8 @@ The list has to have the following structure:
 \item{metric_options}{List that defines options for the metrics.
 The list has to have the following structure:
 \itemize{
-\item \code{metric1} = Vector of options for metric \code{metric1}
-\item \code{metric2} = Vector of options for metric \code{metric2}
+\item \code{metric1} = List of options for metric \code{metric1}
+\item \code{metric2} = List of options for metric \code{metric2}
 }}
 
 \item{author}{Name of the author of the benchmark.}
@@ -46,18 +46,18 @@ the \link{create_pdf_report} function.}
 \item{...}{additional arguments to be passed to \link{create_pdf_report}}
 }
 \value{
-A benchmark object containing the numerical results of the
+A benchmarkResult object containing the numerical results of the
 benchmarking. This data object is basically a list of all metrics
 used in the benchmarking. See \link{Metric} for the way a metric structures
-benchmarking results. In addition the benchmark object contains meta
+benchmarking results. In addition the benchmarkResult object contains meta
 information. Of particular importance is the
 simulation table, which contains the simulation names, paths and
-the short simulation identifier that are used in the benchmark object.
+the short simulation identifier that are used in the benchmarkResult object.
 
 The function \link{get_benchmark_meta_data} can be used to retrieve the meta
 information.
 
-The data structure of the benchmark object is depicted here:
+The data structure of the benchmarkResult object is depicted here:
 \if{html}{
   \out{<div style="text-align: center">}\figure{benchmark_obj_struc.png}{options: style="width:500px;max-width:50\%;"}\out{</div>} #nolint
 }
@@ -67,7 +67,7 @@ Function to benchmark one or several under test LPJmL runs
 against a baseline run.
 }
 \details{
-In order for the benchmark to work, all the output files specified
+In order for the benchmarking to work, all the output files specified
 in the settings have to be present in the baseline and all under test
 directories. All output files need to be with ".bin" extension
 and with meta files of ".bin.json" format. All output paths given to
@@ -103,13 +103,15 @@ benchmark("path_to_baseline_results", "path_to_under_test_results")
 
 # Example 2
 # Specifying author and description, as well as filename for pdf report
-# is recommended. Also, it can make sense to store the benchmark object
+# is recommended. Also, it can make sense to store the benchmarkResult object
 # for later analysis.
-BM_data <- benchmark("path_to_baseline_results",
+BM_resu <- benchmark("path_to_baseline_results",
                      "path_to_under_test_results",
                      author = "anonymous",
                      description = "This is a test",
                      output_file = "myBenchmark.pdf")
+
+saveRDS(BM_resu, "bm_results.rds")
 
 # Example 3
 # Quick benchmarking that only looks at specific outputs with
@@ -157,8 +159,8 @@ BM_data <- benchmark("path_to_baseline_results",
 # Example 6
 # Benchmark with custom metric options
 metric_options <- list(
-  "GlobSumTimeAvgTable" = c(font_size = 12), # use larger font size in table
-  "TimeAvgMap" = c(highlight = "soilc")      # plots a larger map for soilc
+  GlobSumTimeAvgTable = list(font_size = 12), # use larger font size in table
+  TimeAvgMap = list(highlight = "soilc")      # plots a larger map for soilc
 )
 BM_data <- benchmark("path_to_baseline_results",
                      "path_to_under_test_results",

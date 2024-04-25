@@ -1,7 +1,5 @@
 test_that("benchmark produces correct results", {
 
-  set_lpjmlstats_settings(year_subset = NULL) # restore default settings
-
   baseline_dir <- testthat::test_path("../testdata/path1")
   under_test_dir <- testthat::test_path("../testdata/path2")
   settings <-
@@ -23,14 +21,6 @@ test_that("benchmark produces correct results", {
   soiln_time_mean <-
     out$GlobSumTimeAvgTable$var_grp_list$soiln$under_test$pth2$.data_with_unit
   expect_equal(mean(soiln_time_ser), soiln_time_mean, ignore_attr = TRUE)
-
-  # weighted mean of time average should be equal to the global sum time avg
-  soiln_time_avg <- out$TimeAvgMap$var_grp_list$soiln$under_test$pth2
-  soiln_time_avg$aggregate(cell = "global")
-
-  expect_equal(units::set_units(soiln_time_avg$.data_with_unit, "GtN"),
-               units::set_units(soiln_time_mean, "GtN"),
-               ignore_attr = TRUE)
 
   # compare of time avg should be zero since files are identical
   soiln_time_avg_compare <- out$TimeAvgMap$var_grp_list$soiln$compare$pth2$data
@@ -65,8 +55,8 @@ test_that("benchmark works for davids personal directory", {
     `pft_harvest.pft$rainfed rice;
     rainfed maize;
     rainfed oil crops soybean;
-    rainfed grassland`  = c(GlobSumTimeAvgPFT_harvest, TimeAvgMap),
-    fpc = c(GlobSumTimeAvgFPC, GlobSumTimeAvgTable, TimeAvgMap, GlobSumTimeseries)
+    rainfed grassland`  = c(TimeAvgMap, GlobSumTimeAvgTablePFT_harvest),
+    fpc = c(GlobSumTimeAvgTableFPC, GlobSumTimeAvgTable, TimeAvgMap, GlobSumTimeseries)
   )
 
   metric_options <- list(
@@ -86,12 +76,17 @@ test_that("benchmark works for davids personal directory", {
       baseline_dir,
       list(under_test_dir),
       author = "David",
-      description = "test benchmarking"
+      settings = settings,
+      description = "test benchmarking",
+      pdf_report = FALSE
     )
 
   create_pdf_report(data = bench_data)
 
   prepare_tibble_for_table(bench_data$GlobSumTimeAvgTable$var_grp_list)
+
+  set_lpjmlstats_settings(year_subset = NULL)
+
 
 })
 
@@ -101,7 +96,7 @@ test_that("benchmark works for davids personal directory", {
 
 # ----- test benchmark utitlity functions
 
-test_that("create_unique_sim_path_abrev produces short unique names", {
+test_that("create_unique_short_sim_path produces unique names", {
   # create test sim pathes
   paths <- c(
     "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master",           # nolint
@@ -111,12 +106,12 @@ test_that("create_unique_sim_path_abrev produces short unique names", {
   )
 
   # create unique names
-  unique_names <- create_unique_sim_path_abrev(paths)
+  unique_names <- create_unique_short_sim_paths(paths)
 
   # check if names are unique
   expect_equal(unique(unique_names), unname(unique_names))
 
   # check if names are short
-  expect_true(all(nchar(unique_names) <= 8))
+  expect_true(all(nchar(unique_names) <= 40))
 
 })

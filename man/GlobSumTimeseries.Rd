@@ -4,7 +4,8 @@
 \alias{GlobSumTimeseries}
 \title{GlobSumTimeseries}
 \description{
-GlobSumTimeseries metric
+GlobSumTimeseries metric.
+See \link{Metric} for the documentation of metrics in general.
 }
 \section{Super class}{
 \code{\link[lpjmlstats:Metric]{lpjmlstats::Metric}} -> \code{GlobSumTimeseries}
@@ -12,11 +13,15 @@ GlobSumTimeseries metric
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of metric options for this metric
+\item{\code{m_options}}{List of metric options specific to this metric
 \itemize{
 \item \code{font_size} integer, font size of the table
 \item \code{name_trunc} integer, indicating when to truncate the band names
 band names
+\item \code{year_range}: integer or character vector, defines the range
+of years that the metric considers. Integer indices can be between 1
+and \code{nyear}. Character vector is used to subset by actual calendar
+years (starting at \code{firstyear}).
 }}
 
 \item{\code{title}}{Section header used in the report}

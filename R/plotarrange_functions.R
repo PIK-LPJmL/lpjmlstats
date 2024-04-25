@@ -1,3 +1,7 @@
+#' @import patchwork
+# the import for the complete patchwork package is needed
+# to make the `+` operator work in all cases
+
 arrange_table_plot <- function(plotlist, m_options) {
 
   print(
@@ -18,7 +22,7 @@ arrange_table_plot <- function(plotlist, m_options) {
 }
 
 arrange_map_plots <- function(plotlist, m_options) {
-  add_highlighted_maps(plotlist, m_options$highlight)
+  plotlist <- print_highlighted_maps(plotlist, m_options$highlight)
 
   n_plots <- length(plotlist)
 
@@ -29,7 +33,7 @@ arrange_map_plots <- function(plotlist, m_options) {
   for (i in 1:n_plots) {
     plotlist[[i]] <-
       plotlist[[i]] + ggplot2::theme(
-        legend.text = ggplot2::element_text(size = 7),
+        legend.text = ggplot2::element_text(size = m_options$font_size),
         plot.margin = ggplot2::unit(c(0.01, 0.01, 0.01, 0.01), "inches")
       )
   }
@@ -58,9 +62,11 @@ arrange_map_plots <- function(plotlist, m_options) {
   }
 }
 
-add_highlighted_maps <- function(plotlist, highlight) {
+print_highlighted_maps <- function(plotlist, highlight) {
   highlight_plots <- rep(FALSE, length(plotlist))
+  # select all plots with names that contain one of the highlight strings
   for (plot_name in highlight) {
+    # all plot names containing the plot_name string are set to true
     plots_to_add <- stringr::str_detect(names(plotlist), plot_name)
     highlight_plots <- highlight_plots | plots_to_add
   }
@@ -74,8 +80,9 @@ add_highlighted_maps <- function(plotlist, highlight) {
     )
     print(plotlist[[plot]])
     cat("\\newline")
-    plotlist[[plot]] <- NULL
   }
+  plotlist <- plotlist[!highlight_plots]
+  return(plotlist)
 }
 
 arrange_timeseries_plots <- function(plotlist) {

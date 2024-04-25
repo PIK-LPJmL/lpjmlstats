@@ -232,45 +232,61 @@ prepare_var_grp_tibble <- function(var_grp) {
 create_map_plots <- function(var_grp_list,
                              m_options,
                              modification_descr) {
+
+  create_single_map <- function(lpjml_calc, var_name, band, band_names, band_names_short) {
+    compare_band <- subset(lpjml_calc, band = band_names[band])
+    if (length(band_names) > 1) {
+      new_var_name <-
+        paste0(var_name, "$", band_names_short[band])
+    } else {
+      new_var_name <- paste0(var_name)
+    }
+    plot_title <- paste0(
+      lpjml_calc$get_sim_identifier(),
+      " ",
+      modification_descr,
+      "; ",
+      new_var_name,
+      " ",
+      prettify_units(lpjml_calc$meta$unit)
+    )
+    tibble <- prepare_tibble_for_map(compare_band)
+    plot <- create_ggplot_map(tibble,
+                              plot_title,
+                              font_size = m_options$font_size,
+                              n_breaks = m_options$n_breaks,
+                              limits = limits)
+    return(list(plot = plot, plot_title = plot_title))
+  }
   # prepare empty list of all plots
   plot_list <- list()
 
   # loop over all eval groups
   for (var_grp in var_grp_list) {
-    limits <- var_grp$get_limits(type = "compare", quantile = m_options$quantile)
+    limits <- var_grp$get_limits(quantiles = m_options$quantiles)
 
     # use the first comparison object to get the band names
-    band_names <- dimnames(var_grp$compare[[1]][[1]])[["band"]]
+    band_names <- var_grp$get_band_names()
     band_names_short <- shorten_names(band_names, m_options$name_trunc)
 
-    # loop over all comparisons in eval group
-    # this plot assumes there is only on comparison type per eval group given
-    # e.g. only difference is given (but not relative difference etc.)
     for (band in seq_along(band_names)) {
-      for (compare in var_grp$compare[[1]]) {
-        compare_band <- subset(compare, band = band_names[band])
-        if (length(band_names) > 1) {
-          new_var_name <-
-            paste0(var_grp$var_name, "$", band_names_short[band])
-        } else {
-          new_var_name <- paste0(var_grp$var_name
-          )
+      # add comparison plots
+      for (compare_item in var_grp$compare) {
+        for (lpjml_calc in compare_item) {
+          map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short)
+          plot_list[[map$plot_title]] <- map$plot
         }
-        plot_title <- paste0(
-          compare$get_sim_identifier(),
-          " ",
-          modification_descr,
-          "; ",
-          new_var_name,
-          " ",
-          prettify_units(compare$meta$unit)
-        )
-        tibble <- prepare_tibble_for_map(compare_band)
-        plot <- create_ggplot_map(tibble,
-                                  plot_title,
-                                  font_size = m_options$font_size,
-                                  limits = limits)
-        plot_list[[plot_title]] <- plot
+      }
+      # add under test plots
+      for (lpjml_calc in var_grp$under_test) {
+        map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short)
+        plot_list[[map$plot_title]] <- map$plot
+      }
+      # add baseline plot if there is data
+      if (!is.null(var_grp$baseline)) {
+        lpjml_calc <- var_grp$baseline
+        map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short)
+        plot_list[[map$plot_title]] <- map$plot
       }
     }
   }
@@ -284,6 +300,7 @@ create_ggplot_map <-
            title,
            colorbar_length = 1.4,
            font_size = 9,
+           n_breaks = n_breaks,
            limits = NULL) {
     # get world map
     world <- ggplot2::map_data("world")
@@ -299,8 +316,6 @@ create_ggplot_map <-
 
 
     # setup breaks
-    # number of colors for each arm of the diverging color scale
-    n_breaks <- 3
     breaks <- function(limits) {
       if (limits[1] != limits[2])
         breaks <-

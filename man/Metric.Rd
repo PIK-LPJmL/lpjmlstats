@@ -50,6 +50,9 @@ See \link{GlobSumTimeAvgTable} for a typical example of a metric.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
+\item{\code{m_options}}{List of metric options
+Will be overwritten by the individual metric subclasses.}
+
 \item{\code{var_grp_list}}{List of variable groups. Each variable group contains the summaries
 and the comparisons for one variable.}
 }
@@ -131,7 +134,7 @@ Will be overwritten by the individual metric subclasses.
 \if{html}{\out{<a id="method-Metric-arrange_plots"></a>}}
 \if{latex}{\out{\hypertarget{method-Metric-arrange_plots}{}}}
 \subsection{Method \code{arrange_plots()}}{
-Function to arrgange all plots of the metric in the respective
+Function to arrange all plots of the metric in the respective
 section of the report.
 Will be overwritten by the individual metric subclasses.
 \subsection{Usage}{
@@ -152,13 +155,13 @@ Will be overwritten by the individual metric subclasses.
 \subsection{Method \code{capture_summary()}}{
 !Package internal method!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Metric$capture_summary(data, var, type)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Metric$capture_summary(lpjml_calc, var, type)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{Raw data to be summarized}
+\item{\code{lpjml_calc}}{Raw data to be summarized}
 
 \item{\code{var}}{Variable name}
 

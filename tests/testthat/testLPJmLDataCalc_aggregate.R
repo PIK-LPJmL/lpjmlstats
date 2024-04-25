@@ -132,6 +132,7 @@ test_that("aggregation is recorded in meta data", {
 
 test_that("usecases of aggregation with cow and plotting runs error free", {
   # load test data
+  pdf(NULL)
   path_to_soil_n_json <- test_path("../testdata/path1", "soiln.bin.json")
   soiln <- read_io(path_to_soil_n_json)
   soiln$add_grid()
@@ -146,7 +147,6 @@ test_that("usecases of aggregation with cow and plotting runs error free", {
       subset(time = 1) %>%
       plot()
   )
-
 })
 
 test_that("usecases of aggregation with cow integral on multiple timesteps ",

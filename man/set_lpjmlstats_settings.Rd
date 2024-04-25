@@ -25,6 +25,10 @@ DPI for the PDF document.
 the path to the unit conversion table (a .csv file). Defaults to the
 conversion table in the package's \code{inst} folder. The specified
 file must exist and be a .csv file.
+
+\item \code{metric_at_start}: A string to be matched against the
+names of the metrics. The matched metrics will be run first
+and displayed at the beginning of the report.
 }}
 }
 \description{
@@ -33,7 +37,8 @@ This function configures various settings for the lpjmlstats package.
 \examples{
 \dontrun{
 set_lpjmlstats_settings(year_subset = 1:5, graphics_device = "pdf")
-set_lpjmlstats_settings(unit_table_path = "path/to/my_table.csv", pdf_plot_dpi = 300)
+set_lpjmlstats_settings(unit_table_path = "path/to/my_table.csv",
+pdf_plot_dpi = 300)
 }
 
 }
