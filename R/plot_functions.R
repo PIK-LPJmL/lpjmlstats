@@ -230,10 +230,15 @@ prepare_var_grp_tibble <- function(var_grp) {
 
 # ----- map functions -----
 create_map_plots <- function(var_grp_list,
-                             m_options,
-                             modification_descr) {
+                             colorbar_length = 1.4,
+                             m_options) {
 
-  create_single_map <- function(lpjml_calc, var_name, band, band_names, band_names_short) {
+  create_single_map <- function(lpjml_calc,
+                                var_name,
+                                band,
+                                band_names,
+                                band_names_short,
+                                compare_item) {
     compare_band <- subset(lpjml_calc, band = band_names[band])
     if (length(band_names) > 1) {
       new_var_name <-
@@ -244,7 +249,7 @@ create_map_plots <- function(var_grp_list,
     plot_title <- paste0(
       lpjml_calc$get_sim_identifier(),
       " ",
-      modification_descr,
+      compare_item,
       "; ",
       new_var_name,
       " ",
@@ -255,7 +260,8 @@ create_map_plots <- function(var_grp_list,
                               plot_title,
                               font_size = m_options$font_size,
                               n_breaks = m_options$n_breaks,
-                              limits = limits)
+                              limits = limits,
+                              colorbar_length = colorbar_length)
     return(list(plot = plot, plot_title = plot_title))
   }
   # prepare empty list of all plots
@@ -270,23 +276,40 @@ create_map_plots <- function(var_grp_list,
     band_names_short <- shorten_names(band_names, m_options$name_trunc)
 
     for (band in seq_along(band_names)) {
-      # add comparison plots
-      for (compare_item in var_grp$compare) {
-        for (lpjml_calc in compare_item) {
-          map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short)
-          plot_list[[map$plot_title]] <- map$plot
-        }
-      }
-      # add under test plots
-      for (lpjml_calc in var_grp$under_test) {
-        map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short)
-        plot_list[[map$plot_title]] <- map$plot
-      }
       # add baseline plot if there is data
       if (!is.null(var_grp$baseline)) {
         lpjml_calc <- var_grp$baseline
-        map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short)
+        map <- create_single_map(lpjml_calc,
+                                 var_grp$var_name,
+                                 band,
+                                 band_names,
+                                 band_names_short,
+                                 "")
         plot_list[[map$plot_title]] <- map$plot
+      }
+
+      # add under test plots
+      for (lpjml_calc in var_grp$under_test) {
+        map <- create_single_map(lpjml_calc,
+                                 var_grp$var_name,
+                                 band,
+                                 band_names,
+                                 band_names_short,
+                                 "")
+        plot_list[[map$plot_title]] <- map$plot
+      }
+
+      # add comparison plots
+      for (compare_item in names(var_grp$compare)) {
+        for (lpjml_calc in var_grp$compare[[compare_item]]) {
+          map <- create_single_map(lpjml_calc,
+                                   var_grp$var_name,
+                                   band,
+                                   band_names,
+                                   band_names_short,
+                                   compare_item)
+          plot_list[[map$plot_title]] <- map$plot
+        }
       }
     }
   }
@@ -365,7 +388,7 @@ create_ggplot_map <-
         legend.title = ggplot2::element_blank(),
         # position legend below plot
         legend.position = "bottom",
-        # strech the legend to width of plot
+        # stretch the legend to width of plot
         legend.key.width = ggplot2::unit(colorbar_length, "cm"),
         legend.key.height = ggplot2::unit(0.2, "cm"),
         text = ggplot2::element_text(size = font_size)
@@ -419,29 +442,35 @@ create_time_series_plots <- function(var_grp_list,
     # take the bandnames of the first baseline object, assuming the bands
     # of all compare objects are the same
     band_names <- dimnames(var_grp$baseline$data)[["band"]]
+    cells <- dimnames(var_grp$baseline$data)[[1]]
     band_names_short <- shorten_names(band_names, m_options$name_trunc)
     for (band in seq_along(band_names)) {
-      if (length(band_names) == 1) {
-        plot_title <- var_grp$var_name
-      } else {
-        plot_title <-
-          paste0(var_grp$var_name, "$", band_names_short[band])
+      for (cell in cells) {
+        if (length(band_names) == 1) {
+          plot_title <- var_grp$var_name
+        } else {
+          plot_title <-
+            paste0(var_grp$var_name, "$", band_names_short[band])
+        }
+        if (length(cells) > 1) {
+          plot_title <- paste0(plot_title, " ", cell)
+        }
+
+        # add unit
+        plot_title <- paste0(plot_title, " ",
+                             prettify_units(var_grp$baseline$meta$unit))
+
+        tibble <-
+          prepare_tibble_for_timeseries(var_grp, band_names[band], cell)
+
+        p <- create_ggplot_timeseries(tibble,
+                                      plot_title,
+                                      limits = limits,
+                                      font_size = m_options$font_size)
+
+        # add plot to list
+        plot_list[[plot_title]] <- p
       }
-
-      # add unit
-      plot_title <- paste0(plot_title, " ",
-                           prettify_units(var_grp$baseline$meta$unit))
-
-      tibble <-
-        prepare_tibble_for_timeseries(var_grp, band_names[band])
-
-      p <- create_ggplot_timeseries(tibble,
-                                    plot_title,
-                                    limits = limits,
-                                    font_size = m_options$font_size)
-
-      # add plot to list
-      plot_list[[plot_title]] <- p
 
     }
   }
@@ -485,8 +514,8 @@ create_ggplot_timeseries <- function(tibble,
 
 }
 
-prepare_tibble_for_timeseries <- function(var_grp, band = 1) {
-  create_tibble_lpjml_calc <- function(type, lpjml_calc, band) {
+prepare_tibble_for_timeseries <- function(var_grp, band = 1, cell = 1) {
+  create_tibble_lpjml_calc <- function(type, lpjml_calc, band, cell) {
     # get data from lpjml_calc
     data <- lpjml_calc$data
 
@@ -504,26 +533,29 @@ prepare_tibble_for_timeseries <- function(var_grp, band = 1) {
       type = type,
       sim_name = sim_name,
       times = times,
-      value = data[1, , band]
+      value = data[cell, , band]
     )
 
     return(tibble)
   }
 
   # create tibble for baseline
-  tibble <- create_tibble_lpjml_calc("baseline", var_grp$baseline, band)
+  tibble <- create_tibble_lpjml_calc("baseline", var_grp$baseline, band, cell)
 
   # add tibble for under test
   for (under_test in var_grp$under_test) {
     tibble <-
       dplyr::bind_rows(tibble,
-                       create_tibble_lpjml_calc("under_test", under_test, band))
+                       create_tibble_lpjml_calc("under_test",
+                                                under_test,
+                                                band,
+                                                cell))
   }
 
   return(tibble)
 }
 
-# ------ utitliy function ------
+# ------ utility functions ------
 
 # function to insert linebreaks if the text is too long
 insert_linebreaks <- function(text_vect, max_length = 18) {

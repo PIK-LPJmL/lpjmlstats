@@ -52,11 +52,11 @@ test_that("benchmark works for davids personal directory", {
   under_test_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy" # nolint
 
   settings <- list(
-    `pft_harvest.pft$rainfed rice;
-    rainfed maize;
-    rainfed oil crops soybean;
-    rainfed grassland`  = c(TimeAvgMap, GlobSumTimeAvgTablePFT_harvest),
-    fpc = c(GlobSumTimeAvgTableFPC, GlobSumTimeAvgTable, TimeAvgMap, GlobSumTimeseries)
+    #`pft_harvest.pft$rainfed rice;
+    #rainfed maize` =  c(CellSubsetAnnAvgTimeseries)
+    #rainfed oil crops soybean;
+    #rainfed grassland`  = c(TimeAvgMap, GlobSumTimeAvgTablePFT_harvest),
+    msoiltemp1 = c(TimeAvgMapWithAbs, CellSubsetTimeseries, CellSubsetAnnAvgTimeseries)
   )
 
   metric_options <- list(
@@ -66,10 +66,13 @@ test_that("benchmark works for davids personal directory", {
     TimeAvgMap = list(
       highlight = "soilc",
       font_size = 9
+    ),
+    CellSubsetTimeseries = list (
+      cell = c("2000", "3000")
     )
   )
 
-  set_lpjmlstats_settings(year_subset = c(1:2))
+  set_lpjmlstats_settings(year_subset = c(1:30))
 
   bench_data <-
     benchmark(
@@ -77,13 +80,16 @@ test_that("benchmark works for davids personal directory", {
       list(under_test_dir),
       author = "David",
       settings = settings,
+      metric_options = metric_options,
       description = "test benchmarking",
       pdf_report = FALSE
     )
 
-  create_pdf_report(data = bench_data)
+  l <- bench_data$TimeAvgMapAll$plot()
 
-  prepare_tibble_for_table(bench_data$GlobSumTimeAvgTable$var_grp_list)
+  bench_data$TimeAvgMapAll$arrange_plots(l)
+
+  create_pdf_report(benchmark_result = bench_data)
 
   set_lpjmlstats_settings(year_subset = NULL)
 
