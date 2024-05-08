@@ -13,11 +13,6 @@ create_table_plot <- function(var_grp_list,
   # most importantly transpose the table such that the variables are in the
   # rows to allow for displaying a large amount of variables
 
-  # round all numerics of table
-  table <- table %>%
-    dplyr::mutate(dplyr::across(dplyr::where(is.numeric),
-                                round, digits = m_options$decimal_places))
-
   # merge the columns type and sim_name
   # will be the colnames of the displayed tibble
   # e.g. diff to baseline: sim 1
@@ -39,6 +34,12 @@ create_table_plot <- function(var_grp_list,
                                    units::deparse_unit))
   col_units <- prettify_units(unlist(unname(col_units)))
 
+  # convert to character using scientific notation
+  table <- table %>% dplyr::rowwise() %>%
+    dplyr::mutate(dplyr::across(dplyr::where(is.numeric),
+                                units::drop_units)) %>%
+    dplyr::mutate(dplyr::across(dplyr::where(is.numeric),
+                                format, digits = m_options$decimal_places))
 
   # transpose table
   # use type_and_simname as new column names
@@ -60,7 +61,7 @@ create_table_plot <- function(var_grp_list,
                                 insert_linebreaks)) %>%
     dplyr::mutate_all(kableExtra::linebreak)
 
-  # escape all underscores in the table
+  # escape characters
   # NTODO: Make esacaping characters systematic, i.e. refactor in function
   table <- table %>%
     dplyr::mutate_all(function(x) stringr::str_replace_all(x, "_", "\\\\_")) %>%
