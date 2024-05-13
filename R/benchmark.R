@@ -285,11 +285,11 @@ create_simulation_table <- function(paths) {
   lpjml_version <- c()
 
   for (path in sim_paths) {
-    # read any file with a .bin.json extension in the directory
+    # read any file with the correct file extension in the directory
     # and extract the meta data
 
-    # get filename of any file with .bin.json extension in the directory
-    file <- list.files(path, pattern = ".bin.json", full.names = TRUE)[1]
+    # get filename of any fitting file
+    file <- list.files(path, pattern = paths$suffix, full.names = TRUE)[1]
 
     # get relevant meta information from that file
     meta <- lpjmlkit::read_meta(file)

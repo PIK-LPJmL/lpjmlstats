@@ -80,7 +80,7 @@ set_lpjmlstats_settings <- function(...) {
         options(lpjmlstats.metrics_at_start = option_value) # nolint
       },
       "file_extension" = {
-        if (!(is.character(option_value) | is.null(option_value)))
+        if (!(is.character(option_value) | is.null(option_value)) | length(option_value) != 1)
           stop("file_extension must be a character string")
         options(lpjmlstats.file_extension = option_value) # nolint
       },
