@@ -177,7 +177,7 @@ benchmark <-
       list(
         baseline_dir = baseline_dir,
         under_test_dirs = under_test_dirs,
-        suffix = ".bin.json"
+        suffix = getOption("lpjmlstats.file_extension", default = ".bin.json")
       )
 
     sim_table <- create_simulation_table(paths)

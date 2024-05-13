@@ -26,6 +26,9 @@
 #'   \item \code{metric_at_start}: A string to be matched against the
 #'   names of the metrics. The matched metrics will be run first
 #'   and displayed at the beginning of the report.
+#' 
+#'   \item \code{file_extension}: A string indicating the file extension
+#'   to be used by read_io.
 #' }
 #'
 #'
@@ -75,6 +78,11 @@ set_lpjmlstats_settings <- function(...) {
         if (!(is.character(option_value) | is.null(option_value)))
           stop("metrics_at_start must be a character string")
         options(lpjmlstats.metrics_at_start = option_value) # nolint
+      },
+      "file_extension" = {
+        if (!(is.character(option_value) | is.null(option_value)))
+          stop("file_extension must be a character string")
+        options(lpjmlstats.file_extension = option_value) # nolint
       },
       stop(paste("Invalid option:", option_name))
     )
