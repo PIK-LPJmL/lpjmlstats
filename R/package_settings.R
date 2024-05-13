@@ -26,7 +26,7 @@
 #'   \item \code{metric_at_start}: A string to be matched against the
 #'   names of the metrics. The matched metrics will be run first
 #'   and displayed at the beginning of the report.
-#' 
+#'
 #'   \item \code{file_extension}: A string indicating the file extension
 #'   to be used by read_io.
 #' }
