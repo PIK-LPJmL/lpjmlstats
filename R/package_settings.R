@@ -23,9 +23,10 @@
 #'   conversion table in the package's \code{inst} folder. The specified
 #'   file must exist and be a .csv file.
 #'
-#'   \item \code{metric_at_start}: A string to be matched against the
-#'   names of the metrics. The matched metrics will be run first
-#'   and displayed at the beginning of the report.
+#'   \item \code{metrics_at_start}: A vector of strings to be
+#'   matched against the
+#'   names of the metrics. The matched metrics will be prioritized,
+#'   that is run first and displayed at the report beginning.
 #' }
 #'
 #'

@@ -64,7 +64,7 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       #' years (starting at `firstyear`).
       #'
       m_options = list(
-        font_size = 8,
+        font_size = 7,
         name_trunc = 1,
         decimal_places = 3,
         year_range = NULL

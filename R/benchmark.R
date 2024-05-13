@@ -458,18 +458,32 @@ initialize_metrics <- function(settings) {
   return(metric_objs)
 }
 
-# Function to reorder the metrics based on the user specified prioritization
+# Function to reorder the metrics based on user-specified prioritization vector
+# with regex matching
 reorder_metrics <- function(all_metrics) {
-  if (!is.null(getOption("lpjmlstats.metrics_at_start"))) {
-    fig_to_start <- getOption("lpjmlstats.metrics_at_start")
-    # get all metric names that contain the string
-    fig_to_start <- stringr::str_detect(names(all_metrics), fig_to_start)
-    metric_order <- c(which(fig_to_start), which(!fig_to_start))
-    all_metrics <- all_metrics[metric_order]
-  }
-  return(all_metrics)
-}
+  priority_patterns <- getOption("lpjmlstats.metrics_at_start")
 
+  # Initialize an empty vector to store indices for metrics matching the
+  # priority patterns
+  priority_indices <- integer(0)
+
+  # Loop through each pattern and find indices of names in all_metrics that match
+  for (pattern in priority_patterns) {
+    matched_indices <- grep(pattern, names(all_metrics), ignore.case = TRUE)
+    # Append matched indices while avoiding duplicates
+    priority_indices <- unique(c(priority_indices, matched_indices))
+  }
+
+  # Find indices of all_metrics not covered by the priority patterns
+  non_priority_indices <- setdiff(seq_along(all_metrics), priority_indices)
+
+  # Concatenate the indices to create the new order
+  new_order <- c(priority_indices, non_priority_indices)
+
+  # Subset all_metrics based on new order
+  ordered_metrics <- all_metrics[new_order]
+  return(ordered_metrics)
+}
 
 # Function to create and store the summaries that all the metrics need
 retrieve_summaries <-
