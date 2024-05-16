@@ -437,10 +437,7 @@ get_benchmark_meta_data <- function(benchmark_result) {
 # Function to empty the cache of functions tht read in files used
 # throughout the benchmarking
 empty_cache <- function() {
-  # empty the grid and terrarrea cache
-  memoise::forget(read_grid)
-  memoise::forget(read_terr_area)
-  memoise::forget(read_cft_frac)
+  memoise::forget(read_file)
 }
 
 # Function to make instances, that is objects of all metric classes

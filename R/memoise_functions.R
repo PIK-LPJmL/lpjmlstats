@@ -32,8 +32,4 @@ hash_custom <- function(arg_list) {
 
 aggregate <- memoise::memoise(aggregate, hash = hash_custom)
 
-read_terr_area <- memoise::memoise(read_terr_area, hash = hash_custom)
-
-read_grid <- memoise::memoise(read_grid, hash = hash_custom)
-
-read_cft_frac <- memoise::memoise(read_cft_frac, hash = hash_custom)
+read_file <- memoise::memoise(read_file, hash = hash_custom)

@@ -703,13 +703,14 @@ LPJmLDataCalc$set(
     if (!is.null(private$.grid)) {
       return(invisible(self))
     }
-
     if (...length() == 0) {
-      lpjml_data_orig <- read_grid(private$.meta$._data_dir_,
-                                   self$dimnames()[["cell"]],
-                                   private$.meta$._subset_space_)
-      # make a copy to avoid modifying tho original
-      lpjml_data <- lpjml_data_orig$clone(deep = TRUE)
+      grid <- read_file(private$.meta$._data_dir_, "grid", add_grid = FALSE)
+      # Add support for cell subsets. This is a rough filter since $subset
+      #   does not say if cell is subsetted - but ok for now.
+      if (private$.meta$._subset_space_) {
+        cells <- self$dimnames()[["cell"]]
+        grid <- subset(grid, cell = cells)
+      }
     } else {
       # All arguments have to be provided manually to read_io.
       #   Ellipsis (...) does that.
@@ -717,42 +718,19 @@ LPJmLDataCalc$set(
       # Add support for cell subsets. This is a rough filter since $subset
       #   does not say if cell is subsetted - but ok for now.
       if (private$.meta$._subset_space_) {
-        lpjml_data <- read_io(...,
-                              subset = list(cell = self$dimnames()[["cell"]]))
+        grid <- read_io(..., subset = list(cell = self$dimnames()[["cell"]]))
       } else {
-        lpjml_data <- read_io(...)
+        grid <- read_io(...)
       }
     }
 
+    # make a copy to avoid modifying tho original
+    grid_clone <- grid$clone(deep = TRUE)
+
     # Create LPJmLData object and bring together data and meta_data
-    lpjml_grid <- lpjmlkit::LPJmLGridData$new(lpjml_data)
+    lpjml_grid <- lpjmlkit::LPJmLGridData$new(grid_clone)
 
     # set grid attribute
     self$.__set_grid__(lpjml_grid)
   }
 )
-
-read_grid <- function(dir, cells, subset) {
-  # If user has not supplied any parameters try to find a grid file in the
-  # same directory as data. This throws an error if no suitable file is
-  # found.
-  find_gridfile <- utils::getFromNamespace("find_gridfile", "lpjmlkit")
-  filename <- find_gridfile(dir)
-
-  message(paste0(cli::col_blue("grid"),
-                 " read from ",
-                 sQuote(basename(filename))))
-
-  # Add support for cell subsets. This is a rough filter since $subset
-  #   does not say if cell is subsetted - but ok for now.
-  if (subset) {
-    lpjml_data <- read_io(
-      filename = filename,
-      subset = list(cell = cells),
-      silent = TRUE
-    )
-  } else {
-    lpjml_data <- read_io(filename = filename, silent = TRUE)
-  }
-  return(lpjml_data)
-}
