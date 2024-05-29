@@ -510,8 +510,11 @@ GlobSumTimeAvgTablePFT_harvest <- # nolint: object_name_linter.
       #' Weigh by cft_frac and then do the same as GlobSumTimeAvgTable
       #' @param data LPJmLDataCalc object to be summarized
       summarize = function(data) {
-        cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir, "cft_frac")
-        cft_frac <- subset(cft_frac, band = data$meta$band_names)
+        cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir,
+                              "cftfrac")
+        cft_frac <- subset(cft_frac,
+                           band = data$meta$band_names,
+                           time = dimnames(data$data)[2])
         super$summarize(data * cft_frac)
       },
 
@@ -523,7 +526,7 @@ GlobSumTimeAvgTablePFT_harvest <- # nolint: object_name_linter.
       #' initialize with an extended description
       initialize = function() {
         self$description <- paste0(self$description, " In addition to terr_area
-                           the output is also weighted by cft_frac.")
+                           the output is also weighted by cftfrac.")
       }
     )
   )
@@ -573,8 +576,11 @@ GlobSumAnnTimeseriesPFT_harvest <- # nolint: object_name_linter.
       #' Weigh by cft_frac and then do the same as GlobSumAnnAvgTimeseries
       #' @param data LPJmLDataCalc object to be summarized
       summarize = function(data) {
-        cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir, "cft_frac")
-        cft_frac <- subset(cft_frac, band = data$meta$band_names)
+        cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir,
+                              "cftfrac")
+        cft_frac <- subset(cft_frac,
+                           band = data$meta$band_names,
+                           time = dimnames(data$data)[[2]])
         super$summarize(data * cft_frac)
       },
 
@@ -586,7 +592,7 @@ GlobSumAnnTimeseriesPFT_harvest <- # nolint: object_name_linter.
       #' initialize with an extended description
       initialize = function() {
         self$description <- paste0(self$description, " In addition to terr_area
-                           the output is also weighted by cft_frac.")
+                           the output is also weighted by cftfrac.")
       }
     )
   )

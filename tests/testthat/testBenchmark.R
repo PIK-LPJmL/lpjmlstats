@@ -52,11 +52,11 @@ test_that("benchmark works for davids personal directory", {
   under_test_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy" # nolint
 
   settings <- list(
-    #`pft_harvest.pft$rainfed rice;
+    `pft_harvest.pft$rainfed rice` =  c(GlobSumAnnTimeseriesPFT_harvest)
     #rainfed maize` =  c(CellSubsetAnnAvgTimeseries)
     #rainfed oil crops soybean;
     #rainfed grassland`  = c(TimeAvgMap, GlobSumTimeAvgTablePFT_harvest),
-    mn2_emis = c(GlobSumAnnSumTimeseries)
+    #mn2_emis = c(GlobSumAnnTimeseriesPFT_harvest)
   )
 
   metric_options <- list(

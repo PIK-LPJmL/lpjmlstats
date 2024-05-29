@@ -49,8 +49,8 @@ testthat::test_that("var_grp_apply returns correct list", {
 
   var_grp$compare <- list(
     diff = list(
-      sim1 = soiln_under_test_1 - soiln_baseline,
-      sim2 = soiln_under_test_2 - soiln_baseline
+      sim1 = var_grp$under_test$sim1 - var_grp$baseline,
+      sim2 = var_grp$under_test$sim2 - var_grp$baseline
     )
   )
 

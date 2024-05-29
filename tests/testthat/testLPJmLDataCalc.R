@@ -8,7 +8,9 @@ test_that("when initializing with non LPJmLData object an error is thrown", {
 test_that("when initializing with LPJmLData the content arrives", {
   header <- lpjmlkit::create_header(ncell = 6, verbose = FALSE)
   lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header)
-  lpjml_dat <- lpjmlkit::LPJmLData$new(1, meta_data = lpjml_meta)
+  lpjml_meta$.__set_attribute__("unit", "")
+  lpjml_dat <- lpjmlkit::LPJmLData$new(1,
+                                       meta_data = lpjml_meta)
 
   lpjml_calc <- LPJmLDataCalc$new(lpjml_dat)
 
