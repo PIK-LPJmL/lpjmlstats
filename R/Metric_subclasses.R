@@ -386,10 +386,13 @@ GlobSumTimeAvgTablePFT_harvest <- # nolint: object_name_linter.
     public = list(
       #' @description
       #' Weigh by cft_frac and then do the same as GlobSumTimeAvgTable
-      #' @param data LpjmlDataCalc object to be summarized
+      #' @param data LPJmLDataCalc object to be summarized
       summarize = function(data) {
-        cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir, "cft_frac")
-        cft_frac <- subset(cft_frac, band = data$meta$band_names)
+        cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir,
+                              "cftfrac")
+        cft_frac <- subset(cft_frac,
+                           band = data$meta$band_names,
+                           time = dimnames(data$data)[[2]])
         super$summarize(data * cft_frac)
       },
 
@@ -401,7 +404,7 @@ GlobSumTimeAvgTablePFT_harvest <- # nolint: object_name_linter.
       #' initialize with an extended description
       initialize = function() {
         self$description <- paste0(self$description, " In addition to terr_area
-                           the output is also weighted by cft_frac.")
+                           the output is also weighted by cftfrac.")
       }
     )
   )
@@ -416,7 +419,7 @@ GlobSumTimeAvgTableFPC <- R6::R6Class( # nolint: object_name_linter.
   public = list(
     #' @description
     #' Weigh by natural stand fraction and then do the same as GlobSumTimeAvgTable
-    #' @param data LpjmlDataCalc object to be summarized
+    #' @param data LPJmLDataCalc object to be summarized
     summarize = function(data) {
       nat_stand_frac <- subset(data, band = "natural stand fraction")
       bands <- data$meta$band_names
@@ -449,10 +452,13 @@ GlobSumAnnTimeseriesPFT_harvest <- # nolint: object_name_linter.
     public = list(
       #' @description
       #' Weigh by cft_frac and then do the same as GlobSumAnnAvgTimeseries
-      #' @param data LpjmlDataCalc object to be summarized
+      #' @param data LPJmLDataCalc object to be summarized
       summarize = function(data) {
-        cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir, "cft_frac")
-        cft_frac <- subset(cft_frac, band = data$meta$band_names)
+        cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir,
+                              "cftfrac")
+        cft_frac <- subset(cft_frac,
+                           band = data$meta$band_names,
+                           time = dimnames(data$data)[[2]])
         super$summarize(data * cft_frac)
       },
 
@@ -464,7 +470,7 @@ GlobSumAnnTimeseriesPFT_harvest <- # nolint: object_name_linter.
       #' initialize with an extended description
       initialize = function() {
         self$description <- paste0(self$description, " In addition to terr_area
-                           the output is also weighted by cft_frac.")
+                           the output is also weighted by cftfrac.")
       }
     )
   )
@@ -480,7 +486,7 @@ GlobSumAnnTimeseriesFPC <- R6::R6Class( # nolint: object_name_linter.
     #' @description
     #' Weigh by natural stand fraction and then do the same as
     #' GlobSumAnnAvgTimeseries
-    #' @param data LpjmlDataCalc object to be summarized
+    #' @param data LPJmLDataCalc object to be summarized
     summarize = function(data) {
       nat_stand_frac <- subset(data, band = "natural stand fraction")
       bands <- data$meta$band_names
