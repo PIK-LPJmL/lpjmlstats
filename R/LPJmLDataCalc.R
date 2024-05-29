@@ -539,6 +539,8 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
   private$.meta <- meta_calc
   private$.grid <- lpjml_data$grid
   private$copy_unit_meta2array()
+  # the following is to consistently have the unit formatting from units package
+  private$copy_unit_array2meta()
 })
 
 

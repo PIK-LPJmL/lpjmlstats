@@ -30,7 +30,7 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
             `diff_to_baseline` = lapply(var_grp$under_test, function(x) {
               x - var_grp$baseline
             }),
-            `diff_\\%` = lapply(var_grp$under_test, function(x) {
+            `diff_%` = lapply(var_grp$under_test, function(x) {
               (x - var_grp$baseline) / var_grp$baseline * 100
             })
           )
@@ -423,7 +423,7 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' - `highlight` vector of strings, indicating which variables
       #' should receive a larger full width plot
       #' - `quantiles` quantiles used to determine the lower an upper
-      #' limits for the values in th map plot
+      #' limits for the values in the map plot...
       #' - `n_breaks` number of breaks for each arm of the diverging
       #' color scale
       #' - `year_range`: integer or character vector, defines the range

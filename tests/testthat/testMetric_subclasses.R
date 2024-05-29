@@ -9,6 +9,7 @@ test_that("subset cell produces correct output", {
   out <- benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE,
                    metric_options = metric_opt)
 
+  soiln <- read_io(testthat::test_path("../testdata/path1/soiln.bin.json"))
   expected <- subset(soiln, cell = c("10000", "10002") )$.data_with_unit
   expected <- units::set_units(expected, "kgN/m^2")
   # check that global sum of soiln is still the same

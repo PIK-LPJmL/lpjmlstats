@@ -146,3 +146,30 @@ load_soiln_calc <- function() {
   soiln$add_grid()
   return(soiln)
 }
+
+create_soiln_var_grp <- function() {
+  soiln_dir <- testthat::test_path("../testdata/path1/soiln_layer.bin.json")
+  soiln_baseline <- read_io(soiln_dir)
+  soiln_baseline <- aggregate(soiln_baseline, time = "sim_period")
+  soiln_baseline$set_sim_identifier("sim1")
+
+  soiln_under_test_1 <- soiln_baseline$clone(deep=TRUE)
+  soiln_baseline$set_sim_identifier("sim2")
+  soiln_under_test_2 <- soiln_baseline$clone(deep=TRUE)
+  soiln_baseline$set_sim_identifier("sim3")
+
+  soiln_under_test_1$.__enclos_env__$private$.data[1,1,1] <- 10
+  soiln_under_test_2$.__enclos_env__$private$.data[1,1,1] <- 20
+
+  var_grp <- VarGrp$new()
+
+  var_grp$baseline <- soiln_baseline
+  var_grp$under_test <- list(sim1 = soiln_under_test_1,
+                             sim2 = soiln_under_test_2)
+
+  var_grp$compare <- list(diff = list(sim1 = soiln_under_test_1 - soiln_baseline,
+                                      sim2 = soiln_under_test_2 - soiln_baseline))
+
+  return(var_grp)
+}
+

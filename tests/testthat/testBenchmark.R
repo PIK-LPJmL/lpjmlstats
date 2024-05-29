@@ -56,7 +56,7 @@ test_that("benchmark works for davids personal directory", {
     #rainfed maize` =  c(CellSubsetAnnAvgTimeseries)
     #rainfed oil crops soybean;
     #rainfed grassland`  = c(TimeAvgMap, GlobSumTimeAvgTablePFT_harvest),
-    msoiltemp1 = c(TimeAvgMapWithAbs, CellSubsetTimeseries, CellSubsetAnnAvgTimeseries)
+    mn2_emis = c(GlobSumAnnSumTimeseries)
   )
 
   metric_options <- list(
@@ -72,7 +72,7 @@ test_that("benchmark works for davids personal directory", {
     )
   )
 
-  set_lpjmlstats_settings(year_subset = c(1:30))
+  set_lpjmlstats_settings(year_subset = c(1:30), metrics_at_start = c("Map", "Cell"))
 
   bench_data <-
     benchmark(
@@ -87,7 +87,7 @@ test_that("benchmark works for davids personal directory", {
 
   l <- bench_data$TimeAvgMapAll$plot()
 
-  bench_data$TimeAvgMapAll$arrange_plots(l)
+  bench_data$GlobSumTimeAvgTable$plot()
 
   create_pdf_report(benchmark_result = bench_data)
 

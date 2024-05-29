@@ -1,4 +1,5 @@
-# The following import is to provide visible bindings for dplyr semantics
+# The following import is to provide visible bindings for dplyr semantics,
+# which avoids lintr warnings.
 #' @importFrom rlang .data
 
 
@@ -6,54 +7,13 @@
 
 create_table_plot <- function(var_grp_list,
                               m_options) {
-  # ------ prepare table in tidy format, that is rows are observations
-  table <- prepare_tibble_for_table(var_grp_list)
 
-  # ------  change the appearance of table to be more readable
-  # most importantly transpose the table such that the variables are in the
-  # rows to allow for displaying a large amount of variables
-
-  # merge the columns type and sim_name
-  # will be the colnames of the displayed tibble
-  # e.g. diff to baseline: sim 1
-  type_and_simname <- table %>%
-    dplyr::mutate(type_and_simname = paste(.data$type,
-                                           .data$sim_name,
-                                           sep = ":\n")) %>%
-    dplyr::pull(type_and_simname)
-
-  # the type and sim_name columns are not needed anymore for the plot
-  # as they are now in type_and_simname
-  table <- table %>% dplyr::select(-c(.data$type, .data$sim_name))
-
-  # save the units and varnames of the columns
-  # will be lost after transpose
-  var_names <- table %>% names()
-  col_units <- table %>%
-    dplyr::summarise(dplyr::across(dplyr::where(is.numeric),
-                                   units::deparse_unit))
-  col_units <- prettify_units(unlist(unname(col_units)))
+  table <- var_grp_list_to_table(var_grp_list)
 
   # convert to character using scientific notation
   table <- table %>% dplyr::rowwise() %>%
     dplyr::mutate(dplyr::across(dplyr::where(is.numeric),
-                                units::drop_units)) %>%
-    dplyr::mutate(dplyr::across(dplyr::where(is.numeric),
                                 format, digits = m_options$decimal_places))
-
-  # transpose table
-  # use type_and_simname as new column names
-  rownames(table) <- type_and_simname  # will convert to colnames
-  table <- tibble::as_tibble(t(table))
-
-  # add var_names and col_units as columns to the table
-  table <- table %>%
-    dplyr::mutate(variable = var_names,
-                  unit = col_units)
-
-  # put variable and unit in the first two columns
-  table <- table %>%
-    dplyr::select(.data$variable, .data$unit, dplyr::everything())
 
   # insert linebreaks
   table <- table %>%
@@ -62,174 +22,70 @@ create_table_plot <- function(var_grp_list,
     dplyr::mutate_all(kableExtra::linebreak)
 
   # escape characters
-  # NTODO: Make esacaping characters systematic, i.e. refactor in function
+  # uses function from knitr that is not exported, which could be problematic
+  # if an error is thrown here the internal function(name) may have changed
   table <- table %>%
-    dplyr::mutate_all(function(x) stringr::str_replace_all(x, "_", "\\\\_")) %>%
-    dplyr::mutate_all(function(x) stringr::str_replace_all(x, "\\$", "\\\\$"))
-  colnames(table) <- stringr::str_replace_all(colnames(table), "_", "\\\\_")
+    dplyr::mutate_all(knitr:::escape_latex_table)
+  colnames(table) <- knitr:::escape_latex_table(colnames(table))
 
   return(table)
 }
 
-# This function creates a table given a var_grp_list
-# that contain space and time aggregated values for different variables,
-# e.g. global sums of soil carbon, vegetation carbon etc.
-# Each row corresponds to an LPJmL run or a comparison of two LPJmL runs,
-# following the tibble logic of having one row per observation of each variable.
-# Example of created tibble:
-#   type       sim_name  soiln   vegc   ...
-#   baseline     sim1    0.1     0.2    ...
-#   under_test 1 sim2    0.2     0.3    ...
-#   under_test 2 sim3    0.3     0.4    ...
-#   difference 1 sim2    0.1     0.1    ...
-#   difference 2 sim3    0.2     0.2    ...
-# Note that in the report the tibble is displayed in transposed form
-# to fit the larger number of variables in the document.
-prepare_tibble_for_table <- function(var_grp_list) {
-  table <- list()
+var_grp_list_to_table <- function(var_grp_list) {
+  tibble_list <- lapply(var_grp_list, var_grp_to_table)
+  dplyr::bind_rows(tibble_list)
+}
 
-  # loop through variables of var_grp_list and create a list with tibbles
-  # for each variable
-  for (var_grp in var_grp_list) {
-    tibble_for_var <- prepare_var_grp_tibble(var_grp)
-    table[[var_grp$var_name]] <-  tibble_for_var
-  }
+var_grp_to_table <- function(var_grp) {
+  table_list <- var_grp_apply(var_grp, lpjml_calc_to_table)
 
-
-  # join all tibbles of the list to one tibble by matching the
-  # "type" and "sim_name" columns
+  # join all tibbles of the list to one tibble
   join <- function(x, y) {        # define binary join
-    dplyr::inner_join(x,
-                      y,
-                      by = c("type", "sim_name"),
-                      unmatched = "error")
+    dplyr::inner_join(x, y, by = c("variable"), unmatched = "error")
   }
-  table <- Reduce(join, table)  # successively apply binary join to join all
+  table <- Reduce(join, table_list)  # successively apply binary join to join all
+
+  # add unit
+  table <- dplyr::mutate(table,
+                         unit = prettify_units(var_grp$baseline$meta$unit),
+                         .after = variable)
 
   return(table)
 }
 
+lpjml_calc_to_table <- function(lpjml_calc, type, compare_item = NULL) {
 
-# This function creates a tibble for a var_group,
-# containing all values and comparisons for the respective variable.
-# We assume that the data is aggregated to a single item
-# in both the time and space dimension (e.g. "global", "simulation_period")
-# Thus, we only have one value per band for each simulation/
-# simulation-comparison.
-# The columns of the tibble are:
-# - "type" specifying if it is a "baseline", "under_test" or
-#   a comparison (e.g. "difference")
-# - "sim_name", i.e. the name of the simulation
-#   (for the comparison values the name of the under test simulation is used)
-# - for each band of a variable a column with the values of that band
-# Example:
-#   type    sim_name    soiln_layer: 200    soiln: layer 500    ...
-#   baseline     sim1    0.1                 0.2    ...
-#   under_test 1 sim2    0.2                 0.3    ...
-#   under_test 2 sim3    0.3                 0.4    ...
-#   difference 1 sim2    0.1                 0.1    ...
-#   difference 2 sim3    0.2                 0.2    ...
-prepare_var_grp_tibble <- function(var_grp) {
-  # Note that a var_grp contains multiple lpjml_calc objects for the different
-  # outputs of that variable of different simulations as well as
-  # the comparisons of these outputs. Each of these lpjml_calc objects,
-  # gets a row for each of its bands in the var_grp_tibble
-  # This is done for a single lpjml_calc object
-  # by the following fundamental function for generating the table.
-  lpjml_calc_to_rows <-
-    function(type,       # type of the row, i.e. "baseline", "under_test" ...
-             lpjml_calc, # lpjml_calc object containing the data
-             var_name) {   # name of the variable (e.g. "soilc"))
+    # get band names and short band names
+    band_name_vec <-
+      dimnames(lpjml_calc$.data_with_unit)[["band"]]
+    band_name_vec_short <- shorten_names(band_name_vec)
 
-      # create list with all band value of simulation output/ comparison
-      # prepare list
-      band_values <- list()
-      # get band names
-      band_name_vec <-
-        dimnames(lpjml_calc$.data_with_unit)[["band"]]
-
-      # define short band names
-      band_name_vec_short <- shorten_names(band_name_vec)
-
-      for (i in seq_along(band_name_vec)) {
-        band_name <- band_name_vec[i]
-        # extract band value, assuming the lpjml_calc contains only a
-        # single value per band
-        band_value <- lpjml_calc$.data_with_unit[1, 1, band_name]
-        if (band_name == 1) {
-          # go here if there is only one band
-          # in this case we do not add the band name to the colname
-          band_values[[lpjml_calc$meta$variable]] <- band_value
-        } else {
-          # go here if there are multiple bands
-          # in this case we add the band name to the var colname
-          new_var_name <-
-            paste0(lpjml_calc$meta$variable, "$", band_name_vec_short[i])
-          band_values[[new_var_name]] <- band_value
-        }
-      }
-
-      # create row by adding type and sim_name to band values
-      # note that band_values has already defined colnames
-      sim_name <- lpjml_calc$get_sim_identifier()
-      row <- tibble::as_tibble(c(list(type = type,
-                                      sim_name = sim_name),
-                                 band_values))
-
-      # bind newly created row to tibble
-      return(row)
+    # get band values in list
+    band_values <- list()
+    for (i in seq_along(band_name_vec)) {
+      band_name <- band_name_vec[i]
+      # extract band value
+      # !! assumes the lpjml_calc contains only a single value per band !!
+      band_value <- lpjml_calc$.data_with_unit[1, 1, band_name]
+      row_name <- paste0(lpjml_calc$meta$variable,
+                         ifelse(length(band_name_vec) == 1, "",
+                                paste0("$", band_name_vec_short[i])))
+      band_values[[row_name]] <- band_value
     }
 
-  # Get variable name of the var_grp
-  var_name <- var_grp$var_name
+    # create table
+    table <- tibble::tibble(variable = names(band_values))
+    # add values column to table
+    col_name <- paste0(type, ifelse(!is.null(compare_item), "_", ""),
+                          compare_item, ":\n ", lpjml_calc$get_sim_identifier())
+    table <- tibble::add_column(table, !!col_name := unname(unlist(band_values)))
 
-  tibble_for_var <- NULL
-
-  # add baseline value to var_grp_tibble
-  baseline_lpjml_calc <- var_grp$baseline
-  tibble_for_var <-
-    lpjml_calc_to_rows("baseline", baseline_lpjml_calc, var_name)
-
-  # add under test values to var_grp_tibble
-  for (under_test_lpjml_calc in var_grp$under_test) {
-    tibble_for_var <- dplyr::bind_rows(
-      tibble_for_var,
-      lpjml_calc_to_rows("under_test", under_test_lpjml_calc, var_name)
-    )
-  }
-
-  # add compare items to var_grp_tibble
-  # typical compare items are "difference", "rel. difference"
-  for (i in seq_along(var_grp$compare)) {
-    # loop compare items
-    named_item <- var_grp$compare[i]
-    item_name <- names(named_item)
-    compare_item <- named_item[[1]]  # is a list of lpjml_calc objects
-    for (compare_lpjml_calc in compare_item) {
-      # loop under test runs
-      new_row <-
-        lpjml_calc_to_rows(item_name, compare_lpjml_calc, var_name)
-
-      # a tibble must have the same unit for all col values
-      # the following workaround is used to ensure this,
-      # effectively loosing the unit of the compare values
-      use_baseline_unit <- function(x) {
-        base_unit <- baseline_lpjml_calc$meta$unit
-        units::drop_units(x) %>% units::set_units(base_unit)
-      }
-      new_row <-
-        new_row %>% dplyr::mutate(dplyr::across(dplyr::where(is.numeric),
-                                                use_baseline_unit))
-
-      tibble_for_var <- dplyr::bind_rows(tibble_for_var, new_row)
-    }
-  }
-
-  return(tibble_for_var)
+    return(table)
 }
 
 
-# ----- map functions -----
+
+# ----- map plot -----
 create_map_plots <- function(var_grp_list,
                              colorbar_length = 1.4,
                              m_options) {
@@ -350,7 +206,7 @@ create_ggplot_map <-
       return(breaks)
     }
 
-    # Create ggplot with color scale
+    # create ggplot with color scale
     p <- ggplot2::ggplot() +
       ggplot2::geom_tile(data = tibble,
                          ggplot2::aes(
@@ -427,7 +283,7 @@ prepare_tibble_for_map <- function(lpjml_calc) {
   return(tibble)
 }
 
-# ----- time series functions -----
+# ----- time series plot -----
 create_time_series_plots <- function(var_grp_list,
                                      m_options) {
 
@@ -499,7 +355,7 @@ create_ggplot_timeseries <- function(tibble,
     p <- p + ggplot2::ylim(limits)
   }
 
-  # create plot
+  # adjust plot
   p <- p + ggplot2::labs(x = "time", y = "value") +
     ggplot2::ggtitle(title) +
     ggplot2::theme_minimal() +
@@ -649,4 +505,26 @@ prettify_units <- function(unit_vec) {
                                         replacement = " - ")
 
   return(paste0("[", str_units, "]"))
+}
+
+var_grp_apply <- function(var_grp, fun) {
+  list <- list()
+  if (!is.null(var_grp$baseline)) {
+    list <- append(list, list(fun(var_grp$baseline, "baseline")))
+  }
+  if (!is.null(var_grp$under_test)) {
+    for (lpjml_calc in var_grp$under_test) {
+      list <- append(list, list(fun(lpjml_calc, "under_test")))
+    }
+  }
+  if (!is.null(var_grp$compare)) {
+    for (item in seq_along(var_grp$compare)) {
+      item_name <- names(var_grp$compare[item])
+      for (lpjml_calc in var_grp$compare[[item]])
+        list <- append(list, list(
+          fun(lpjml_calc, "compare", compare_item = item_name)
+        ))
+    }
+  }
+  return(list)
 }
