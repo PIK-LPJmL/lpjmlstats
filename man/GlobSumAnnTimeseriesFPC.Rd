@@ -53,7 +53,7 @@ GlobSumAnnAvgTimeseries
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{LpjmlDataCalc object to be summarized}
+\item{\code{data}}{LPJmLDataCalc object to be summarized}
 }
 \if{html}{\out{</div>}}
 }

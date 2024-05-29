@@ -1,6 +1,6 @@
 # Statistical tools for LPJmL data analysis
 
-R package **lpjmlstats**, version **0.2.1**
+R package **lpjmlstats**, version **0.2.2**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/lpjmlstats)](https://cran.r-project.org/package=lpjmlstats)  [![R build status](https://gitlab.pik-potsdam.de/lpjml/lpjmlstats/workflows/check/badge.svg)](https://gitlab.pik-potsdam.de/lpjml/lpjmlstats/actions) [![codecov](https://codecov.io/gh/lpjml/lpjmlstats/branch/master/graph/badge.svg)](https://app.codecov.io/gh/lpjml/lpjmlstats) [![r-universe](https://pik-piam.r-universe.dev/badges/lpjmlstats)](https://pik-piam.r-universe.dev/builds)
 
@@ -48,7 +48,7 @@ In case of questions / problems please contact David Hötten <davidho@pik-potsda
 
 To cite package **lpjmlstats** in publications use:
 
-Hötten D, Breier J (2024). _lpjmlstats: Statistical tools for LPJmL data analysis_. R package version 0.2.1.
+Hötten D, Breier J (2024). _lpjmlstats: Statistical tools for LPJmL data analysis_. R package version 0.2.2.
 
 A BibTeX entry for LaTeX users is
 
@@ -57,6 +57,6 @@ A BibTeX entry for LaTeX users is
   title = {lpjmlstats: Statistical tools for LPJmL data analysis},
   author = {David Hötten and Jannes Breier},
   year = {2024},
-  note = {R package version 0.2.1},
+  note = {R package version 0.2.2},
 }
 ```

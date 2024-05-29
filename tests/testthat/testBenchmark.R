@@ -81,7 +81,7 @@ test_that("benchmark works for davids personal directory", {
       pdf_report = FALSE
     )
 
-  create_pdf_report(data = bench_data)
+  create_pdf_report(bench_data)
 
   prepare_tibble_for_table(bench_data$GlobSumTimeAvgTable$var_grp_list)
 
