@@ -6,10 +6,10 @@
 # * https://r-pkgs.org/testing-design.html#sec-tests-files-overview
 # * https://testthat.r-lib.org/articles/special-files.html
 
-library(testthat)
-library(lpjmlstats)
-library(Matrix)
-library(raster)
-library(maps)
+library(testthat)   # nolint: undesirable_function_linter.
+library(lpjmlstats) # nolint: undesirable_function_linter.
+library(Matrix)     # nolint: undesirable_function_linter.
+library(raster)     # nolint: undesirable_function_linter.
+library(maps)       # nolint: undesirable_function_linter.
 
 test_check("lpjmlstats")

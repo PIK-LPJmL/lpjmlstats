@@ -408,7 +408,7 @@ LPJmLDataCalc$set(
       if (is.null(private$.meta$._data_dir_)) {
         stop("The data directory must be set to read the terr_area")
       }
-      terr_area_orig <- read_terr_area(private$.meta$._data_dir_)
+      terr_area_orig <- read_file(private$.meta$._data_dir_, "terr_area")
       # make a new copy of the original terr_area, such that modifications
       # do not affect the original R6 object
       terr_area <- terr_area_orig$clone(deep = TRUE)
@@ -426,90 +426,23 @@ LPJmLDataCalc$set(
   }
 )
 
-read_terr_area <- function(searchdir) {
-  # find path of terr_area file
-  terr_area_files <- list.files(
-    path = searchdir,
-    pattern = "^terr_area",
-    full.names = TRUE
-  )
-  if (length(terr_area_files) > 0) {
-    terr_area_types <- sapply(terr_area_files, lpjmlkit::detect_io_type) # nolint
-    # Prefer "meta" file_extension if present
-    if (length(which(terr_area_types == "meta")) == 1) {
-      filename <- terr_area_files[match("meta", terr_area_types)]
-    } else if (length(which(terr_area_types == "clm")) == 1) {
-      # Second priority "clm" file_extension
-      filename <- terr_area_files[match("clm", terr_area_types)]
-    } else {
-      # Stop if either multiple files per file type or not the right type have
-      # been detected
-      stop(
-        "Cannot detect terr_area file automatically",
-      )
-    }
-  } else {
-    # Stop if no file name matching pattern detected
-    stop(
-      "Cannot detect terr_area file automatically",
-    )
-  }
+read_file <- function(searchdir, name, add_grid = TRUE) {
+  # find path of file
+  filename <- find_varfile(searchdir, name)
 
-  # read terr_area file
+  # read file
   message(paste0(
-    cli::col_blue("terr_area"),
+    cli::col_blue(name),
     " read from ",
     sQuote(basename(filename))
   ))
-  terr_area <- read_io(filename)
-  terr_area$add_grid()
+  lpjml_calc <- read_io(filename)
 
-  return(terr_area)
+  if (add_grid)
+    lpjml_calc$add_grid()
+
+  return(lpjml_calc)
 }
-
-read_cft_frac <- function(searchdir) {
-  # find path of terr_area file
-  cft_frac_files <- list.files(
-    path = searchdir,
-    pattern = "^cftfrac",
-    full.names = TRUE
-  )
-  if (length(cft_frac_files) > 0) {
-    cft_frac_types <- sapply(cft_frac_files, lpjmlkit::detect_io_type) # nolint
-    # Prefer "meta" file_extension if present
-    if (length(which(cft_frac_types == "meta")) == 1) {
-      filename <- cft_frac_files[match("meta", cft_frac_types)]
-    } else if (length(which(cft_frac_types == "clm")) == 1) {
-      # Second priority "clm" file_extension
-      filename <- cft_frac_files[match("clm", cft_frac_types)]
-    } else {
-      # Stop if either multiple files per file type or not the right type have
-      # been detected
-      stop(
-        "Cannot detect cft_frac file automatically",
-      )
-    }
-  } else {
-    # Stop if no file name matching pattern detected
-    stop(
-      "Cannot detect cft_frac file automatically",
-    )
-  }
-
-  # read cft_frac file
-  message(paste0(
-    cli::col_blue("cft_frac"),
-    " read from ",
-    sQuote(basename(filename))
-  ))
-  cft_frac <- read_in_time_subsetted(NULL, filename)
-  cft_frac$add_grid()
-
-  return(cft_frac)
-}
-
-
-
 
 
 # ----- utility functions -----

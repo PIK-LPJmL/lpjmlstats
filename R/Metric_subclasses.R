@@ -510,7 +510,7 @@ GlobSumTimeAvgTablePFT_harvest <- # nolint: object_name_linter.
       #' Weigh by cft_frac and then do the same as GlobSumTimeAvgTable
       #' @param data LPJmLDataCalc object to be summarized
       summarize = function(data) {
-        cft_frac <- read_cft_frac(data$meta$.__enclos_env__$private$.data_dir)
+        cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir, "cft_frac")
         cft_frac <- subset(cft_frac, band = data$meta$band_names)
         super$summarize(data * cft_frac)
       },
@@ -573,7 +573,7 @@ GlobSumAnnTimeseriesPFT_harvest <- # nolint: object_name_linter.
       #' Weigh by cft_frac and then do the same as GlobSumAnnAvgTimeseries
       #' @param data LPJmLDataCalc object to be summarized
       summarize = function(data) {
-        cft_frac <- read_cft_frac(data$meta$.__enclos_env__$private$.data_dir)
+        cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir, "cft_frac")
         cft_frac <- subset(cft_frac, band = data$meta$band_names)
         super$summarize(data * cft_frac)
       },
