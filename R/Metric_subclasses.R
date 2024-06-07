@@ -372,6 +372,104 @@ TimeAvgMap <- # nolint: object_name_linter.
     )
   )
 
+# ------- difference maps plus absolute value map for baseline -----------------------
+
+#' @title TimeAvgMapPlusBase
+#' @description
+#' TimeAvgMapPlusBase metric.
+#' See \link{Metric} for the documentation of metrics in general.
+#' @export
+TimeAvgMapPlusBase <- # nolint: object_name_linter.
+  R6::R6Class(
+    "TimeAvgMapPlusBase",
+    inherit = Metric,
+    public = list(
+      #' @description
+      #' Take the mean over the simulation period for each cell.
+      #' @param data LpjmlDataCalc object to be summarized
+      #' @return A summarized \link{LPJmLDataCalc} object
+      summarize = function(data) {
+        data %>%
+          aggregate(time = list(to = "sim_period", stat = "mean"))
+      },
+
+      #' @description
+      #' Compare the baseline summary with the under test summaries by
+      #' subtracting the baseline from the under test.
+      #' @param var_grp variable group
+      compare = function(var_grp) {
+
+        var_grp$compare <-
+          list(difference = lapply(var_grp$under_test, function(x) {
+            x - var_grp$baseline
+          }), absolute = var_grp$baseline)
+
+        # add grids for to all differences
+        lapply(list(var_grp$compare$difference, var_grp$compare$absolute), function(x) x$add_grid())
+
+        # omit setting baseline to NULL so that create_map_plots() can use it
+        #var_grp$baseline <- NULL
+        var_grp$under_test <- NULL
+      },
+
+      #' @description
+      #' Create a map plot with country border overlay.
+      #' @return A list of map ggplots
+      plot = function() {
+        # describe calculation that was applied to the data
+        mod_descr <- "- baseline"
+
+        create_map_plots(
+          self$var_grp_list,
+          self$m_options,
+          mod_descr
+        )
+      },
+
+      #' @description
+      #' Arrange the map plots side by side
+      #' @param plotlist List of map ggplots
+      arrange_plots = function(plotlist) {
+        arrange_map_plots(plotlist, self$m_options)
+      },
+
+      #' @field m_options
+      #' List of metric options specific to this metric
+      #' - `font_size` integer, font size of the map plot
+      #' - `name_trunc` integer, indicating when to truncate the
+      #' band names
+      #' - `highlight` vector of strings, indicating which variables
+      #' should receive a larger full width plot
+      #' - `quantiles` quantiles used to determine the lower an upper
+      #' limits for the values in th map plot
+      #' - `n_breaks` number of breaks for each arm of the diverging
+      #' color scale
+      #' - `year_range`: integer or character vector, defines the range
+      #' of years that the metric considers. Integer indices can be between 1
+      #' and `nyear`. Character vector is used to subset by actual calendar
+      #' years (starting at `firstyear`).
+      m_options = list(
+        font_size = 7,
+        name_trunc = 1,
+        highlight = NULL,
+        quantiles = c(0.05, 0.95),
+        year_range = NULL,
+        n_breaks = 3
+      ),
+
+      #' @field title
+      #' Section header used in the report
+      title = "Time Average Maps Plus Baseline",
+
+      #' @field description
+      #' Description used in the report
+      description = "The cell-time values of each variable are averaged over
+             time. The difference of unter test outputs  to baseline outputs
+             is then plotted on a map plus a map of the baseline outputs. \n"
+    )
+  )
+
+
 
 # ------------ metrics for special outputs -------------------------------------
 

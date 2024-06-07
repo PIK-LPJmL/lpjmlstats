@@ -233,7 +233,8 @@ create_map_plots <- function(var_grp_list,
                              m_options,
                              modification_descr) {
 
-  create_single_map <- function(lpjml_calc, var_name, band, band_names, band_names_short) {
+  create_single_map <- function(lpjml_calc, var_name, band, band_names, band_names_short,
+                                limits = NULL, modification_descr = modification_descr) {
     compare_band <- subset(lpjml_calc, band = band_names[band])
     if (length(band_names) > 1) {
       new_var_name <-
@@ -273,19 +274,24 @@ create_map_plots <- function(var_grp_list,
       # add comparison plots
       for (compare_item in var_grp$compare) {
         for (lpjml_calc in compare_item) {
-          map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short)
+          map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short,
+                                   limits = limits)
           plot_list[[map$plot_title]] <- map$plot
         }
       }
       # add under test plots
       for (lpjml_calc in var_grp$under_test) {
-        map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short)
+        map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short,
+                                 limits = var_grp$get_limits(type = "under_test", 
+                                 quantiles = m_options$quantiles), modification_descr = "")
         plot_list[[map$plot_title]] <- map$plot
       }
       # add baseline plot if there is data
       if (!is.null(var_grp$baseline)) {
         lpjml_calc <- var_grp$baseline
-        map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short)
+        map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short,
+                                 limits = var_grp$get_limits(type = "baseline",
+                                 quantiles = m_options$quantiles), modification_descr = "")
         plot_list[[map$plot_title]] <- map$plot
       }
     }
