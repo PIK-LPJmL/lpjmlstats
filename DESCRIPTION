@@ -1,16 +1,21 @@
 Package: lpjmlstats
 Title: Statistical tools for LPJmL data analysis
-Version: 0.2.2
-Authors@R: c(person("David","Hötten", email = "davidho@pik-potsdam.de", role = c("aut", "cre")),
-             person("Jannes","Breier", email = "jannes.breier@pik-potsdam.de", role = c("aut")))
+Version: 0.2.3
+Authors@R: c(
+    person("David","Hötten", , "davidho@pik-potsdam.de", role = c("aut", "cre")),
+    person("Jannes","Breier", , "jannes.breier@pik-potsdam.de", role = c("aut"), comment = c(ORCID = "0000-0002-9055-6904"))
+  )
 Description: This package provides statistical tools for LPJmL data analysis
     to be used for benchmarking LPJmL outputs.
 License: AGPL-3
-Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.1
+Encoding: UTF-8
+URL: https://github.com/PIK-LPJmL/lpjmlstats
+BugReports: https://github.com/PIK-LPJmL/lpjmlstats/issues
 Imports:
     dplyr,
+    magrittr,
     units,
     lpjmlkit,
     Matrix,
@@ -38,4 +43,4 @@ Config/testthat/edition: 3
 VignetteBuilder: knitr
 Depends:
     R (>= 3.5.0)
-Date: 2024-05-29
+Date: 2024-06-12
