@@ -236,12 +236,14 @@ create_map_plots <- function(var_grp_list,
   create_single_map <- function(lpjml_calc, var_name, band, band_names, band_names_short,
                                 limits = NULL, modification_descr = modification_descr) {
     compare_band <- subset(lpjml_calc, band = band_names[band])
+
     if (length(band_names) > 1) {
       new_var_name <-
         paste0(var_name, "$", band_names_short[band])
     } else {
       new_var_name <- paste0(var_name)
     }
+
     plot_title <- paste0(
       lpjml_calc$get_sim_identifier(),
       " ",
@@ -275,7 +277,7 @@ create_map_plots <- function(var_grp_list,
       for (compare_item in var_grp$compare) {
         for (lpjml_calc in compare_item) {
           map <- create_single_map(lpjml_calc, var_grp$var_name, band, band_names, band_names_short,
-                                   limits = limits)
+                                   limits = limits, modification_descr = modification_descr)
           plot_list[[map$plot_title]] <- map$plot
         }
       }

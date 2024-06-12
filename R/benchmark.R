@@ -158,7 +158,6 @@
 #'
 #' @md
 #'
-#' @importFrom dplyr %>%
 #' @export
 #'
 benchmark <-
