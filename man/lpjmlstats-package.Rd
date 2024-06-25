@@ -8,12 +8,20 @@
 \description{
 This package provides statistical tools for LPJmL data analysis to be used for benchmarking LPJmL outputs.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/PIK-LPJmL/lpjmlstats}
+  \item Report bugs at \url{https://github.com/PIK-LPJmL/lpjmlstats/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: David Hötten \email{davidho@pik-potsdam.de}
 
 Authors:
 \itemize{
-  \item Jannes Breier \email{jannes.breier@pik-potsdam.de}
+  \item Jannes Breier \email{jannes.breier@pik-potsdam.de} (\href{https://orcid.org/0000-0002-9055-6904}{ORCID})
 }
 
 }
