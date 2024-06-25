@@ -44,8 +44,5 @@ Config/testthat/edition: 3
 VignetteBuilder: knitr
 Depends:
     R (>= 3.5.0)
-<<<<<<< HEAD
 Date: 2024-06-25
-=======
-Date: 2024-06-12
->>>>>>> main
+
