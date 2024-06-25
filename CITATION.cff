@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'lpjmlstats: Statistical tools for LPJmL data analysis'
-version: 0.2.3
-date-released: '2024-06-12'
+version: 0.3.0
+date-released: '2024-06-25'
 abstract: This package provides statistical tools for LPJmL data analysis to be used
   for benchmarking LPJmL outputs.
 authors:
