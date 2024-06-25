@@ -28,7 +28,9 @@ Imports:
     patchwork,
     tibble,
     cli,
-    raster
+    raster,
+    tidyselect,
+    R6
 Suggests: 
     testthat (>= 3.0.0),
     maps,
@@ -38,4 +40,4 @@ Config/testthat/edition: 3
 VignetteBuilder: knitr
 Depends:
     R (>= 3.5.0)
-Date: 2024-05-16
+Date: 2024-06-25

@@ -27,14 +27,15 @@ GlobSumAnnTimeseriesFPC metric
 \if{html}{\out{
 <details><summary>Inherited methods</summary>
 <ul>
-<li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="add_comparison"><a href='../../lpjmlstats/html/Metric.html#method-Metric-add_comparison'><code>lpjmlstats::Metric$add_comparison()</code></a></span></li>
-<li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="apply_to_all_lpjml_calcs"><a href='../../lpjmlstats/html/Metric.html#method-Metric-apply_to_all_lpjml_calcs'><code>lpjmlstats::Metric$apply_to_all_lpjml_calcs()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="add_compare_meta"><a href='../../lpjmlstats/html/Metric.html#method-Metric-add_compare_meta'><code>lpjmlstats::Metric$add_compare_meta()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="add_comparisons"><a href='../../lpjmlstats/html/Metric.html#method-Metric-add_comparisons'><code>lpjmlstats::Metric$add_comparisons()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="capture_summary"><a href='../../lpjmlstats/html/Metric.html#method-Metric-capture_summary'><code>lpjmlstats::Metric$capture_summary()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="compare"><a href='../../lpjmlstats/html/Metric.html#method-Metric-compare'><code>lpjmlstats::Metric$compare()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="generate_report_content"><a href='../../lpjmlstats/html/Metric.html#method-Metric-generate_report_content'><code>lpjmlstats::Metric$generate_report_content()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="print_metric_description"><a href='../../lpjmlstats/html/Metric.html#method-Metric-print_metric_description'><code>lpjmlstats::Metric$print_metric_description()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="print_metric_header"><a href='../../lpjmlstats/html/Metric.html#method-Metric-print_metric_header'><code>lpjmlstats::Metric$print_metric_header()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="store_summary"><a href='../../lpjmlstats/html/Metric.html#method-Metric-store_summary'><code>lpjmlstats::Metric$store_summary()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="transform_lpjml_calcs"><a href='../../lpjmlstats/html/Metric.html#method-Metric-transform_lpjml_calcs'><code>lpjmlstats::Metric$transform_lpjml_calcs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="GlobSumTimeseries" data-id="arrange_plots"><a href='../../lpjmlstats/html/GlobSumTimeseries.html#method-GlobSumTimeseries-arrange_plots'><code>lpjmlstats::GlobSumTimeseries$arrange_plots()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="GlobSumTimeseries" data-id="plot"><a href='../../lpjmlstats/html/GlobSumTimeseries.html#method-GlobSumTimeseries-plot'><code>lpjmlstats::GlobSumTimeseries$plot()</code></a></span></li>
 </ul>

@@ -50,14 +50,14 @@ arrange_map_plots <- function(plotlist, m_options, ncol = 2) {
   }
 
   # arrange plots
-  for (i in 0:floor(n_plots/ncol)) {
+  for (i in 0:floor(n_plots / ncol)) {
     patch <- NULL
     for (k in 1:ncol) {
-      if (i*ncol + k <= n_plots) {
+      if (i * ncol + k <= n_plots) {
         if (k == 1)
-          patch <- plotlist[[i*ncol + k]]
+          patch <- plotlist[[i * ncol + k]]
         else
-          patch <- patch + plotlist[[i*ncol + k]]
+          patch <- patch + plotlist[[i * ncol + k]]
       }
     }
     if (!is.null(patch))

@@ -57,7 +57,7 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       #' List of metric options specific to this metric
       #' - `font_size`: integer, font size of the table
       #' - `name_trunc`: integer, number of characters to display in the table
-      #' - `decimal_places`: integer, number of decimal places to display
+      #' - `disp_digits`: integer, number of significant digits to display
       #' - `year_range`: integer or character vector, defines the range
       #' of years that the metric considers. Integer indices can be between 1
       #' and `nyear`. Character vector is used to subset by actual calendar
@@ -66,7 +66,7 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       m_options = list(
         font_size = 7,
         name_trunc = 1,
-        decimal_places = 3,
+        disp_digits = 4,
         year_range = NULL
       ),
 
@@ -274,6 +274,11 @@ GlobAvgAnnAvgTimeseries <- R6::R6Class( # nolint: object_name_linter.
   )
 )
 
+#' @title CellSubsetAnnAvgTimeseries
+#' @description
+#' CellSubsetAnnAvgTimeseries metric.
+#' See \link{Metric} for the documentation of metrics in general.
+#' @export
 CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
   R6::R6Class(
     "CellSubsetAnnAvgTimeseries",
@@ -281,7 +286,7 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
     public = list(
       #' @description
       #' Subset the cells and compute an annual average.
-      #' @param data LPJmLDataCalc object to be summarized
+      #' @param lpjml_data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(lpjml_data) {
         subset(lpjml_data, cell = self$m_options$cell) %>%
@@ -319,6 +324,11 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
     )
   )
 
+#' @title CellSubsetTimeseries
+#' @description
+#' CellSubsetTimeseries metric.
+#' See \link{Metric} for the documentation of metrics in general.
+#' @export
 CellSubsetTimeseries <- # nolint: object_name_linter.
   R6::R6Class(
     "CellSubsetTimeseries",
@@ -326,7 +336,7 @@ CellSubsetTimeseries <- # nolint: object_name_linter.
     public = list(
       #' @description
       #' Subset the cells.
-      #' @param data LPJmLDataCalc object to be summarized
+      #' @param lpjml_data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(lpjml_data) {
         subset(lpjml_data, cell = self$m_options$cell)
@@ -451,6 +461,11 @@ TimeAvgMap <- # nolint: object_name_linter.
     )
   )
 
+#' @title TimeAvgMapWithAbs
+#' @description
+#' TimeAvgMapWithAbs metric.
+#' See \link{Metric} for the documentation of metrics in general.
+#' @export
 TimeAvgMapWithAbs <- # nolint: object_name_linter.
   R6::R6Class(
     "TimeAvgMapWithAbs",
@@ -487,8 +502,12 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
         arrange_map_plots(plotlist, self$m_options, ncol = 3)
       },
 
-
+      #' @field title
+      #' Section header used in the report
       title = "Time Average Maps With Absolute Values",
+
+      #' @field description
+      #' Description used in the report
       description = "The cell time values are averaged
                      over time and plotted on a map. The difference
                      to the baseline is also plotted. \n"
@@ -514,7 +533,7 @@ GlobSumTimeAvgTablePFT_harvest <- # nolint: object_name_linter.
                               "cftfrac")
         cft_frac <- subset(cft_frac,
                            band = data$meta$band_names,
-                           time = dimnames(data$data)[2])
+                           time = dimnames(data$data)[[2]])
         super$summarize(data * cft_frac)
       },
 

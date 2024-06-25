@@ -94,9 +94,20 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
       cat(
         paste0(
           spaces,
-          cli::col_blue("$sim_identifier"),
+          cli::col_blue("$sim_ident"),
           " ",
-          self$.__get_sim_identifier__(),
+          self$sim_ident,
+          "\n"
+        )
+      )
+
+      # print sim path abbreviation
+      cat(
+        paste0(
+          spaces,
+          cli::col_blue("$pos_in_var_grp"),
+          " ",
+          self$pos_in_var_grp,
           "\n"
         )
       )
@@ -105,37 +116,141 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
     #' @description
     #' Set the simulation identifier
     #' !Internal method only to be used for package development!
-    #' @param sim_identifier string, simulation identifier
-    .__set_sim_identifier__ = function(sim_identifier) {
-      private$.sim_identifier <- sim_identifier
+    #' @param sim_ident string, simulation identifier
+    .__set_sim_ident__ = function(sim_ident) {
+      private$.sim_ident <- sim_ident
     },
 
     #' @description
+    #' Set the position of the lpjml_calc inside of its var_grp.
     #' !Internal method only to be used for package development!
-    #' @return string, simulation identifier
-    .__get_sim_identifier__ = function() {
-      return(private$.sim_identifier)
+    #' @param pos_in_var_grp A list with the position of the lpjml_calc
+    #' inside of the var_grp. The first entry is the type; can be
+    #' "baseline", "under_test" or "compare".
+    #' The second entry is the compare item if
+    #' of type "compare", e.g. "diff".
+    #' E.g. list("under_test") or list("compare", "diff").
+    .__set_pos_in_var_grp__ = function(pos_in_var_grp) {
+      private$.pos_in_var_grp <- pos_in_var_grp
+    },
+
+    #' @description
+    #' Set versions of band names for display, usually shorter.
+    #' !Internal method only to be used for package development!
+    .__set_band_names_disp__ = function() {
+      private$.band_names_disp <-
+        shorten_names(private$.band_names)
     }
+
   ),
 
   active = list(
-    #' @field space_aggregation Indication weather the data has been
+    #' @field space_aggregation boolean, Indication weather the data has been
     #' subject to space aggregation.
     space_aggregation = function() {
       return(private$.space_aggregation)
     },
 
-    #' @field time_aggregation Indication weather the data has been
+    #' @field time_aggregation boolean, Indication weather the data has been
     #' subject to time aggregation.
     time_aggregation = function() {
       return(private$.time_aggregation)
+    },
+
+    #' @field band_names_disp
+    #' named vector, versions of band names used for display, usually shorter
+    band_names_disp = function() {
+      if (!is.null(private$.band_names))
+        return(shorten_names(private$.band_names))
+      else
+        return(NULL)
+    },
+
+    #' @field pos_in_var_grp
+    #' list, position of the lpjml_calc inside of its var_grp.
+    pos_in_var_grp = function() {
+      return(private$.pos_in_var_grp)
+    },
+
+    #' @field sim_ident
+    #' string, simulation identifier
+    sim_ident = function() {
+      return(private$.sim_ident)
+    },
+
+    #' @field var_and_band_disp
+    #' string, variable name together with name of first band, e.g. `soiln$200`
+    var_and_band_disp = function() {
+      paste0(self$variable,
+             ifelse(is.null(self$band_names_disp),
+                    "", "$"),
+             # below vanishes if band_names_disp is NULL
+             self$band_names_disp[[1]])
     }
   ),
 
   private = list(
     .space_aggregation = NULL,
     .time_aggregation = NULL,
-    .sim_identifier = "notset"
-
+    .sim_ident = "undefined simulation",
+    .band_names_disp = NULL,
+    .pos_in_var_grp = list("undefined position in var_grp")
   )
 )
+
+
+# NTODO: needs refactoring
+shorten_names <- function(names, trunc = 9) {
+
+  # find index until which all strings are equal
+  stop <- FALSE
+  i <- 0
+  while (stop == FALSE) {
+    i <- i + 1
+    if (length(unique(substr(
+      x = names,
+      start = 1,
+      stop = i
+    ))) > 1) {
+
+      stop <- TRUE
+    }
+
+    if (i > max(stringr::str_length(names))) {
+      stop <- TRUE
+    }
+  }
+  i <- i - 1
+
+  if (i > trunc + 9) {
+    front_parts <- names %>% stringr::str_sub(1, 4)
+    back_parts <- names %>% stringr::str_sub(max(i - 3, 6))
+    short_colnames <- paste0(front_parts, "[..]", back_parts)
+  } else {
+    short_colnames <- names
+  }
+
+  # find index from which all remaining truncated strings are unique
+  stop <- FALSE
+  i <- 0
+  while (stop == FALSE) {
+    i <- i + 1
+    if (length(unique(substr(
+      x = short_colnames,
+      start = 1,
+      stop = i
+    ))) == length(unique(short_colnames
+    ))) {
+
+      stop <- TRUE
+    }
+  }
+
+  trunc <- max(i + 6, trunc + 6)
+
+  short_colnames <- stringr::str_trunc(short_colnames, trunc, ellipsis = "[..]")
+
+  names(short_colnames) <- names
+
+  return(short_colnames)
+}

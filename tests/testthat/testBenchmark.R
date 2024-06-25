@@ -28,6 +28,23 @@ test_that("benchmark produces correct results", {
 
 })
 
+test_that("correct meta information ends up in lpjml_calc", {
+
+  baseline_dir <- testthat::test_path("../testdata/path1")
+  under_test_dir <- testthat::test_path("../testdata/path2")
+  settings <-
+    list(soiln_layer = list(.DoNothing))
+
+  out <- benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE)
+
+  compare_lpjml_calc <-
+    out$.DoNothing$var_grp_list$soiln_layer$compare$nodiff$sim1
+
+
+  expect_equal(compare_lpjml_calc$meta$pos_in_var_grp,
+               list(type = "compare", compare_item = "nodiff"))
+})
+
 test_that("benchmark report generation runs through without warnings", {
   skip("NTODO: Currently crahses testing of devtools::check()")
   baseline_dir <- testthat::test_path("../testdata/path1")
@@ -45,29 +62,21 @@ test_that("benchmark report generation runs through without warnings", {
 
 })
 
-test_that("benchmark works for davids personal directory", {
+test_that("experiments in david personal directory", {
 
   skip("only works at davids personal directory")
   baseline_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master" #nolint
   under_test_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy" # nolint
 
   settings <- list(
-    `pft_harvest.pft$rainfed rice` =  c(GlobSumAnnTimeseriesPFT_harvest)
-    #rainfed maize` =  c(CellSubsetAnnAvgTimeseries)
-    #rainfed oil crops soybean;
-    #rainfed grassland`  = c(TimeAvgMap, GlobSumTimeAvgTablePFT_harvest),
-    #mn2_emis = c(GlobSumAnnTimeseriesPFT_harvest)
+    `pft_harvest.pft$rainfed rice; rainfed maize` = c(GlobSumTimeAvgTablePFT_harvest)
   )
 
   metric_options <- list(
     GlobSumTimeAvgTable = list(
       font_size = 10
     ),
-    TimeAvgMap = list(
-      highlight = "soilc",
-      font_size = 9
-    ),
-    CellSubsetTimeseries = list (
+    CellSubsetTimeseries = list(
       cell = c("2000", "3000")
     )
   )
@@ -79,23 +88,39 @@ test_that("benchmark works for davids personal directory", {
       baseline_dir,
       list(under_test_dir),
       author = "David",
-      settings = settings,
       metric_options = metric_options,
       description = "test benchmarking",
+      settings = settings,
       pdf_report = FALSE
     )
 
-  l <- bench_data$TimeAvgMapAll$plot()
-
-  bench_data$GlobSumTimeAvgTable$plot()
 
   create_pdf_report(benchmark_result = bench_data)
 
-  set_lpjmlstats_settings(year_subset = NULL)
+  bench_data$GlobSumTimeAvgTablePFT_harvest$plot()
 
+  bench_data$TimeAvgMapWithAbs$plot()
 
+  set_lpjmlstats_settings(year_subset = NULL, metrics_at_start = NULL)
 })
 
+test_that("default run in davids personal directory", {
+
+  skip("only works at davids personal directory")
+  baseline_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master" #nolint
+  under_test_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy" # nolint
+
+  set_lpjmlstats_settings(year_subset = c(1:2))
+
+  bench_data <-
+    benchmark(
+      baseline_dir,
+      list(under_test_dir),
+      author = "David",
+      description = "test benchmarking",
+      pdf_report = TRUE
+    )
+})
 
 
 

@@ -306,17 +306,17 @@ create_simulation_table <- function(paths) {
     }
 
     # create identifier from file paths
-    sim_identifier <- unlist(create_unique_short_sim_paths(sim_paths))
+    sim_ident <- unlist(create_unique_short_sim_paths(sim_paths))
   } else {
-    sim_identifier <- sim_names
+    sim_ident <- sim_names
   }
 
   # remove underscores if it doesnt inflict uniqueness
-  if (length(sim_identifier) == length(unique(gsub("_", "", sim_identifier)))) {
-    sim_identifier <- gsub("_", " ", sim_identifier)
+  if (length(sim_ident) == length(unique(gsub("_", "", sim_ident)))) {
+    sim_ident <- gsub("_", " ", sim_ident)
   }
 
-  sim_identifier <- abbreviate(sim_identifier, minlength = 4, method = "both.sides")
+  sim_ident <- abbreviate(sim_ident, minlength = 4, method = "both.sides")
 
   lpjml_version <- gsub("LPJmL C Version", "", lpjml_version)
 
@@ -328,7 +328,7 @@ create_simulation_table <- function(paths) {
     tibble::tibble(sim_paths,
                    lpjml_version,
                    sim_names,
-                   sim_identifier,
+                   sim_ident,
                    sim_type = sim_type)
 
   return(sim_table)
@@ -394,11 +394,11 @@ set_options <- function(metrics, m_options) {
 
 
 
-# Function applies unit conversions ass specified in package conversion
+# Function applies unit conversions as specified in package conversion
 # table to all metrics
 apply_unit_conversion_table <- function(metrics) {
   for (metric in metrics) {
-    metric$apply_to_all_lpjml_calcs(function(x) x$apply_unit_conversion_table())
+    metric$transform_lpjml_calcs(function(x) x$apply_unit_conversion_table())
   }
 }
 
@@ -424,7 +424,7 @@ create_benchmarkResult_obj <- function(metrics, # nolint: object_name_linter.
 #' @return A list with the meta data of the benchmarkResult object.
 #' The list contains the author, the description and a simulation
 #' identification table. The latter is a tibble with the columns
-#' sim_paths, lpjml_version, sim_names, sim_identifier and sim_type.
+#' sim_paths, lpjml_version, sim_names, sim_ident and sim_type.
 #'
 #' @export
 get_benchmark_meta_data <- function(benchmark_result) {
@@ -489,7 +489,8 @@ retrieve_summaries <-
     # datafile by datafile to avoid reading the same raw data file multiple
     # times or having several raw files in memory at the same time
 
-    # Function to read raw file and extract all needed summaries of that file
+    # Function to read raw file, add some meta information
+    # and capture all needed summaries of that file
     process_file <-
       function(metric_list,
                dir,
@@ -498,8 +499,8 @@ retrieve_summaries <-
                suffix,
                sim_table) {
 
+        # get varname, bandname and filename
         var_band <- split_variable_and_band(var)
-
         filename <- paste0(var_band$var_pure, suffix)
 
         # load potentially large raw dataset into memory
@@ -508,14 +509,18 @@ retrieve_summaries <-
         if (!is.null(var_band$band)) {
           raw_data <- subset(raw_data, band = var_band$band)
         }
-        raw_data$set_sim_identifier(
-          sim_table$sim_identifier[sim_table$sim_paths == dir][1]
+
+        # add some context of the data object to the meta
+        raw_data$.meta$.__set_sim_ident__(
+          sim_table$sim_ident[sim_table$sim_paths == dir][1]
         )
+        raw_data$.meta$.__set_pos_in_var_grp__(list(type = type))
+
+        # allow each metric to capture an individual summary of this raw data
         for (metric in metric_list) {
-          # allow each metric to capture an individual summary of this raw data
-          # cat(paste0("Summarize with metric ", class(metric)[1], " ...\n")) # nolint
           metric$capture_summary(raw_data, var, type)
         }
+
         # remove raw data from memory
         rm(raw_data)
         gc()
@@ -590,6 +595,6 @@ read_in_time_subsetted <- function(dir = dir, filename = filename) {
 # internal comparison function of all metrics
 compare_summaries <- function(metric_list) {
   for (metric in metric_list) {
-    metric$add_comparison()
+    metric$add_comparisons()
   }
 }
