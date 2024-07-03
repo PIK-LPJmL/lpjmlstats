@@ -64,8 +64,7 @@ lpjml_calc_to_table <- function(lpjml_calc) {
     # !! assumes the lpjml_calc contains only a single value per band !!
     lpjml_calc_sub <- subset(lpjml_calc, band = band_name)
     band_value <- lpjml_calc_sub$.data_with_unit[1, 1, 1]
-    row_name <- lpjml_calc_sub$meta$var_and_band_disp
-    band_values[[row_name]] <- band_value
+    band_values[[lpjml_calc_sub$meta$var_and_band_disp]] <- band_value
   }
 
   # ---- create table ----
@@ -118,10 +117,9 @@ lpjml_calc_to_map <- function(lpjml_calc,
                               m_options,
                               limits,
                               colorbar_length = 1.4) {
-  var_and_band_disp <- lpjml_calc$meta$var_and_band_disp
   pos_in_var_grp <- lpjml_calc$meta$pos_in_var_grp
   plot_title <- paste(
-    var_and_band_disp,
+    lpjml_calc$meta$var_and_band_disp,
     lpjml_calc$meta$sim_ident,
     pos_in_var_grp$compare_item,
     prettify_units(lpjml_calc$meta$unit)

@@ -238,26 +238,9 @@ VarGrp <- # nolint:object_linter_name
           return(dimnames(self$compare[[1]][[1]])[["band"]])
       },
 
-      transform_lpjml_calcs = function(fun, ...) {
-        fun_skip_null <- function(x, fun, ...) {
-          # skip if x is NULL
-          if (!is.null(x))
-            return(fun(x, ...))
-          else
-            return(NULL)
-        }
-        self$baseline <- fun_skip_null(self$baseline, fun, ...)
-        for (i in seq_along(self$under_test)) {
-          self$under_test[[i]] <- fun_skip_null(self$under_test[[i]], fun, ...)
-        }
-        for (i in seq_along(self$compare)) {
-          for (j in seq_along(compare)) {
-            self$compare[[i]][[j]] <-
-              fun_skip_null(self$compare[[i]][[j]], fun, ...)
-          }
-        }
-      },
-
+      # Function applies the function `fun`
+      # to the first lpjml_calc it can find in the var_grp and returns the
+      # result.
       apply_to_any_lpjml_calc = function(fun, ...) {
         if (!is.null(self$baseline)) {
           return(fun(self$baseline, ...))
@@ -270,8 +253,8 @@ VarGrp <- # nolint:object_linter_name
         }
       },
 
-      # This utility function applies the function `fun`
-      # to all elements of a var_grp
+      # Function applies the function `fun`
+      # to all lpjml_calcs of a var_grp
       # (baseline, all under_test, all compare with all items)
       # and saves the results in a non-nested list.
       # Additional arguments ... will be passed to `fun`
@@ -307,6 +290,34 @@ VarGrp <- # nolint:object_linter_name
           }
         }
         return(list)
+      },
+
+      # Function applies the function `fun`
+      # to all lpjml_calcs of a var_grp
+      # (baseline, all under_test, all compare with all items).
+      # `fun` is expected to return lpjml_calc objects.
+      # The lpjml_calcs of the var_grp are overwritten by
+      # those objects. (They are transformed by `fun`)
+      # Additional arguments ... will be passed to `fun`
+      # in addition to each lpjml_calc.
+      transform_lpjml_calcs = function(fun, ...) {
+        fun_skip_null <- function(x, fun, ...) {
+          # skip if x is NULL
+          if (!is.null(x))
+            return(fun(x, ...))
+          else
+            return(NULL)
+        }
+        self$baseline <- fun_skip_null(self$baseline, fun, ...)
+        for (i in seq_along(self$under_test)) {
+          self$under_test[[i]] <- fun_skip_null(self$under_test[[i]], fun, ...)
+        }
+        for (i in seq_along(self$compare)) {
+          for (j in seq_along(compare)) {
+            self$compare[[i]][[j]] <-
+              fun_skip_null(self$compare[[i]][[j]], fun, ...)
+          }
+        }
       },
 
       deep_clone = function(deep = FALSE) {
