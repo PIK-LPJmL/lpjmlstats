@@ -499,7 +499,7 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       #' Arrange the map plots side by side
       #' @param plotlist List of map ggplots
       arrange_plots = function(plotlist) {
-        arrange_map_plots(plotlist, self$m_options, ncol = 3)
+        arrange_map_plots(plotlist, self$m_options, num_cols = 3)
       },
 
       #' @field title

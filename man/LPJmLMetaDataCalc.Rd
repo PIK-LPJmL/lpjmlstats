@@ -38,7 +38,6 @@ subject to time aggregation.}
 \item \href{#method-LPJmLMetaDataCalc-print}{\code{LPJmLMetaDataCalc$print()}}
 \item \href{#method-LPJmLMetaDataCalc-.__set_sim_ident__}{\code{LPJmLMetaDataCalc$.__set_sim_ident__()}}
 \item \href{#method-LPJmLMetaDataCalc-.__set_pos_in_var_grp__}{\code{LPJmLMetaDataCalc$.__set_pos_in_var_grp__()}}
-\item \href{#method-LPJmLMetaDataCalc-.__set_band_names_disp__}{\code{LPJmLMetaDataCalc$.__set_band_names_disp__()}}
 \item \href{#method-LPJmLMetaDataCalc-clone}{\code{LPJmLMetaDataCalc$clone()}}
 }
 }
@@ -170,17 +169,6 @@ E.g. list("under_test") or list("compare", "diff").}
 }
 \if{html}{\out{</div>}}
 }
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLMetaDataCalc-.__set_band_names_disp__"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-.__set_band_names_disp__}{}}}
-\subsection{Method \code{.__set_band_names_disp__()}}{
-Set versions of band names for display, usually shorter.
-!Internal method only to be used for package development!
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$.__set_band_names_disp__()}\if{html}{\out{</div>}}
-}
-
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-LPJmLMetaDataCalc-clone"></a>}}

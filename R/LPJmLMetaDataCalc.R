@@ -132,14 +132,6 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
     #' E.g. list("under_test") or list("compare", "diff").
     .__set_pos_in_var_grp__ = function(pos_in_var_grp) {
       private$.pos_in_var_grp <- pos_in_var_grp
-    },
-
-    #' @description
-    #' Set versions of band names for display, usually shorter.
-    #' !Internal method only to be used for package development!
-    .__set_band_names_disp__ = function() {
-      private$.band_names_disp <-
-        shorten_names(private$.band_names)
     }
 
   ),
@@ -193,7 +185,6 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
     .space_aggregation = NULL,
     .time_aggregation = NULL,
     .sim_ident = "undefined simulation",
-    .band_names_disp = NULL,
     .pos_in_var_grp = list("undefined position in var_grp")
   )
 )

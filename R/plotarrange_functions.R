@@ -21,7 +21,7 @@ arrange_table_plot <- function(plotlist, m_options) {
   )
 }
 
-arrange_map_plots <- function(plotlist, m_options, ncol = 2) {
+arrange_map_plots <- function(plotlist, m_options, num_cols = 2) {
   plotlist <- print_highlighted_maps(plotlist, m_options$highlight)
 
   n_plots <- length(plotlist)
@@ -50,18 +50,18 @@ arrange_map_plots <- function(plotlist, m_options, ncol = 2) {
   }
 
   # arrange plots
-  for (i in 0:floor(n_plots / ncol)) {
+  for (i in 0:floor(n_plots / num_cols)) {
     patch <- NULL
-    for (k in 1:ncol) {
-      if (i * ncol + k <= n_plots) {
+    for (k in 1:num_cols) {
+      if (i * num_cols + k <= n_plots) {
         if (k == 1)
-          patch <- plotlist[[i * ncol + k]]
+          patch <- plotlist[[i * num_cols + k]]
         else
-          patch <- patch + plotlist[[i * ncol + k]]
+          patch <- patch + plotlist[[i * num_cols + k]]
       }
     }
     if (!is.null(patch))
-      print(patch + patchwork::plot_layout(ncol = ncol))
+      print(patch + patchwork::plot_layout(ncol = num_cols))
     cat("\\newline")
   }
 }
