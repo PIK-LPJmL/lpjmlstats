@@ -62,78 +62,16 @@ test_that("benchmark report generation runs through without warnings", {
 
 })
 
-test_that("experiments in david personal directory", {
-
-  skip("only works at davids personal directory")
-  baseline_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master" #nolint
-  under_test_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy" # nolint
-
-  settings <- list(
-    `pft_harvest.pft$rainfed rice; rainfed maize` = c(GlobSumTimeAvgTablePFT_harvest)
-  )
-
-  metric_options <- list(
-    GlobSumTimeAvgTable = list(
-      font_size = 10
-    ),
-    CellSubsetTimeseries = list(
-      cell = c("2000", "3000")
-    )
-  )
-
-  set_lpjmlstats_settings(year_subset = c(1:30), metrics_at_start = c("Map", "Cell"))
-
-  bench_data <-
-    benchmark(
-      baseline_dir,
-      list(under_test_dir),
-      author = "David",
-      metric_options = metric_options,
-      description = "test benchmarking",
-      settings = settings,
-      pdf_report = FALSE
-    )
-
-
-  create_pdf_report(benchmark_result = bench_data)
-
-  bench_data$GlobSumTimeAvgTablePFT_harvest$plot()
-
-  bench_data$TimeAvgMapWithAbs$plot()
-
-  set_lpjmlstats_settings(year_subset = NULL, metrics_at_start = NULL)
-})
-
-test_that("default run in davids personal directory", {
-
-  skip("only works at davids personal directory")
-  baseline_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master" #nolint
-  under_test_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy" # nolint
-
-  set_lpjmlstats_settings(year_subset = c(1:2))
-
-  bench_data <-
-    benchmark(
-      baseline_dir,
-      list(under_test_dir),
-      author = "David",
-      description = "test benchmarking",
-      pdf_report = TRUE
-    )
-})
-
-
-
 
 # ----- test benchmark utitlity functions
 
 test_that("create_unique_short_sim_path produces unique names", {
   # create test sim pathes
   paths <- c(
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master",           # nolint
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy",  # nolint
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy2", # nolint
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM2/new_soil_energy"  # nolint
+    "C:/Users/test/Desktop/test2/something/master",  # nolint
+    "C:/Users/test/Desktop/test2/something/other1",  # nolint
+    "C:/Users/test/Desktop/test2/something/other2",  # nolint
+    "C:/Users/test/Desktop/test2/anything/other4"    # nolint
   )
 
   # create unique names
