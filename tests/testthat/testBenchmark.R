@@ -28,6 +28,23 @@ test_that("benchmark produces correct results", {
 
 })
 
+test_that("correct meta information ends up in lpjml_calc", {
+
+  baseline_dir <- testthat::test_path("../testdata/path1")
+  under_test_dir <- testthat::test_path("../testdata/path2")
+  settings <-
+    list(soiln_layer = list(.DoNothing))
+
+  out <- benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE)
+
+  compare_lpjml_calc <-
+    out$.DoNothing$var_grp_list$soiln_layer$compare$nodiff$sim1
+
+
+  expect_equal(compare_lpjml_calc$meta$pos_in_var_grp,
+               list(type = "compare", compare_item = "nodiff"))
+})
+
 test_that("benchmark report generation runs through without warnings", {
   skip("NTODO: Currently crahses testing of devtools::check()")
   baseline_dir <- testthat::test_path("../testdata/path1")
@@ -45,64 +62,16 @@ test_that("benchmark report generation runs through without warnings", {
 
 })
 
-test_that("benchmark works for davids personal directory", {
-
-  skip("only works at davids personal directory")
-  baseline_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master" #nolint
-  under_test_dir <- "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy" # nolint
-
-  settings <- list(
-    `pft_harvest.pft$rainfed rice;
-    rainfed maize;
-    rainfed oil crops soybean;
-    rainfed grassland`  = c(TimeAvgMap, GlobSumTimeAvgTablePFT_harvest),
-    fpc = c(GlobSumTimeAvgTableFPC, GlobSumTimeAvgTable, TimeAvgMap, GlobSumTimeseries)
-  )
-
-  metric_options <- list(
-    GlobSumTimeAvgTable = list(
-      font_size = 10
-    ),
-    TimeAvgMap = list(
-      highlight = "soilc",
-      font_size = 9
-    )
-  )
-
-  set_lpjmlstats_settings(year_subset = c(1:2))
-
-  bench_data <-
-    benchmark(
-      baseline_dir,
-      list(under_test_dir),
-      author = "David",
-      settings = settings,
-      description = "test benchmarking",
-      pdf_report = FALSE
-    )
-
-  create_pdf_report(bench_data)
-
-  prepare_tibble_for_table(bench_data$GlobSumTimeAvgTable$var_grp_list)
-
-  set_lpjmlstats_settings(year_subset = NULL)
-
-
-})
-
-
-
-
 
 # ----- test benchmark utitlity functions
 
 test_that("create_unique_short_sim_path produces unique names", {
   # create test sim pathes
   paths <- c(
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/master",           # nolint
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy",  # nolint
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM/new_soil_energy2", # nolint
-    "C:/Users/davidho/Desktop/LPJmLG/example_outputs_BM2/new_soil_energy"  # nolint
+    "C:/Users/test/Desktop/test2/something/master",  # nolint
+    "C:/Users/test/Desktop/test2/something/other1",  # nolint
+    "C:/Users/test/Desktop/test2/something/other2",  # nolint
+    "C:/Users/test/Desktop/test2/anything/other4"    # nolint
   )
 
   # create unique names

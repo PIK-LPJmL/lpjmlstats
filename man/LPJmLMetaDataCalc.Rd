@@ -13,11 +13,19 @@ A meta data container for the LPJmLDataCalc class that extends the
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
-\item{\code{space_aggregation}}{Indication weather the data has been
+\item{\code{space_aggregation}}{boolean, Indication weather the data has been
 subject to space aggregation.}
 
-\item{\code{time_aggregation}}{Indication weather the data has been
+\item{\code{time_aggregation}}{boolean, Indication weather the data has been
 subject to time aggregation.}
+
+\item{\code{band_names_disp}}{named vector, versions of band names used for display, usually shorter}
+
+\item{\code{pos_in_var_grp}}{list, position of the lpjml_calc inside of its var_grp.}
+
+\item{\code{sim_ident}}{string, simulation identifier}
+
+\item{\code{var_and_band_disp}}{string, variable name together with name of first band, e.g. \verb{soiln$200}}
 }
 \if{html}{\out{</div>}}
 }
@@ -28,8 +36,8 @@ subject to time aggregation.}
 \item \href{#method-LPJmLMetaDataCalc-.__set_space_aggregation__}{\code{LPJmLMetaDataCalc$.__set_space_aggregation__()}}
 \item \href{#method-LPJmLMetaDataCalc-.__set_time_aggregation__}{\code{LPJmLMetaDataCalc$.__set_time_aggregation__()}}
 \item \href{#method-LPJmLMetaDataCalc-print}{\code{LPJmLMetaDataCalc$print()}}
-\item \href{#method-LPJmLMetaDataCalc-.__set_sim_identifier__}{\code{LPJmLMetaDataCalc$.__set_sim_identifier__()}}
-\item \href{#method-LPJmLMetaDataCalc-.__get_sim_identifier__}{\code{LPJmLMetaDataCalc$.__get_sim_identifier__()}}
+\item \href{#method-LPJmLMetaDataCalc-.__set_sim_ident__}{\code{LPJmLMetaDataCalc$.__set_sim_ident__()}}
+\item \href{#method-LPJmLMetaDataCalc-.__set_pos_in_var_grp__}{\code{LPJmLMetaDataCalc$.__set_pos_in_var_grp__()}}
 \item \href{#method-LPJmLMetaDataCalc-clone}{\code{LPJmLMetaDataCalc$clone()}}
 }
 }
@@ -122,34 +130,44 @@ Wrapper for \code{\link{LPJmLMetaData}} print method.
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLMetaDataCalc-.__set_sim_identifier__"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-.__set_sim_identifier__}{}}}
-\subsection{Method \code{.__set_sim_identifier__()}}{
+\if{html}{\out{<a id="method-LPJmLMetaDataCalc-.__set_sim_ident__"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-.__set_sim_ident__}{}}}
+\subsection{Method \code{.__set_sim_ident__()}}{
 Set the simulation identifier
 !Internal method only to be used for package development!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$.__set_sim_identifier__(sim_identifier)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$.__set_sim_ident__(sim_ident)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{sim_identifier}}{string, simulation identifier}
+\item{\code{sim_ident}}{string, simulation identifier}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLMetaDataCalc-.__get_sim_identifier__"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-.__get_sim_identifier__}{}}}
-\subsection{Method \code{.__get_sim_identifier__()}}{
+\if{html}{\out{<a id="method-LPJmLMetaDataCalc-.__set_pos_in_var_grp__"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-.__set_pos_in_var_grp__}{}}}
+\subsection{Method \code{.__set_pos_in_var_grp__()}}{
+Set the position of the lpjml_calc inside of its var_grp.
 !Internal method only to be used for package development!
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$.__get_sim_identifier__()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$.__set_pos_in_var_grp__(pos_in_var_grp)}\if{html}{\out{</div>}}
 }
 
-\subsection{Returns}{
-string, simulation identifier
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{pos_in_var_grp}}{A list with the position of the lpjml_calc
+inside of the var_grp. The first entry is the type; can be
+"baseline", "under_test" or "compare".
+The second entry is the compare item if
+of type "compare", e.g. "diff".
+E.g. list("under_test") or list("compare", "diff").}
+}
+\if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}

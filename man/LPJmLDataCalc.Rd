@@ -16,6 +16,9 @@ An extended LPJmLData class that enables arithmetic and statistics.
 
 \item{\code{.data_with_unit}}{Returns the internal enclosed unit object
 !Internal method only to be used for package development!}
+
+\item{\code{.meta}}{Returns the actual LPJmLMetaDataCalc object
+!Internal method only to be used for package development!}
 }
 \if{html}{\out{</div>}}
 }
@@ -35,8 +38,6 @@ An extended LPJmLData class that enables arithmetic and statistics.
 \item \href{#method-LPJmLDataCalc-.convert_unit}{\code{LPJmLDataCalc$.convert_unit()}}
 \item \href{#method-LPJmLDataCalc-.set_unit}{\code{LPJmLDataCalc$.set_unit()}}
 \item \href{#method-LPJmLDataCalc-apply_unit_conversion_table}{\code{LPJmLDataCalc$apply_unit_conversion_table()}}
-\item \href{#method-LPJmLDataCalc-set_sim_identifier}{\code{LPJmLDataCalc$set_sim_identifier()}}
-\item \href{#method-LPJmLDataCalc-get_sim_identifier}{\code{LPJmLDataCalc$get_sim_identifier()}}
 \item \href{#method-LPJmLDataCalc-add_grid}{\code{LPJmLDataCalc$add_grid()}}
 \item \href{#method-LPJmLDataCalc-clone}{\code{LPJmLDataCalc$clone()}}
 }
@@ -311,38 +312,6 @@ Apply unit conversion from conversion table
 \item{\code{path_to_table}}{A string with the path to the conversion table.}
 }
 \if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLDataCalc-set_sim_identifier"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-set_sim_identifier}{}}}
-\subsection{Method \code{set_sim_identifier()}}{
-!Internal method only to be used for package development!
-Set the simulation identifier to the LPJmLDataCalc object.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$set_sim_identifier(identifier)}\if{html}{\out{</div>}}
-}
-
-\subsection{Arguments}{
-\if{html}{\out{<div class="arguments">}}
-\describe{
-\item{\code{identifier}}{A string with the identifier to set.}
-}
-\if{html}{\out{</div>}}
-}
-}
-\if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-LPJmLDataCalc-get_sim_identifier"></a>}}
-\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-get_sim_identifier}{}}}
-\subsection{Method \code{get_sim_identifier()}}{
-!Internal method only to be used for package development!
-Get the simulation identifier of the LPJmLDataCalc object.
-\subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$get_sim_identifier()}\if{html}{\out{</div>}}
-}
-
-\subsection{Returns}{
-A string with the simulation identifier.
 }
 }
 \if{html}{\out{<hr>}}

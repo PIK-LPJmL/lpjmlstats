@@ -67,8 +67,9 @@ and the comparisons for one variable.}
 \item \href{#method-Metric-arrange_plots}{\code{Metric$arrange_plots()}}
 \item \href{#method-Metric-capture_summary}{\code{Metric$capture_summary()}}
 \item \href{#method-Metric-store_summary}{\code{Metric$store_summary()}}
-\item \href{#method-Metric-add_comparison}{\code{Metric$add_comparison()}}
-\item \href{#method-Metric-apply_to_all_lpjml_calcs}{\code{Metric$apply_to_all_lpjml_calcs()}}
+\item \href{#method-Metric-add_comparisons}{\code{Metric$add_comparisons()}}
+\item \href{#method-Metric-add_compare_meta}{\code{Metric$add_compare_meta()}}
+\item \href{#method-Metric-transform_lpjml_calcs}{\code{Metric$transform_lpjml_calcs()}}
 \item \href{#method-Metric-generate_report_content}{\code{Metric$generate_report_content()}}
 \item \href{#method-Metric-print_metric_header}{\code{Metric$print_metric_header()}}
 \item \href{#method-Metric-print_metric_description}{\code{Metric$print_metric_description()}}
@@ -193,31 +194,42 @@ Store the summary in the variable group
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Metric-add_comparison"></a>}}
-\if{latex}{\out{\hypertarget{method-Metric-add_comparison}{}}}
-\subsection{Method \code{add_comparison()}}{
+\if{html}{\out{<a id="method-Metric-add_comparisons"></a>}}
+\if{latex}{\out{\hypertarget{method-Metric-add_comparisons}{}}}
+\subsection{Method \code{add_comparisons()}}{
 !Package internal method!
-Compare and store the comparison in the variable group
+Compare and store the comparison in all variable groups
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Metric$add_comparison()}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Metric$add_comparisons()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Metric-add_compare_meta"></a>}}
+\if{latex}{\out{\hypertarget{method-Metric-add_compare_meta}{}}}
+\subsection{Method \code{add_compare_meta()}}{
+!Package internal method!
+Add the position of the comparisons within the var_grp to meta
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Metric$add_compare_meta(var_grp)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{var}}{Variable name}
+\item{\code{var_grp}}{variable group}
 }
 \if{html}{\out{</div>}}
 }
 }
 \if{html}{\out{<hr>}}
-\if{html}{\out{<a id="method-Metric-apply_to_all_lpjml_calcs"></a>}}
-\if{latex}{\out{\hypertarget{method-Metric-apply_to_all_lpjml_calcs}{}}}
-\subsection{Method \code{apply_to_all_lpjml_calcs()}}{
+\if{html}{\out{<a id="method-Metric-transform_lpjml_calcs"></a>}}
+\if{latex}{\out{\hypertarget{method-Metric-transform_lpjml_calcs}{}}}
+\subsection{Method \code{transform_lpjml_calcs()}}{
 !Package internal method!
 Apply function to all lpjml_calcs in all eval groups and lists
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Metric$apply_to_all_lpjml_calcs(fun, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Metric$transform_lpjml_calcs(fun, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{

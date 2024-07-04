@@ -947,11 +947,12 @@ elements appear only within <aliases>.
             <definition>unit of time for the earth to make one complete revolution around the sun, relative to the fixed stars</definition>
         </unit>
         <unit>
-            <def>3.15569259747e7 s</def>
+            <def>365 day</def>
             <aliases>
                 <name> <singular>tropical_year</singular> </name>
                 <name> <singular>year</singular> </name>
-                <!-- The following is commented-out because "a" already maps to "are"
+                <!-- This unit has been modified to fit with the LPJmL year. 
+                The following is commented-out because "a" already maps to "are"
                 <symbol>a</symbol>
                 -->
                 <symbol>yr</symbol>

@@ -4,7 +4,7 @@
 #' @import lpjmlkit
 #' @importFrom abind abind
 #' @importFrom Matrix sparseMatrix Matrix colSums
-#'
+#' @importFrom R6 R6Class
 #' @description
 #' An extended LPJmLData class that enables arithmetic and statistics.
 #'
@@ -69,7 +69,6 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     plot = function(...) {
       private$.__plot__(...)
     },
-
 
 
     #' @description
@@ -147,22 +146,6 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     },
 
     #' @description
-    #' !Internal method only to be used for package development!
-    #' Set the simulation identifier to the LPJmLDataCalc object.
-    #' @param identifier A string with the identifier to set.
-    set_sim_identifier = function(identifier) {
-      private$.meta$.__set_sim_identifier__(identifier)
-    },
-
-    #' @description
-    #' !Internal method only to be used for package development!
-    #' Get the simulation identifier of the LPJmLDataCalc object.
-    #' @return A string with the simulation identifier.
-    get_sim_identifier = function() {
-      private$.meta$.__get_sim_identifier__()
-    },
-
-    #' @description
     #' Add a grid to the LPJmLDataCalc object
     #' Wrapper for the `add_grid` method of the `LPJmLData` class.
     add_grid = function() {
@@ -184,8 +167,14 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     #' Returns the internal enclosed unit object
     #' !Internal method only to be used for package development!
     .data_with_unit = function() {
-      # NTODO: is this the correct way to indicate function not for end user?
       return(private$.data)
+    },
+
+    #' @field .meta
+    #' Returns the actual LPJmLMetaDataCalc object
+    #' !Internal method only to be used for package development!
+    .meta = function() {
+      return(private$.meta)
     }
   )
 )
@@ -251,7 +240,15 @@ LPJmLDataCalc$set("private", "copy_unit_meta2array",
                       }
                       return(x)
                     }
-                    unit <- insert_caret(private$.meta$unit)
+                    unit <- private$.meta$unit
+                    # The units::set_units methods only accepts two formats
+                    # either using "g/m" and "m^2" or using "g m-1" and "m2".
+                    # Therefore, if the unit string contains the division
+                    # symbol "/", also the caret must be there.
+                    # Once the data is read in one time, both "/" and "^" are
+                    # eliminated, and only the standard second format is used.
+                    if (stringr::str_detect(private$.meta$unit, "/"))
+                      unit <- insert_caret(unit)
                     unit <- set_minussign_to_nounit(unit)
                     private$.data <- units::set_units(private$.data,
                                                       as_units(unit))
@@ -314,6 +311,7 @@ LPJmLDataCalc$set(
       # Convert the unit
       private$.__convert_unit__(converted_unit)
     }
+    return(invisible(self))
   }
 )
 
@@ -539,6 +537,8 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
   private$.meta <- meta_calc
   private$.grid <- lpjml_data$grid
   private$copy_unit_meta2array()
+  # the following is to consistently have the unit formatting from units package
+  private$copy_unit_array2meta()
 })
 
 

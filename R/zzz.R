@@ -13,5 +13,5 @@
 
   # the metrics_at_start default is "Table". NULL means that no reordering
   # of metrics is done.
-  set_lpjmlstats_settings(metrics_at_start = "Table")
+  set_lpjmlstats_settings(metrics_at_start = c("Table", "Timeseries"))
 }

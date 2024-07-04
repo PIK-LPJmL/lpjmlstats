@@ -13,7 +13,7 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       #' @description
       #' First take global weighted sum, then average over all time steps
       #' of the simulation period. The result is a scalar for each band.
-      #' @param data LpjmlDataCalc object to be summarized
+      #' @param data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(data) {
         data %>%
@@ -27,10 +27,10 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       compare = function(var_grp) {
         var_grp$compare <-
           list(
-            `diff to baseline` = lapply(var_grp$under_test, function(x) {
+            `diff_to_baseline` = lapply(var_grp$under_test, function(x) {
               x - var_grp$baseline
             }),
-            `diff \\%` = lapply(var_grp$under_test, function(x) {
+            `diff_%` = lapply(var_grp$under_test, function(x) {
               (x - var_grp$baseline) / var_grp$baseline * 100
             })
           )
@@ -57,16 +57,16 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       #' List of metric options specific to this metric
       #' - `font_size`: integer, font size of the table
       #' - `name_trunc`: integer, number of characters to display in the table
-      #' - `decimal_places`: integer, number of decimal places to display
+      #' - `disp_digits`: integer, number of significant digits to display
       #' - `year_range`: integer or character vector, defines the range
       #' of years that the metric considers. Integer indices can be between 1
       #' and `nyear`. Character vector is used to subset by actual calendar
       #' years (starting at `firstyear`).
       #'
       m_options = list(
-        font_size = 8,
+        font_size = 7,
         name_trunc = 1,
-        decimal_places = 3,
+        disp_digits = 4,
         year_range = NULL
       ),
 
@@ -94,7 +94,7 @@ GlobAvgTimeAvgTable <- R6::R6Class( # nolint: object_name_linter.
   public = list(
     #' @description
     #' First take global weighted mean, then average over all time steps.
-    #' @param data LpjmlDataCalc object to be summarized
+    #' @param data LPJmLDataCalc object to be summarized
     #' @return A summarized \link{LPJmLDataCalc} object
     summarize = function(data) {
       data %>%
@@ -129,7 +129,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
   public = list(
     #' @description
     #' Take a global weighted sum of the output.
-    #' @param data LpjmlDataCalc object to be summarized
+    #' @param data LPJmLDataCalc object to be summarized
     #' @return A summarized \link{LPJmLDataCalc} object
     summarize = function(data) {
       data %>%
@@ -191,7 +191,7 @@ GlobAvgTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' @description
     #' Take the global weighted mean
     #' over the cells.
-    #' @param data LpjmlDataCalc object to be summarized
+    #' @param data LPJmLDataCalc object to be summarized
     #' @return A summarized \link{LPJmLDataCalc} object
     summarize = function(data) {
       data %>%
@@ -222,7 +222,7 @@ GlobSumAnnAvgTimeseries <- # nolint: object_name_linter.
       #' @description
       #' Take the mean for each year and then the global weighted sum
       #' over the cells.
-      #' @param data LpjmlDataCalc object to be summarized
+      #' @param data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(data) {
         data %>%
@@ -254,7 +254,7 @@ GlobAvgAnnAvgTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' @description
     #' Take the mean for each year and then the global weighted mean
     #' over the cells.
-    #' @param data LpjmlDataCalc object to be summarized
+    #' @param data LPJmLDataCalc object to be summarized
     #' @return A summarized \link{LPJmLDataCalc} object
     summarize = function(data) {
       data %>%
@@ -274,6 +274,101 @@ GlobAvgAnnAvgTimeseries <- R6::R6Class( # nolint: object_name_linter.
   )
 )
 
+#' @title CellSubsetAnnAvgTimeseries
+#' @description
+#' CellSubsetAnnAvgTimeseries metric.
+#' See \link{Metric} for the documentation of metrics in general.
+#' @export
+CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
+  R6::R6Class(
+    "CellSubsetAnnAvgTimeseries",
+    inherit = GlobAvgTimeseries,
+    public = list(
+      #' @description
+      #' Subset the cells and compute an annual average.
+      #' @param lpjml_data LPJmLDataCalc object to be summarized
+      #' @return A summarized \link{LPJmLDataCalc} object
+      summarize = function(lpjml_data) {
+        subset(lpjml_data, cell = self$m_options$cell) %>%
+          aggregate(time = list(to = "years", stat = "mean"))
+      },
+
+      #' @field m_options
+      #' List of metric options specific to this metric
+      #' - `font_size` integer, font size of the table
+      #' - `name_trunc` integer, indicating when to truncate the band names
+      #' band names
+      #' - `year_range`: integer or character vector, defines the range
+      #' of years that the metric considers. Integer indices can be between 1
+      #' and `nyear`. Character vector is used to subset by actual calendar
+      #' years (starting at `firstyear`).
+      #' - `cell` cells to be subsetted
+      m_options = list(
+        font_size = 7,
+        name_trunc = 1,
+        year_range = NULL,
+        cell = 10000
+      ),
+
+      #' @field description
+      #' Description used in the report
+      description =
+        paste0(
+          "The metric subsets one or several cells ",
+          "and averages annually. \n"
+        ),
+
+      #' @field title
+      #' Section header used in the report
+      title = "Cell Subset Annual Average Timeseries"
+    )
+  )
+
+#' @title CellSubsetTimeseries
+#' @description
+#' CellSubsetTimeseries metric.
+#' See \link{Metric} for the documentation of metrics in general.
+#' @export
+CellSubsetTimeseries <- # nolint: object_name_linter.
+  R6::R6Class(
+    "CellSubsetTimeseries",
+    inherit = GlobAvgTimeseries,
+    public = list(
+      #' @description
+      #' Subset the cells.
+      #' @param lpjml_data LPJmLDataCalc object to be summarized
+      #' @return A summarized \link{LPJmLDataCalc} object
+      summarize = function(lpjml_data) {
+        subset(lpjml_data, cell = self$m_options$cell)
+      },
+
+      #' @field m_options
+      #' List of metric options specific to this metric
+      #' - `font_size` integer, font size of the table
+      #' - `name_trunc` integer, indicating when to truncate the band names
+      #' band names
+      #' - `year_range`: integer or character vector, defines the range
+      #' of years that the metric considers. Integer indices can be between 1
+      #' and `nyear`. Character vector is used to subset by actual calendar
+      #' years (starting at `firstyear`).
+      #' - `cell` cells to be subsetted
+      m_options = list(
+        font_size = 7,
+        name_trunc = 1,
+        year_range = NULL,
+        cell = 10000
+      ),
+
+      #' @field description
+      #' Description used in the report
+      description =
+        paste0("The metric subsets one or several cells. \n"),
+
+      #' @field title
+      #' Section header used in the report
+      title = "Cell Subset Timeseries"
+    )
+  )
 
 
 # ------- reduction of time dimension -----------------------------------------
@@ -290,7 +385,7 @@ TimeAvgMap <- # nolint: object_name_linter.
     public = list(
       #' @description
       #' Take the mean over the simulation period for each cell.
-      #' @param data LpjmlDataCalc object to be summarized
+      #' @param data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(data) {
         data %>%
@@ -304,12 +399,12 @@ TimeAvgMap <- # nolint: object_name_linter.
       compare = function(var_grp) {
 
         var_grp$compare <-
-          list(difference = lapply(var_grp$under_test, function(x) {
+          list(diff_to_baseline = lapply(var_grp$under_test, function(x) {
             x - var_grp$baseline
           }))
 
-        # add grids for to all differences
-        lapply(var_grp$compare$difference, function(x) x$add_grid())
+        # add grids for to all diff_to_baselines
+        lapply(var_grp$compare$diff_to_baseline, function(x) x$add_grid())
 
         var_grp$baseline <- NULL
         var_grp$under_test <- NULL
@@ -319,14 +414,8 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' Create a map plot with country border overlay.
       #' @return A list of map ggplots
       plot = function() {
-        # describe calculation that was applied to the data
-        mod_descr <- "- baseline"
-
-        create_map_plots(
-          self$var_grp_list,
-          self$m_options,
-          mod_descr
-        )
+        create_map_plots(self$var_grp_list,
+                         m_options = self$m_options)
       },
 
       #' @description
@@ -344,7 +433,7 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' - `highlight` vector of strings, indicating which variables
       #' should receive a larger full width plot
       #' - `quantiles` quantiles used to determine the lower an upper
-      #' limits for the values in th map plot
+      #' limits for the values in the map plot...
       #' - `n_breaks` number of breaks for each arm of the diverging
       #' color scale
       #' - `year_range`: integer or character vector, defines the range
@@ -367,11 +456,63 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' @field description
       #' Description used in the report
       description = "The cell-time values of each variable are averaged over
-             time. The difference of unter test outputs  to baseline outputs
+             time. The difference of unter test outputs to baseline outputs
              is then plotted on a map. \n"
     )
   )
 
+#' @title TimeAvgMapWithAbs
+#' @description
+#' TimeAvgMapWithAbs metric.
+#' See \link{Metric} for the documentation of metrics in general.
+#' @export
+TimeAvgMapWithAbs <- # nolint: object_name_linter.
+  R6::R6Class(
+    "TimeAvgMapWithAbs",
+    inherit = TimeAvgMap,
+    public = list(
+      #' @description
+      #' Compare the baseline summary with the under test summaries by
+      #' subtracting the baseline from the under test.
+      #' @param var_grp variable group
+      compare = function(var_grp) {
+
+        var_grp$compare <-
+          list(diff_to_baseline = lapply(var_grp$under_test, function(x) {
+            x - var_grp$baseline
+          }))
+
+        # add grids for to all diff_to_baselines
+        lapply(var_grp$compare$diff_to_baseline, function(x) x$add_grid())
+      },
+
+      #' @description
+      #' Create a map plot with country border overlay.
+      #' @return A list of map ggplots
+      plot = function() {
+        create_map_plots(self$var_grp_list,
+                         self$m_options,
+                         colorbar_length = 0.8)
+      },
+
+      #' @description
+      #' Arrange the map plots side by side
+      #' @param plotlist List of map ggplots
+      arrange_plots = function(plotlist) {
+        arrange_map_plots(plotlist, self$m_options, num_cols = 3)
+      },
+
+      #' @field title
+      #' Section header used in the report
+      title = "Time Average Maps With Absolute Values",
+
+      #' @field description
+      #' Description used in the report
+      description = "The cell time values are averaged
+                     over time and plotted on a map. The difference
+                     to the baseline is also plotted. \n"
+    )
+  )
 
 # ------------ metrics for special outputs -------------------------------------
 

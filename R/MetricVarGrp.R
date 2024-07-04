@@ -133,8 +133,8 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
       if (type == "baseline") {
         self$var_grp_list[[var]]$baseline <- summary
       } else if (type == "under_test") {
-        sim_identifier <- summary$get_sim_identifier()
-        self$var_grp_list[[var]]$under_test[[sim_identifier]] <-
+        sim_ident <- summary$meta$sim_ident
+        self$var_grp_list[[var]]$under_test[[sim_ident]] <-
           summary
       } else {
         stop("type must be either 'baseline' or 'under_test'")
@@ -143,12 +143,28 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
 
     #' @description
     #' !Package internal method!
-    #' Compare and store the comparison in the variable group
-    #' @param var Variable name
-    add_comparison = function() {
-      # get the group for this variable
+    #' Compare and store the comparison in all variable groups
+    add_comparisons = function() {
       for (var_grp in self$var_grp_list) {
         self$compare(var_grp)
+        self$add_compare_meta(var_grp)
+      }
+    },
+
+    #' @description
+    #' !Package internal method!
+    #' Add the position of the comparisons within the var_grp to meta
+    #' @param var_grp variable group
+    add_compare_meta = function(var_grp) {
+      for (compare_item_num in seq_along(var_grp$compare)) {
+        compare_item_name <- names(var_grp$compare[compare_item_num])
+        compare_item <- var_grp$compare[[compare_item_num]]
+        for (lpjml_calc in compare_item) {
+          lpjml_calc$.meta$.__set_pos_in_var_grp__(
+            list(type = "compare",
+                 compare_item = compare_item_name)
+          )
+        }
       }
     },
 
@@ -157,23 +173,9 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     #' Apply function to all lpjml_calcs in all eval groups and lists
     #' @param fun Function to apply
     #' @param ... Additional arguments passed to fun
-    apply_to_all_lpjml_calcs = function(fun, ...) {
-      apply_fun_to_data_only <- function(x, fun, ...) {
-        # skip if x is NULL
-        if (!is.null(x)) {
-          fun(x, ...)
-        }
-      }
+    transform_lpjml_calcs = function(fun, ...) {
       for (var_grp in self$var_grp_list) {
-        apply_fun_to_data_only(var_grp$baseline, fun, ...)
-        for (under_test in var_grp$under_test) {
-          apply_fun_to_data_only(under_test, fun, ...)
-        }
-        for (compare in var_grp$compare) {
-          for (value in compare) {
-            apply_fun_to_data_only(value, fun, ...)
-          }
-        }
+        var_grp$transform_lpjml_calcs(fun, ...)
       }
     },
 
@@ -236,25 +238,106 @@ VarGrp <- # nolint:object_linter_name
           return(dimnames(self$compare[[1]][[1]])[["band"]])
       },
 
-      under_test = NULL,
-      # list of under test summaries
-      baseline = NULL,
-      # baseline summary
-      compare = NULL  # list of comparisons under test against baseline
-    ),
-
-    active = list(
-      var_name = function() {
-
+      # Function applies the function `fun`
+      # to the first lpjml_calc it can find in the var_grp and returns the
+      # result.
+      apply_to_any_lpjml_calc = function(fun, ...) {
         if (!is.null(self$baseline)) {
-          return(self$baseline$meta$variable)
+          return(fun(self$baseline, ...))
         } else if (!is.null(self$under_test[[1]])) {
-          return(self$under_test[[1]]$meta$variable)
+          return(fun(self$under_test[[1]], ...))
         } else if (!is.null(self$compare[[1]][[1]])) {
-          return(self$compare[[1]][[1]]$meta$variable)
+          return(fun(self$compare[[1]][[1]], ...))
         } else {
           stop("No data in var_grp")
         }
-      }
+      },
+
+      # Function applies the function `fun`
+      # to all lpjml_calcs of a var_grp
+      # (baseline, all under_test, all compare with all items)
+      # and saves the results in a non-nested list.
+      # Additional arguments ... will be passed to `fun`
+      # in addition to each lpjml_calc.
+      apply_to_lpjml_calcs = function(fun, ...) {
+        add_to_list <- function(list, lpjml_calc) {
+          result <- fun(lpjml_calc, ...)
+          if (!is.null(attr(result, "listname"))) {
+            list[[attr(result, "listname")]] <- result
+          } else {
+            list <- c(list, list(result))
+          }
+          return(list)
+        }
+        list <- list()
+        # process baseline with fun if it exists
+        if (!is.null(self$baseline)) {
+          list <- add_to_list(list, self$baseline)
+        }
+        # process under_test(s) with fun if any exist
+        if (!is.null(self$under_test)) {
+          for (lpjml_calc in self$under_test) {
+            list <- add_to_list(list, lpjml_calc)
+          }
+        }
+        # process compare(s) with fun if any exist
+        if (!is.null(self$compare)) {
+          for (item in seq_along(self$compare)) {
+            item_name <- names(self$compare[item])
+            for (lpjml_calc in self$compare[[item]]) {
+              list <- add_to_list(list, lpjml_calc)
+            }
+          }
+        }
+        return(list)
+      },
+
+      # Function applies the function `fun`
+      # to all lpjml_calcs of a var_grp
+      # (baseline, all under_test, all compare with all items).
+      # `fun` is expected to return lpjml_calc objects.
+      # The lpjml_calcs of the var_grp are overwritten by
+      # those objects. (They are transformed by `fun`)
+      # Additional arguments ... will be passed to `fun`
+      # in addition to each lpjml_calc.
+      transform_lpjml_calcs = function(fun, ...) {
+        fun_skip_null <- function(x, fun, ...) {
+          # skip if x is NULL
+          if (!is.null(x))
+            return(fun(x, ...))
+          else
+            return(NULL)
+        }
+        self$baseline <- fun_skip_null(self$baseline, fun, ...)
+        for (i in seq_along(self$under_test)) {
+          self$under_test[[i]] <- fun_skip_null(self$under_test[[i]], fun, ...)
+        }
+        for (i in seq_along(self$compare)) {
+          for (j in seq_along(compare)) {
+            self$compare[[i]][[j]] <-
+              fun_skip_null(self$compare[[i]][[j]], fun, ...)
+          }
+        }
+      },
+
+      deep_clone = function(deep = FALSE) {
+        new_var_grp <- VarGrp$new()
+        new_var_grp$under_test <- lapply(self$under_test, function(x) {
+          x$clone(deep = TRUE)
+        })
+        new_var_grp$compare <- lapply(self$compare, function(comp) {
+          lapply(comp, function(x) {
+            x$clone(deep = TRUE)
+          })
+        })
+        if (!is.null(self$baseline)) {
+          new_var_grp$baseline <- self$baseline$clone(deep = TRUE)
+        }
+        return(new_var_grp)
+      },
+
+      under_test = NULL,
+      baseline = NULL,
+      compare = NULL
     )
   )

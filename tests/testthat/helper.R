@@ -1,3 +1,5 @@
+#' @importFrom R6 R6Class
+
 #' function to create a sparse region matrix
 #' columns = regions; rows = cells
 #' values are the fraction of cell area that is contained in a region
@@ -146,3 +148,54 @@ load_soiln_calc <- function() {
   soiln$add_grid()
   return(soiln)
 }
+
+
+create_var_grp <-
+  function(baseline) {
+    baseline$.meta$.__set_sim_ident__("sim1")
+    baseline$.meta$.__set_pos_in_var_grp__(list(type = "baseline"))
+
+    under_test_1 <- baseline$clone(deep = TRUE)
+    baseline$.meta$.__set_sim_ident__("sim2")
+    under_test_1$.meta$.__set_pos_in_var_grp__(list(type = "under_test"))
+    under_test_2 <- baseline$clone(deep = TRUE)
+    baseline$.meta$.__set_sim_ident__("sim3")
+    under_test_2$.meta$.__set_pos_in_var_grp__(list(type = "under_test"))
+
+
+    under_test_1$.__enclos_env__$private$.data[1, 1, 1] <- 10
+    under_test_2$.__enclos_env__$private$.data[1, 1, 1] <- 20
+
+    var_grp <- VarGrp$new()
+
+    var_grp$baseline <- baseline
+    var_grp$under_test <- list(sim1 = under_test_1, sim2 = under_test_2)
+
+    var_grp$compare <- list(diff = list(sim1 = under_test_1 - baseline,
+                                        sim2 = under_test_2 - baseline))
+
+    compare_pos <- list(type = "compare", compare_item = "diff")
+    var_grp$compare$diff$sim1$.meta$.__set_pos_in_var_grp__(compare_pos)
+    var_grp$compare$diff$sim2$.meta$.__set_pos_in_var_grp__(compare_pos)
+
+    return(var_grp)
+  }
+
+get_test_m_options <- function() {
+  m_options <- list(font_size = 8, n_breaks = 3, quantiles = c(0.05, 0.95))
+  return(m_options)
+}
+
+# metric for testing purposes
+.DoNothing <- R6::R6Class( # nolint: object_name_linter.
+  ".DoNothing", # nolint: object_name_linter.
+  inherit = Metric,
+  public = list(
+    summarize = function(data) {
+      data
+    },
+    compare = function(var_grp) {
+      var_grp$compare <- list("nodiff" = list(sim1 = var_grp$baseline))
+    }
+  )
+)
