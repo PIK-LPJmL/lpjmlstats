@@ -101,10 +101,10 @@ create_map_plots <- function(var_grp_list,
       var_grp_band$transform_lpjml_calcs(function(x) {
         subset(x, band = band)
       })
-      band_plot_list <- var_grp$apply_to_lpjml_calcs(lpjml_calc_to_map,
-                                                     m_options,
-                                                     limits,
-                                                     colorbar_length)
+      band_plot_list <- var_grp_band$apply_to_lpjml_calcs(lpjml_calc_to_map,
+                                                          m_options,
+                                                          limits,
+                                                          colorbar_length)
       plot_list <- c(plot_list, band_plot_list)
     }
   }

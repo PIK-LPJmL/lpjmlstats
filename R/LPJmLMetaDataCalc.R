@@ -152,8 +152,9 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
     #' @field band_names_disp
     #' named vector, versions of band names used for display, usually shorter
     band_names_disp = function() {
+      # NTODO: check if bandname abbreviation is still needed and posibly add it here
       if (!is.null(private$.band_names))
-        return(shorten_names(private$.band_names))
+        return(private$.band_names)
       else
         return(NULL)
     },
