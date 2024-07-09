@@ -163,7 +163,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' of years that the metric considers. Integer indices can be between 1
     #' and `nyear`. Character vector is used to subset by actual calendar
     #' years (starting at `firstyear`).
-    m_options = list(font_size = 7,
+    m_options = list(font_size = 6,
                      name_trunc = 1,
                      year_range = NULL),
 
@@ -304,7 +304,7 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
       #' years (starting at `firstyear`).
       #' - `cell` cells to be subsetted
       m_options = list(
-        font_size = 7,
+        font_size = 6,
         name_trunc = 1,
         year_range = NULL,
         cell = 10000
@@ -353,7 +353,7 @@ CellSubsetTimeseries <- # nolint: object_name_linter.
       #' years (starting at `firstyear`).
       #' - `cell` cells to be subsetted
       m_options = list(
-        font_size = 7,
+        font_size = 6,
         name_trunc = 1,
         year_range = NULL,
         cell = 10000
@@ -441,7 +441,7 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' and `nyear`. Character vector is used to subset by actual calendar
       #' years (starting at `firstyear`).
       m_options = list(
-        font_size = 7,
+        font_size = 6,
         name_trunc = 1,
         highlight = NULL,
         quantiles = c(0.05, 0.95),

@@ -4,6 +4,7 @@
 #' @importFrom rlang :=
 #' @importFrom tidyselect matches
 
+
 # ----- table plot -----
 
 create_table_plot <- function(var_grp_list, m_options) {
@@ -85,7 +86,6 @@ lpjml_calc_to_table <- function(lpjml_calc) {
 }
 
 
-
 # ----- map plot -----
 
 create_map_plots <- function(var_grp_list,
@@ -121,8 +121,9 @@ lpjml_calc_to_map <- function(lpjml_calc,
   plot_title <- paste(
     lpjml_calc$meta$var_and_band_disp,
     lpjml_calc$meta$sim_ident,
-    pos_in_var_grp$compare_item,
-    prettify_units(lpjml_calc$meta$unit)
+    ifelse(!is.null(pos_in_var_grp$compare_item), pos_in_var_grp$compare_item, " - "),
+    prettify_units(lpjml_calc$meta$unit),
+    sep = "; "
   )
   tibble <- lpjml_calc_to_map_tibble(lpjml_calc)
   plot <- map_tibble_to_ggplot(
@@ -241,7 +242,9 @@ lpjml_calc_to_map_tibble <- function(lpjml_calc) {
   return(tibble)
 }
 
+
 # ----- time series plot -----
+
 create_time_series_plots <- function(var_grp_list, m_options) {
   plot_list <- list()
   for (var_grp in var_grp_list) {
@@ -264,8 +267,9 @@ create_time_series_plots <- function(var_grp_list, m_options) {
           var_grp_band$apply_to_any_lpjml_calc(function(x) {
             x$meta$var_and_band_disp
           }),
-          ifelse(length(spatial_units) > 1, spatial_unit, ""),
-          prettify_units(var_grp_band$baseline$meta$unit)
+          ifelse(length(spatial_units) > 1, spatial_unit, " - "),
+          prettify_units(var_grp_band$baseline$meta$unit),
+          sep = "; "
         )
         tibble_list <-
           var_grp_band$apply_to_lpjml_calcs(lpjml_calc_to_timeseries_tibble)
@@ -336,6 +340,7 @@ lpjml_calc_to_timeseries_tibble <- function(lpjml_calc) {
 
   return(tibble)
 }
+
 
 # ------ utility functions ------
 

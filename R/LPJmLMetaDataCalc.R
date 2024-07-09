@@ -54,8 +54,6 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
       private$.time_aggregation <- agg_method
     },
 
-
-
     #' @description
     #' Wrapper for [`LPJmLMetaData`] print method.
     #' @param spaces string of spaces to be printed as prefix
@@ -133,7 +131,6 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
     .__set_pos_in_var_grp__ = function(pos_in_var_grp) {
       private$.pos_in_var_grp <- pos_in_var_grp
     }
-
   ),
 
   active = list(
@@ -189,60 +186,3 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
     .pos_in_var_grp = list("undefined position in var_grp")
   )
 )
-
-
-# NTODO: needs refactoring
-shorten_names <- function(names, trunc = 9) {
-
-  # find index until which all strings are equal
-  stop <- FALSE
-  i <- 0
-  while (stop == FALSE) {
-    i <- i + 1
-    if (length(unique(substr(
-      x = names,
-      start = 1,
-      stop = i
-    ))) > 1) {
-
-      stop <- TRUE
-    }
-
-    if (i > max(stringr::str_length(names))) {
-      stop <- TRUE
-    }
-  }
-  i <- i - 1
-
-  if (i > trunc + 9) {
-    front_parts <- names %>% stringr::str_sub(1, 4)
-    back_parts <- names %>% stringr::str_sub(max(i - 3, 6))
-    short_colnames <- paste0(front_parts, "[..]", back_parts)
-  } else {
-    short_colnames <- names
-  }
-
-  # find index from which all remaining truncated strings are unique
-  stop <- FALSE
-  i <- 0
-  while (stop == FALSE) {
-    i <- i + 1
-    if (length(unique(substr(
-      x = short_colnames,
-      start = 1,
-      stop = i
-    ))) == length(unique(short_colnames
-    ))) {
-
-      stop <- TRUE
-    }
-  }
-
-  trunc <- max(i + 6, trunc + 6)
-
-  short_colnames <- stringr::str_trunc(short_colnames, trunc, ellipsis = "[..]")
-
-  names(short_colnames) <- names
-
-  return(short_colnames)
-}

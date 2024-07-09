@@ -313,6 +313,7 @@ VarGrp <- # nolint:object_linter_name
           self$under_test[[i]] <- fun_skip_null(self$under_test[[i]], fun, ...)
         }
         for (i in seq_along(self$compare)) {
+          compare <- self$compare[[i]]
           for (j in seq_along(compare)) {
             self$compare[[i]][[j]] <-
               fun_skip_null(self$compare[[i]][[j]], fun, ...)
