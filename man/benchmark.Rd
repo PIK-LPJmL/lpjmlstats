@@ -118,7 +118,6 @@ saveRDS(BM_resu, "bm_results.rds")
 # specific metrics and doesn't generate pdf report.
 # In addition only the first 10 years are considered
 # which gives another significant speedup.
-set_lpjmlstats_settings(year_subset = 1:10)
 settings <- list(
  vegc = c(GlobSumTimeAvgTable),
  soilc = c(GlobSumTimeAvgTable),
@@ -135,7 +134,6 @@ BM_data <- benchmark("path_to_baseline_results",
                      "path_to_under_test_results",
                      settings = settings,
                      pdf_report = FALSE)
-set_lpjmlstats_settings(year_subset = NULL) # restore default settings
 
 # Example 4
 # Benchmark soiltemp in addition to default settings

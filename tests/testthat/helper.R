@@ -199,3 +199,10 @@ get_test_m_options <- function() {
     }
   )
 )
+
+# test metric options
+m_option <- list(year_subset = as.character(c(2009:2018)))
+test_m_options <- list(GlobSumTimeAvgTable = m_option,
+                       GlobSumTimeseries = m_option,
+                       TimeAvgMap = m_option,
+                       .DoNothing = m_option)

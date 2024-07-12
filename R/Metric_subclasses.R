@@ -58,16 +58,14 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       #' - `font_size`: integer, font size of the table
       #' - `name_trunc`: integer, number of characters to display in the table
       #' - `disp_digits`: integer, number of significant digits to display
-      #' - `year_range`: integer or character vector, defines the range
-      #' of years that the metric considers. Integer indices can be between 1
-      #' and `nyear`. Character vector is used to subset by actual calendar
-      #' years (starting at `firstyear`).
+      #' - `year_subset`: character vector, defines which calander years the metric considers,
+      #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
       #'
       m_options = list(
         font_size = 7,
         name_trunc = 1,
         disp_digits = 4,
-        year_range = NULL
+        year_subset = as.character(1991:2000)
       ),
 
       #' @field title
@@ -159,13 +157,11 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' - `font_size` integer, font size of the table
     #' - `name_trunc` integer, indicating when to truncate the band names
     #' band names
-    #' - `year_range`: integer or character vector, defines the range
-    #' of years that the metric considers. Integer indices can be between 1
-    #' and `nyear`. Character vector is used to subset by actual calendar
-    #' years (starting at `firstyear`).
+    #' - `year_subset`: character vector, defines which calander years the metric considers,
+    #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
     m_options = list(font_size = 6,
                      name_trunc = 1,
-                     year_range = NULL),
+                     year_subset = as.character(1901:2011)),
 
     #' @field title
     #' Section header used in the report
@@ -298,15 +294,13 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
       #' - `font_size` integer, font size of the table
       #' - `name_trunc` integer, indicating when to truncate the band names
       #' band names
-      #' - `year_range`: integer or character vector, defines the range
-      #' of years that the metric considers. Integer indices can be between 1
-      #' and `nyear`. Character vector is used to subset by actual calendar
-      #' years (starting at `firstyear`).
+      #' - `year_subset`: character vector, defines which calander years the metric considers,
+      #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
       #' - `cell` cells to be subsetted
       m_options = list(
         font_size = 6,
         name_trunc = 1,
-        year_range = NULL,
+        year_subset = as.character(1901:2011),
         cell = 10000
       ),
 
@@ -347,15 +341,13 @@ CellSubsetTimeseries <- # nolint: object_name_linter.
       #' - `font_size` integer, font size of the table
       #' - `name_trunc` integer, indicating when to truncate the band names
       #' band names
-      #' - `year_range`: integer or character vector, defines the range
-      #' of years that the metric considers. Integer indices can be between 1
-      #' and `nyear`. Character vector is used to subset by actual calendar
-      #' years (starting at `firstyear`).
+      #' - `year_subset`: character vector, defines which calander years the metric considers,
+      #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
       #' - `cell` cells to be subsetted
       m_options = list(
         font_size = 6,
         name_trunc = 1,
-        year_range = NULL,
+        year_subset = as.character(1901:2011),
         cell = 10000
       ),
 
@@ -436,16 +428,14 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' limits for the values in the map plot...
       #' - `n_breaks` number of breaks for each arm of the diverging
       #' color scale
-      #' - `year_range`: integer or character vector, defines the range
-      #' of years that the metric considers. Integer indices can be between 1
-      #' and `nyear`. Character vector is used to subset by actual calendar
-      #' years (starting at `firstyear`).
+      #' - `year_subset`: character vector, defines which calander years the metric considers,
+      #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
       m_options = list(
         font_size = 6,
         name_trunc = 1,
         highlight = NULL,
         quantiles = c(0.05, 0.95),
-        year_range = NULL,
+        year_subset = as.character(1991:2000),
         n_breaks = 3
       ),
 

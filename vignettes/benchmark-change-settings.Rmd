@@ -21,14 +21,6 @@ This vignette explains how to incorporate new outputs into the benchmarking by m
 library(lpjmlstats) # nolint
 ```
 
-For a quick completion, we again only look at 
-the first five years of all LPJmL outputs.
-Skip the following modification to the package settings,
-if you prefer to run the full benchmarking.
-```{r set_year_subset}
-set_lpjmlstats_settings(year_subset = 1:5)
-```
-
 It is a common theme in model development 
 that new specific model outputs, not included in standard benchmarking,
 need to be evaluated.
@@ -115,8 +107,4 @@ the new metrics.
 Also note the large map highlighting the time averaged soil temperature
 distribution at the beginning of the "Time Average" section.
 
-This concludes the vignette. Remember to restore the default settings via
-
-```{r}
-set_lpjmlstats_settings(year_subset = NULL)
-```
+This concludes the vignette.

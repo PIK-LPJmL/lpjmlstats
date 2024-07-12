@@ -73,6 +73,7 @@ and the comparisons for one variable.}
 \item \href{#method-Metric-generate_report_content}{\code{Metric$generate_report_content()}}
 \item \href{#method-Metric-print_metric_header}{\code{Metric$print_metric_header()}}
 \item \href{#method-Metric-print_metric_description}{\code{Metric$print_metric_description()}}
+\item \href{#method-Metric-print_year_subset}{\code{Metric$print_year_subset()}}
 \item \href{#method-Metric-clone}{\code{Metric$clone()}}
 }
 }
@@ -272,6 +273,17 @@ Function to print the metric header.
 Function to print the metric description.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Metric$print_metric_description()}\if{html}{\out{</div>}}
+}
+
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-Metric-print_year_subset"></a>}}
+\if{latex}{\out{\hypertarget{method-Metric-print_year_subset}{}}}
+\subsection{Method \code{print_year_subset()}}{
+!Package internal method!
+Function to print the year_subset metric option.
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Metric$print_year_subset()}\if{html}{\out{</div>}}
 }
 
 }

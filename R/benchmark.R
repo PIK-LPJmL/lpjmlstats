@@ -96,7 +96,6 @@
 #' # specific metrics and doesn't generate pdf report.
 #' # In addition only the first 10 years are considered
 #' # which gives another significant speedup.
-#' set_lpjmlstats_settings(year_subset = 1:10)
 #' settings <- list(
 #'  vegc = c(GlobSumTimeAvgTable),
 #'  soilc = c(GlobSumTimeAvgTable),
@@ -113,7 +112,6 @@
 #'                      "path_to_under_test_results",
 #'                      settings = settings,
 #'                      pdf_report = FALSE)
-#' set_lpjmlstats_settings(year_subset = NULL) # restore default settings
 #'
 #' # Example 4
 #' # Benchmark soiltemp in addition to default settings
@@ -484,7 +482,7 @@ reorder_metrics <- function(all_metrics) {
 
 # Function to create and store the summaries that all the metrics need
 retrieve_summaries <-
-  function(metric_list, var, paths, sim_table) {
+  function(metrics_of_var, var, paths, sim_table) {
     # the summaries will be retrieved and stored in the metric objects
     # datafile by datafile to avoid reading the same raw data file multiple
     # times or having several raw files in memory at the same time
@@ -492,7 +490,7 @@ retrieve_summaries <-
     # Function to read raw file, add some meta information
     # and capture all needed summaries of that file
     process_file <-
-      function(metric_list,
+      function(metrics_of_var,
                dir,
                var,
                type,
@@ -505,7 +503,7 @@ retrieve_summaries <-
 
         # load potentially large raw dataset into memory
         cat(paste0("Process ", type, " ", cli::col_blue(var), " ...\n"))
-        raw_data <- read_in_time_subsetted(dir, filename)
+        raw_data <- read_in_time_subsetted(dir, filename, metrics_of_var)
         if (!is.null(var_band$band)) {
           raw_data <- subset(raw_data, band = var_band$band)
         }
@@ -517,7 +515,7 @@ retrieve_summaries <-
         raw_data$.meta$.__set_pos_in_var_grp__(list(type = type))
 
         # allow each metric to capture an individual summary of this raw data
-        for (metric in metric_list) {
+        for (metric in metrics_of_var) {
           metric$capture_summary(raw_data, var, type)
         }
 
@@ -528,7 +526,7 @@ retrieve_summaries <-
 
 
     # process baseline file
-    process_file(metric_list,
+    process_file(metrics_of_var,
                  paths$baseline_dir,
                  var,
                  "baseline",
@@ -537,7 +535,7 @@ retrieve_summaries <-
 
     # process under test files
     for (ut_dir in paths$under_test_dirs) {
-      process_file(metric_list,
+      process_file(metrics_of_var,
                    ut_dir,
                    var,
                    "under_test",
@@ -572,20 +570,25 @@ split_variable_and_band <- function(var) {
   return(list(var_pure = var_pure, band = band))
 }
 
-# Function to read in a file and subset it if a year subset is given
-read_in_time_subsetted <- function(dir = dir, filename = filename) {
+# Function to read in a file and subset it based on year_subsets of metrics
+read_in_time_subsetted <- function(dir, filename, metrics_of_var) {
+  # get the smallest and largest year that need to be read to fulfill needs of all metrics
+  min_year <- Inf
+  max_year <- -Inf
+  for (metric in metrics_of_var) {
+    years <- as.numeric(metric$m_options$year_subset)
+    if (min(years) < min_year) min_year <- min(years)
+    if (max(years) > max_year) max_year <- max(years)
+  }
+
+  # add directory if provided
   if (!is.null(dir))
     path <- file.path(dir, filename)
   else
     path <- filename
 
-  if (is.null(getOption("lpjmlstats.year_subset"))) {
-    raw_data <- read_io(path)
-  } else {
-    year_subset <-  list(year = getOption("lpjmlstats.year_subset"))
-    raw_data <-
-      read_io(path, subset = year_subset)
-  }
+  # read the data
+  raw_data <- read_io(path, subset = list(year = as.character(min_year:max_year)))
 
   return(raw_data)
 }
