@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -343,10 +343,6 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <p>This vignette explains how to incorporate new outputs into the
 benchmarking by modifying its settings.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(lpjmlstats) <span class="co"># nolint</span></span></code></pre></div>
-<p>For a quick completion, we again only look at the first five years of
-all LPJmL outputs. Skip the following modification to the package
-settings, if you prefer to run the full benchmarking.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">set_lpjmlstats_settings</span>(<span class="at">year_subset =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span></code></pre></div>
 <p>It is a common theme in model development that new specific model
 outputs, not included in standard benchmarking, need to be evaluated.
 These new model outputs often also require new types of evaluations,
@@ -359,12 +355,12 @@ normal global sum to aggregate this output. Instead, a global
 temperature average is needed.</p>
 <p>To meet these requirements, a new benchmarking settings list is
 needed. The structure of the lpjml settings list is as follows:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">output_var1  =</span> <span class="fu">c</span>(metric1, metric2, metric3),</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">output_var2  =</span> <span class="fu">c</span>(metric2),</span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">output_var3  =</span> <span class="fu">c</span>(metric1, metric4),</span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  ...</span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="at">output_var1  =</span> <span class="fu">c</span>(metric1, metric2, metric3),</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>  <span class="at">output_var2  =</span> <span class="fu">c</span>(metric2),</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>  <span class="at">output_var3  =</span> <span class="fu">c</span>(metric1, metric4),</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>  ...</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>)</span></code></pre></div>
 <p>Each line corresponds to an lpjml output variable. The left hand side
 defines <em>which output is processed</em>, while the right hand side
 defines <em>how this output is processed</em>, that is which metrics are
@@ -379,47 +375,45 @@ temperature amplitude within each year, while the
 <code>TimeAvgMap</code> can aid in understanding the spatial
 distribution.</p>
 <p>Therefore, we define the following settings:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>soil_temp_settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="co"># first top layer is evaluated by all mentioned metrics</span></span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">msoiltemp1  =</span> <span class="fu">c</span>(</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    GlobAvgTimeAvgTable,</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    GlobAvgAnnAvgTimeseries,</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    GlobAvgTimeseries,</span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    TimeAvgMap</span>
-<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  ),</span>
-<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="co"># third layer is also evaulated but only by an annual time series</span></span>
-<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="at">msoiltemp3  =</span> <span class="fu">c</span>(GlobAvgAnnAvgTimeseries)</span>
-<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>soil_temp_settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="co"># first top layer is evaluated by all mentioned metrics</span></span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">msoiltemp1  =</span> <span class="fu">c</span>(</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    GlobAvgTimeAvgTable,</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    GlobAvgAnnAvgTimeseries,</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    GlobAvgTimeseries,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    TimeAvgMap</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>  ),</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  <span class="co"># third layer is also evaulated but only by an annual time series</span></span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a>  <span class="at">msoiltemp3  =</span> <span class="fu">c</span>(GlobAvgAnnAvgTimeseries)</span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>)</span></code></pre></div>
 <p>These are already valid settings that could be used in the benchmark
 function, to have a benchmark that only evaluates soil temperature.
 However, we are also interested in how our adjustment effects other
 relevant lpjml variables, and thus we extend the default settings with
 this addition.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>extended_default <span class="ot">&lt;-</span> <span class="fu">c</span>(default_settings, soil_temp_settings)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>extended_default <span class="ot">&lt;-</span> <span class="fu">c</span>(default_settings, soil_temp_settings)</span></code></pre></div>
 <p>Since the report focuses on soil temperature, we would like to
 feature a larger map showing the spatial distribution for this variable.
 We check our options via <code>?TimeAvgMap</code> and see that this can
 be achieved with the <code>highlight</code> metric option:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>metric_opt <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">TimeAvgMap =</span> <span class="fu">list</span>(<span class="at">highlight =</span> <span class="fu">c</span>(<span class="st">&quot;soiltemp1&quot;</span>)))</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>metric_opt <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">TimeAvgMap =</span> <span class="fu">list</span>(<span class="at">highlight =</span> <span class="fu">c</span>(<span class="st">&quot;soiltemp1&quot;</span>)))</span></code></pre></div>
 <p>Now we are ready to start the benchmarking, with the new extended
 settings as an additional argument:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a>benchmark_result <span class="ot">&lt;-</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>  <span class="fu">benchmark</span>(</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>    <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.7.1/output&quot;</span>, <span class="co"># nolint</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>    <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.8.6/output&quot;</span>, <span class="co"># nolint</span></span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>    <span class="at">settings =</span> extended_default,</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>    <span class="at">metric_options =</span> metric_opt,</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>    <span class="at">author =</span> <span class="st">&quot;David&quot;</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>    <span class="at">description =</span> <span class="st">&quot;Evaluate changes to soil temperature&quot;</span>,</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>    <span class="at">output_file =</span> <span class="st">&quot;benchmark_soiltemp.pdf&quot;</span></span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>benchmark_result <span class="ot">&lt;-</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="fu">benchmark</span>(</span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>    <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.7.1/output&quot;</span>, <span class="co"># nolint</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>    <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.8.6/output&quot;</span>, <span class="co"># nolint</span></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="at">settings =</span> extended_default,</span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">metric_options =</span> metric_opt,</span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>    <span class="at">author =</span> <span class="st">&quot;David&quot;</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>    <span class="at">description =</span> <span class="st">&quot;Evaluate changes to soil temperature&quot;</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    <span class="at">output_file =</span> <span class="st">&quot;benchmark_soiltemp.pdf&quot;</span></span>
+<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  )</span></code></pre></div>
 <p>In the benchmark report you will find new sections that display the
 results for the new metrics. Also note the large map highlighting the
 time averaged soil temperature distribution at the beginning of the
 “Time Average” section.</p>
-<p>This concludes the vignette. Remember to restore the default settings
-via</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">set_lpjmlstats_settings</span>(<span class="at">year_subset =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<p>This concludes the vignette.</p>
 
 
 

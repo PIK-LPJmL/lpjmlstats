@@ -31,7 +31,11 @@ test_that("benchmark runs through for single cell data", {
   settings <-
     list(soiln_layer = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap))
 
-  expect_no_error(benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE, metric_options = test_m_options))
+  expect_no_error(benchmark(baseline_dir,
+                            under_test_dir,
+                            settings,
+                            pdf_report = FALSE,
+                            metric_options = test_m_options))
 })
 
 test_that("correct meta information ends up in lpjml_calc", {
