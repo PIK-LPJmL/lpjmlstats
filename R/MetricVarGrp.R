@@ -247,7 +247,11 @@ VarGrp <- # nolint:object_linter_name
       },
 
       get_band_names = function() {
-        self$apply_to_any_lpjml_calc(function(x) dimnames(x)[["band"]])
+        self$apply_to_any_lpjml_calc(function(x) dimnames(x$data)[["band"]])
+      },
+
+      get_var_name = function() {
+        self$apply_to_any_lpjml_calc(function(x) x$meta$variable)
       },
 
       # Function applies the function `fun`

@@ -18,7 +18,6 @@ Imports:
     units,
     lpjmlkit,
     Matrix,
-    abind,
     methods,
     memoise,
     rlang,
@@ -34,7 +33,8 @@ Imports:
     cli,
     raster,
     tidyselect,
-    R6
+    R6,
+    rnaturalearth
 Suggests: 
     testthat (>= 3.0.0),
     maps,

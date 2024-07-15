@@ -194,6 +194,19 @@ test_that("broadcasting second operator works for multiplication", {
   expect_equal(product$data[1, 1, ], c(3, 2, 1), ignore_attr = TRUE) #nolint
 })
 
+test_that("multiplication with non matchin dimnames fails", {
+  array1 <- rep(c(1, 0, 0, 1), 3)
+  dim(array1) <- c(2, 2, 3)
+  dimnames(array1) <- list(cell = c("1", "2"), time = c("1", "2"), band = c("1", "2", "3"))
+  array2 <- c(3, 2, 1)
+  dim(array2) <- c(1, 1, 3)
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  lpjml_calc2 <- create_LPJmLDataCalc(array2, "")
+
+  expect_error(lpjml_calc1 * lpjml_calc2, "match")
+
+})
+
 test_that("multiplication with scalar unit object works", {
   array1 <- c(1, 0, 0, 1)
   dim(array1) <- c(2, 2, 1)

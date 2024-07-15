@@ -1,5 +1,4 @@
-test_that("benchmark produces correct results", {
-
+test_that("benchmark produces correct results for global data", {
   baseline_dir <- testthat::test_path("../testdata/path1")
   under_test_dir <- testthat::test_path("../testdata/path2")
   settings <-
@@ -22,12 +21,20 @@ test_that("benchmark produces correct results", {
 
   # compare of time avg should be zero since files are identical
   soiln_time_avg_compare <- out$TimeAvgMap$var_grp_list$soiln$compare$pth2$data
-  expect_equal(sum(soiln_time_avg_compare), 0)
 
+  expect_equal(sum(soiln_time_avg_compare), 0)
+})
+
+test_that("benchmark runs through for single cell data", {
+  baseline_dir <- testthat::test_path("../testdata/path1")
+  under_test_dir <- testthat::test_path("../testdata/path2")
+  settings <-
+    list(soiln_layer = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap))
+
+  expect_no_error(benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE, metric_options = test_m_options))
 })
 
 test_that("correct meta information ends up in lpjml_calc", {
-
   baseline_dir <- testthat::test_path("../testdata/path1")
   under_test_dir <- testthat::test_path("../testdata/path2")
   settings <-
@@ -37,7 +44,6 @@ test_that("correct meta information ends up in lpjml_calc", {
 
   compare_lpjml_calc <-
     out$.DoNothing$var_grp_list$soiln_layer$compare$nodiff$sim1
-
 
   expect_equal(compare_lpjml_calc$meta$pos_in_var_grp,
                list(type = "compare", compare_item = "nodiff"))
@@ -53,11 +59,11 @@ test_that("benchmark report generation runs through without warnings", {
   out <- benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE)
 
   report_path <- testthat::test_path("../testdata/benchmark_report.pdf")
+
   expect_no_warning(create_pdf_report(out, report_path))
 
   # remove the report file benchmark.pdf
   file.remove(report_path)
-
 })
 
 
@@ -80,5 +86,4 @@ test_that("create_unique_short_sim_path produces unique names", {
 
   # check if names are short
   expect_true(all(nchar(unique_names) <= 40))
-
 })

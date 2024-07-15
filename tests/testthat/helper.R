@@ -134,6 +134,7 @@ create_test_global_LPJmLDataCalc <- function(unit = "gN", value = NULL) { # noli
   } else {
     data <- array(rep(value, 67420), dim = c(67420, 1, 1))
   }
+  dimnames(data) <- list(cell = as.character(0:67419), time = "1", band = "1")
   grid <- read_def_grid()
 
   lpjml_calc <- create_LPJmLDataCalc(data, unit, grid)
@@ -182,7 +183,12 @@ create_var_grp <-
   }
 
 get_test_m_options <- function() {
-  m_options <- list(font_size = 8, n_breaks = 3, quantiles = c(0.05, 0.95))
+  m_options <- list(font_size = 8,
+                    n_breaks = 3,
+                    quantiles = c(0.05, 0.95),
+                    var_seperator = NULL,
+                    band_seperator = NULL,
+                    num_cols = 2)
   return(m_options)
 }
 

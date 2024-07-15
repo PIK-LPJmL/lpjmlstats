@@ -2,7 +2,6 @@
 #'
 #' @import lpjmlkit
 #' @importFrom Matrix sparseMatrix Matrix colSums
-#' @importFrom abind abind
 #' @importFrom utils read.csv
 #' @importFrom methods as
 #' @importFrom jsonlite fromJSON
@@ -160,7 +159,7 @@ read_countrymap <- function(file_path) {
 build_global_region <- function(grid) {
   region_matrix <- Matrix::Matrix(1, nrow = 1, ncol = grid$meta$ncell,
                                   sparse = TRUE)
-  region_matrix <- as(as(region_matrix, "generalMatrix"), "CsparseMatrix")
+  region_matrix <- methods::as(methods::as(region_matrix, "generalMatrix"), "CsparseMatrix")
   dimnames(region_matrix) <- list(c("global"), NULL)
   return(LPJmLRegionData$new(grid, region_matrix))
 }

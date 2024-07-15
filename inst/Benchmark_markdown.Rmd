@@ -21,6 +21,7 @@ knitr::opts_chunk$set(
   dpi = getOption("lpjmlstats.pdf_plot_dpi", 300),
   dev = getOption("lpjmlstats.graphics_device", "png"),
   crop = NULL,
+  fig.pos = "H",
   fig.height = getOption("lpjmlstats.fig_height", 2.4)
 )
 ```

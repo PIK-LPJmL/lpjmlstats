@@ -295,7 +295,10 @@ create_simulation_table <- function(paths) {
     lpjml_version <- c(lpjml_version, meta$source)
   }
 
-  if (length(unique(sim_names)) != length(sim_names)) {
+  if (!is.null(names(paths$baseline_dir)) && !is.null(names(paths$under_test_dirs))) {
+    # use user specified names for the simulations if existing 
+    sim_ident <- c(names(paths$baseline_dir), names(paths$under_test_dirs))
+  } else if (length(unique(sim_names)) != length(sim_names)) {
     # use file paths as sim identifier, if sim names are not unique
     # check if file paths are unique
     if (length(unique(sim_paths)) != length(sim_paths)) {
@@ -527,7 +530,7 @@ retrieve_summaries <-
 
     # process baseline file
     process_file(metrics_of_var,
-                 paths$baseline_dir,
+                 unlist(paths$baseline_dir),
                  var,
                  "baseline",
                  paths$suffix,

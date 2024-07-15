@@ -8,21 +8,11 @@ CellSubsetTimeseries metric.
 See \link{Metric} for the documentation of metrics in general.
 }
 \section{Super classes}{
-\code{\link[lpjmlstats:Metric]{lpjmlstats::Metric}} -> \code{\link[lpjmlstats:GlobSumTimeseries]{lpjmlstats::GlobSumTimeseries}} -> \code{\link[lpjmlstats:GlobAvgTimeseries]{lpjmlstats::GlobAvgTimeseries}} -> \code{CellSubsetTimeseries}
+\code{\link[lpjmlstats:Metric]{lpjmlstats::Metric}} -> \code{\link[lpjmlstats:GlobSumTimeseries]{lpjmlstats::GlobSumTimeseries}} -> \code{\link[lpjmlstats:GlobAvgTimeseries]{lpjmlstats::GlobAvgTimeseries}} -> \code{\link[lpjmlstats:CellSubsetAnnAvgTimeseries]{lpjmlstats::CellSubsetAnnAvgTimeseries}} -> \code{CellSubsetTimeseries}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of metric options specific to this metric
-\itemize{
-\item \code{font_size} integer, font size of the table
-\item \code{name_trunc} integer, indicating when to truncate the band names
-band names
-\item \code{year_subset}: character vector, defines which calander years the metric considers,
-i.e. a data subset that the metric works with; e.g. c("1995", "1996").
-\item \code{cell} cells to be subsetted
-}}
-
 \item{\code{description}}{Description used in the report}
 
 \item{\code{title}}{Section header used in the report}

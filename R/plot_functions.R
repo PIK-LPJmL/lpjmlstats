@@ -3,7 +3,7 @@
 #' @importFrom rlang .data
 #' @importFrom rlang :=
 #' @importFrom tidyselect matches
-
+#' @importFrom rnaturalearth ne_countries
 
 # ----- table plot -----
 
@@ -70,12 +70,11 @@ lpjml_calc_to_table <- function(lpjml_calc) {
 
   # ---- create table ----
   # add variable column
-  table <- tibble::tibble(variable = names(band_values))
+  table <- tibble::tibble(variable = tolower(names(band_values)))
   # add value column
   pos_in_var_grp <- lpjml_calc$meta$pos_in_var_grp
   col_name <- paste0(
-    pos_in_var_grp$type,
-    ifelse(!is.null(pos_in_var_grp$compare_item), "_", ""),
+    ifelse(!pos_in_var_grp$type == "compare", pos_in_var_grp$type, ""),
     pos_in_var_grp$compare_item,
     ":\n ",
     lpjml_calc$meta$sim_ident
@@ -94,9 +93,12 @@ create_map_plots <- function(var_grp_list,
   plot_list <- list()
 
   for (var_grp in var_grp_list) {
+    plot_list <- add_seperator(plot_list, m_options$var_seperator, paste("##", var_grp$get_var_name()))
     limits <- var_grp$get_limits(quantiles = m_options$quantiles)
     band_names <- var_grp$get_band_names()
     for (band in band_names) {
+      if (length(band_names) > 1)
+        plot_list <- add_seperator(plot_list, m_options$band_seperator, paste("###", band))
       var_grp_band <- var_grp$deep_clone()
       var_grp_band$transform_lpjml_calcs(function(x) {
         subset(x, band = band)
@@ -106,7 +108,9 @@ create_map_plots <- function(var_grp_list,
                                                           limits,
                                                           colorbar_length)
       plot_list <- c(plot_list, band_plot_list)
+      plot_list <- add_seperator(plot_list, m_options$band_seperator)
     }
+    plot_list <- add_seperator(plot_list, m_options$var_seperator)
   }
   return(plot_list)
 }
@@ -118,10 +122,12 @@ lpjml_calc_to_map <- function(lpjml_calc,
                               limits,
                               colorbar_length = 1.4) {
   pos_in_var_grp <- lpjml_calc$meta$pos_in_var_grp
-  plot_title <- paste(
-    lpjml_calc$meta$var_and_band_disp,
+  plot_title <- paste_custom(
+    ifelse(is.null(m_options$var_seperator), lpjml_calc$meta$variable, ""),
+    ifelse(is.null(m_options$band_seperator) & !is.null(lpjml_calc$meta$band_names),
+           lpjml_calc$meta$band_names[[1]], ""),
     lpjml_calc$meta$sim_ident,
-    ifelse(!is.null(pos_in_var_grp$compare_item), pos_in_var_grp$compare_item, " - "),
+    ifelse(!is.null(pos_in_var_grp$compare_item), pos_in_var_grp$compare_item, ""),
     prettify_units(lpjml_calc$meta$unit),
     sep = "; "
   )
@@ -145,19 +151,18 @@ map_tibble_to_ggplot <-
            title,
            colorbar_length = 1.4,
            font_size = 9,
-           n_breaks = n_breaks,
+           n_breaks = 3,
            limits = NULL) {
-    # get world map
-    world <- ggplot2::map_data("world")
 
-    # crop world map to data range
+    # get range
     x_range <- range(tibble$x, na.rm = TRUE)
     y_range <- range(tibble$y, na.rm = TRUE)
-    world <- world %>%
-      dplyr::filter(.data$long >= x_range[1] &
-                      .data$long <= x_range[2]) %>%
-      dplyr::filter(.data$lat >= y_range[1] &
-                      .data$lat <= y_range[2])
+
+    x_range <- c(x_range[1] - 1, x_range[2] + 1) # add 1 deg of padding
+    y_range <- c(y_range[1] - 1, y_range[2] + 1)
+
+    # get world map
+    world <- rnaturalearth::ne_countries(returnclass = "sf", scale = "small", type = "countries")
 
     # setup breaks
     breaks <- function(limits) {
@@ -193,10 +198,12 @@ map_tibble_to_ggplot <-
         p1 = 0.6,
         # increase saturation of pos. colors
         limits = limits                     # set limits
-      )
+      ) +
+      ggplot2::geom_sf(data = world, fill = NA, linewidth = 0.12) +
+      ggplot2::coord_sf(crs = sf::st_crs(4326))
 
     # adjust plot
-    p <- p + ggplot2::coord_fixed(xlim = x_range, ylim = y_range) +
+    p <- p +
       # remove padding around plot
       ggplot2::scale_x_continuous(limits = x_range,
                                   expand = c(0, 0),
@@ -210,29 +217,19 @@ map_tibble_to_ggplot <-
         # stretch the legend to width of plot
         legend.key.width = ggplot2::unit(colorbar_length, "cm"),
         legend.key.height = ggplot2::unit(0.2, "cm"),
+        aspect.ratio = (y_range[2] - y_range[1]) / (x_range[2] - x_range[1])
       )
 
     p <- p + benchmark_theme(p, font_size) + ggplot2::ggtitle(title)
-
-    # add country border overlay
-    p <- p + ggplot2::geom_polygon(
-      data = world,
-      ggplot2::aes(
-        x = .data$long,
-        y = .data$lat,
-        group = .data$group
-      ),
-      # reduce line thickness
-      linewidth = 0.12,
-      fill = NA,
-      # transparent filling
-      color = "darkgray"  # color of border
-    )
 
     return(p)
   }
 
 lpjml_calc_to_map_tibble <- function(lpjml_calc) {
+  lpjml_calc$add_grid()
+  grid <- lpjml_calc$grid$subset(cell = dimnames(lpjml_calc)[["cell"]])
+  lpjml_calc$.__set_grid__(grid)
+
   data_ras <- lpjmlkit::as_raster(lpjml_calc)
   tibble <- tibble::tibble(raster::as.data.frame(data_ras, xy = TRUE))
 
@@ -248,12 +245,16 @@ lpjml_calc_to_map_tibble <- function(lpjml_calc) {
 create_time_series_plots <- function(var_grp_list, m_options) {
   plot_list <- list()
   for (var_grp in var_grp_list) {
+    plot_list <- add_seperator(plot_list, m_options$var_seperator, paste("##", var_grp$get_var_name()))
     limits <- var_grp$get_limits("all")
     spatial_units <- dimnames(var_grp$baseline$data)[[1]]
     spatial_dim <- names(dimnames(var_grp$baseline$data)[1])
     band_names <-
       var_grp$apply_to_any_lpjml_calc(function(x) dimnames(x$data)[["band"]])
     for (band in band_names) {
+      if (length(band_names) > 1)
+        plot_list <- add_seperator(plot_list, m_options$band_seperator, paste("###", band))
+
       for (spatial_unit in spatial_units) {
         var_grp_band <- var_grp$deep_clone()
         # subsetting needs to be done with do.call as the spatial dimension is
@@ -263,11 +264,11 @@ create_time_series_plots <- function(var_grp_list, m_options) {
         var_grp_band$transform_lpjml_calcs(function(x) {
           do.call("subset", c(list(x = x), args))
         })
-        plot_title <- paste(
-          var_grp_band$apply_to_any_lpjml_calc(function(x) {
-            x$meta$var_and_band_disp
-          }),
-          ifelse(length(spatial_units) > 1, spatial_unit, " - "),
+        var_name <- var_grp_band$apply_to_any_lpjml_calc(function(x) x$meta$variable)
+        plot_title <- paste_custom(
+          ifelse(is.null(m_options$var_seperator), var_name, ""),
+          ifelse(is.null(m_options$band_seperator) & length(band_names), band, ""),
+          ifelse(length(spatial_units) > 1, spatial_unit, ""),
           prettify_units(var_grp_band$baseline$meta$unit),
           sep = "; "
         )
@@ -280,9 +281,11 @@ create_time_series_plots <- function(var_grp_list, m_options) {
           limits = limits,
           font_size = m_options$font_size
         )
-        plot_list[[plot_title]] <- p
+        plot_list <- c(plot_list, list(plot_title = p))
       }
+      plot_list <- add_seperator(plot_list, m_options$band_seperator)
     }
+    plot_list <- add_seperator(plot_list, m_options$var_seperator)
   }
   return(plot_list)
 }
@@ -368,6 +371,25 @@ insert_linebreaks <- function(text_vect, max_length = 18) {
   return(text_vect)
 }
 
+add_seperator <- function(plot_list, seperator, text = NULL) {
+  if (!is.null(seperator)) {
+    if (!is.null(text))
+      return(c(plot_list, list(seperator = paste(text, "\n\n\n\n"))))
+    else
+      return(c(plot_list, list(seperator = paste(seperator, "\n\n\n\n"))))
+  } else {
+    return(plot_list)
+  }
+}
+
+paste_custom <- function(..., sep = "; ") {
+  args <- list(...)
+  # Filter out NULL values
+  args <- args[!vapply(args, function(x) nchar(x) == 0, logical(1))]
+  # Concatenate the remaining arguments with the specified separator
+  paste(args, collapse = sep)
+}
+
 prettify_units <- function(unit_vec) {
   str_units <- as.character(unit_vec)
 
@@ -384,6 +406,7 @@ benchmark_theme <- function(plot, font_size) {
     axis.title.x = ggplot2::element_blank(),
     axis.title.y = ggplot2::element_blank(),
     text = ggplot2::element_text(size = font_size),
-    plot.title = ggplot2::element_text(size = font_size * 1.2)
+    plot.title = ggplot2::element_text(size = font_size * 1.2),
+    plot.margin = ggplot2::unit(c(0.01, 0.01, 0.01, 0.01), "inches")
   )
 }

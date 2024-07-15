@@ -20,6 +20,11 @@ See \link{Metric} for the documentation of metrics in general.
 band names
 \item \code{year_subset}: character vector, defines which calander years the metric considers,
 i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+\item \code{num_cols}: integer, number of cols in the plot grid in the report
+\item \code{var_seperator}: NULL or character string, if is character string a
+line break is inserted for each variable and a heading with variable name added,
+additionally the text will be executed as latex command \verb{e.g. \\\\newpage} for pagebreak
+\item \code{band_seperator}: analogous to var_seperator but for bands
 }}
 
 \item{\code{title}}{Section header used in the report}

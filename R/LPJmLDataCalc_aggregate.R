@@ -215,6 +215,7 @@ LPJmLDataCalc$set(
     # the grid is also needed to calculate the supporting cell areas
     # and construct dynamic regions
     self$add_grid()
+    private$.grid$subset(cell = dimnames(self$data)[["cell"]]) # subset the grid
 
     # select the correct LPJmLRegionData object as aggregation unit
     if (inherits(spatial_agg_units, "LPJmLRegionData")) {
@@ -375,13 +376,14 @@ LPJmLDataCalc$set(
       lapply(1:private$.meta$nbands, function(band) {
         as.array(region_matrix %*% self$data[, , band]) # core aggregation step
       })
-    aggr_data <- abind(list_of_aggr_bands, along = 3)
+    aggr_data <- unlist(list_of_aggr_bands)
+    first_band <- list_of_aggr_bands[[1]]
 
     # recover names of dimension vector
-    region_names <- dimnames(aggr_data)[[1]]
-    dim(aggr_data) <- c(region = dim(aggr_data)[1],
-                        time = dim(aggr_data)[2],
-                        band = dim(aggr_data)[3])
+    region_names <- dimnames(first_band)[[1]]
+    dim(aggr_data) <- c(region = dim(first_band)[1],
+                        time = dim(first_band)[2],
+                        band = private$.meta$nbands)
 
     # recover dimnames
     dimnames(aggr_data) <- list(
@@ -422,6 +424,7 @@ LPJmLDataCalc$set(
       stop("The ref_area must be either 'terr_area' or
            'cell_area'")
     }
+    cell_areas <- subset(cell_areas, cell = dimnames(self$data)[["cell"]])
     return(cell_areas)
   }
 )
@@ -461,7 +464,7 @@ calc_cellarea_wrapper <- function(lpjml_grid) {
   dim(cell_areas) <- c(cell = ncell,
                        time = 1,
                        band = 1)
-  dimnames(cell_areas) <- list(cell = 1:ncell,
+  dimnames(cell_areas) <- list(cell = dimnames(lpjml_grid$data)[["cell"]],
                                time = 1,
                                band = 1)
 
