@@ -344,5 +344,18 @@ test_that("keep dimnames works as expected", {
   expect_equal(dimnames(array1), list(c("a", "b"), c("c", "d"), NULL))
   expect_equal(deparse_unit(array1), "gN")
   expect_equal(dim(array1), c(x = 2, y = 2, z = 1))
+})
 
+test_that("add band returns correct data and meta data for mean", {
+  soiln_calc <- load_soiln_layer_calc()
+  soiln_calc$add_band("mean", mean)
+
+  # meta data checks
+  expect_equal(soiln_calc$meta$nbands, 6)
+  expect_equal(soiln_calc$meta$band_names[6], "mean")
+  expect_equal(dim(soiln_calc$data), c(cell = 1, time = 10, band = 6))
+
+  # data checks
+  expect_equal(soiln_calc$data[1,1,6], mean(soiln_calc$data[1,1,]))
+  expect_equal(units::deparse_unit(soiln_calc$.data_with_unit), "gN m-2")
 })

@@ -34,6 +34,14 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     },
 
     #' @description
+    #' Add a band to the object by applying a function to the band vector for each spacial and temporal unit
+    #' @param band_name Name of band
+    #' @param fun function
+    add_band = function(band_name, fun) {
+      private$.__add_band__(band_name, fun)
+    },
+
+    #' @description
     #' Get the reference area of the LPJmLDataCalc object.
     #' For an area density variable the reference area should
     #' be the area of each cell on which the variable is defined.
@@ -695,6 +703,27 @@ subset.LPJmLDataCalc <- function(x, ...) {
   return(.as_LPJmLDataCalc(lpjml_dat))
 }
 
+LPJmLDataCalc$set("private", ".__add_band__",
+                  function(band_name, fun) {
+                    # create new larger array and copy content
+                    old_dims <- dim(private$.data)
+                    new_array <- array(NA, dim = c(old_dims[1], old_dims[2], old_dims[3] + 1))
+                    new_array[, , -(old_dims[3] + 1)] <- private$.data
+                    
+                    # insert new band
+                    new_array[, , old_dims[3] + 1] <- apply(private$.data, MARGIN = c(1, 2), FUN = fun)
+
+                    # update unit 
+                    resulting_unit <- units(fun(private$.data[1, 1, ])) # test case to get unit
+                    new_array <- units::set_units(new_array, resulting_unit)
+
+                    private$.data <- new_array
+
+                    # meta data update
+                    private$.meta$.__set_attribute__("nbands", private$.meta$nbands + 1)
+                    private$copy_unit_array2meta()
+                    private$.meta$.__set_attribute__("band_names", c(self$.meta$band_names, band_name))
+                  })
 
 
 # ----- add_grid -----

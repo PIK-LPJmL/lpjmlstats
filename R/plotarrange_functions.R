@@ -30,10 +30,10 @@ arrange_map_plots <- function(plotlist, m_options) {
     return()
   }
 
-  arrange_plots(plotlist, m_options$num_cols, wrap = TRUE)
+  arrange_plots_all(plotlist, m_options$num_cols, wrap = TRUE)
 }
 
-arrange_plots <- function(plotlist, num_cols, wrap) {
+arrange_plots_all <- function(plotlist, num_cols, wrap) {
   print_plotrow <- function(plotrow) {
     if (!is.null(plotrow))
       print(plotrow + patchwork::plot_layout(nrow = 1, widths = rep(1, num_cols)))
@@ -120,5 +120,5 @@ arrange_timeseries_plots <- function(plotlist, m_options) {
   grid::grid.newpage()
   grid::grid.draw(legend)
   cat("\n\n")
-  arrange_plots(plotlist, m_options$num_cols, wrap = FALSE)
+  arrange_plots_all(plotlist, m_options$num_cols, wrap = FALSE)
 }

@@ -150,6 +150,13 @@ load_soiln_calc <- function() {
   return(soiln)
 }
 
+load_soiln_layer_calc <- function() {
+  path_to_soil_n_json <-
+    testthat::test_path("../testdata/path1", "soiln_layer.bin.json")
+  soiln <- lpjmlstats::read_io(path_to_soil_n_json)
+  soiln$add_grid()
+  return(soiln)
+}
 
 create_var_grp <-
   function(baseline) {
