@@ -706,16 +706,21 @@ subset.LPJmLDataCalc <- function(x, ...) {
 LPJmLDataCalc$set("private", ".__add_band__",
                   function(band_name, fun) {
                     # create new larger array and copy content
+                    old_dimnames <- dimnames(private$.data)
                     old_dims <- dim(private$.data)
                     new_array <- array(NA, dim = c(old_dims[1], old_dims[2], old_dims[3] + 1))
                     new_array[, , -(old_dims[3] + 1)] <- private$.data
-                    
+
                     # insert new band
                     new_array[, , old_dims[3] + 1] <- apply(private$.data, MARGIN = c(1, 2), FUN = fun)
 
-                    # update unit 
+                    # update unit
                     resulting_unit <- units(fun(private$.data[1, 1, ])) # test case to get unit
                     new_array <- units::set_units(new_array, resulting_unit)
+
+                    # update dimnames
+                    old_dimnames[["band"]] <- c(old_dimnames[["band"]], band_name)
+                    dimnames(new_array) <- old_dimnames
 
                     private$.data <- new_array
 
