@@ -134,6 +134,7 @@ create_test_global_LPJmLDataCalc <- function(unit = "gN", value = NULL) { # noli
   } else {
     data <- array(rep(value, 67420), dim = c(67420, 1, 1))
   }
+  dimnames(data) <- list(cell = as.character(0:67419), time = "1", band = "1")
   grid <- read_def_grid()
 
   lpjml_calc <- create_LPJmLDataCalc(data, unit, grid)
@@ -149,6 +150,13 @@ load_soiln_calc <- function() {
   return(soiln)
 }
 
+load_soiln_layer_calc <- function() {
+  path_to_soil_n_json <-
+    testthat::test_path("../testdata/path1", "soiln_layer.bin.json")
+  soiln <- lpjmlstats::read_io(path_to_soil_n_json)
+  soiln$add_grid()
+  return(soiln)
+}
 
 create_var_grp <-
   function(baseline) {
@@ -182,7 +190,12 @@ create_var_grp <-
   }
 
 get_test_m_options <- function() {
-  m_options <- list(font_size = 8, n_breaks = 3, quantiles = c(0.05, 0.95))
+  m_options <- list(font_size = 8,
+                    n_breaks = 3,
+                    quantiles = c(0.05, 0.95),
+                    var_seperator = NULL,
+                    band_seperator = NULL,
+                    num_cols = 2)
   return(m_options)
 }
 
@@ -199,3 +212,10 @@ get_test_m_options <- function() {
     }
   )
 )
+
+# test metric options
+m_option <- list(year_subset = as.character(c(2009:2018)))
+test_m_options <- list(GlobSumTimeAvgTable = m_option,
+                       GlobSumTimeseries = m_option,
+                       TimeAvgMap = m_option,
+                       .DoNothing = m_option)

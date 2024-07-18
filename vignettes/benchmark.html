@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -363,26 +363,18 @@ loaded.</p>
 going from version 5.7.1 to version 5.8.6.</p>
 <p>Start by loading the package.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(lpjmlstats) <span class="co"># nolint</span></span></code></pre></div>
-<p>For a quick completion of the tutorial, we will only look at the
-first five years of all LPJmL outputs, which significantly reduces
-computation time. If you prefer a full comparison, skip the following
-modification to the package settings.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">set_lpjmlstats_settings</span>(<span class="at">year_subset =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>)</span></code></pre></div>
-<p>Remember to restore the default settings after the completion of the
-tutorial with
-<code>set_lpjmlstats_settings(year_subset = NULL)</code>.</p>
 <p>The basic usage of the benchmarking function is simple. Enter the
 paths of the under test and baseline output directories, along with some
 meta-information.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>benchmark_result <span class="ot">&lt;-</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="fu">benchmark</span>(</span>
-<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>    <span class="at">baseline_dir =</span> <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.7.1/output&quot;</span>,    <span class="co"># nolint</span></span>
-<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>    <span class="co"># it is recommended to use absolute paths</span></span>
-<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>    <span class="at">under_test_dirs =</span> <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.8.6/output&quot;</span>, <span class="co"># nolint</span></span>
-<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>    <span class="at">author =</span> <span class="st">&quot;David&quot;</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>    <span class="at">description =</span> <span class="st">&quot;Evaluate the changes from version 5.7.1 to 5.8.6&quot;</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>    <span class="at">output_file =</span> <span class="st">&quot;benchmark_vignette.pdf&quot;</span></span>
-<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>benchmark_result <span class="ot">&lt;-</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>  <span class="fu">benchmark</span>(</span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>    <span class="at">baseline_dir =</span> <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.7.1/output&quot;</span>,    <span class="co"># nolint</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>    <span class="co"># it is recommended to use absolute paths</span></span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>    <span class="at">under_test_dirs =</span> <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.8.6/output&quot;</span>, <span class="co"># nolint</span></span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>    <span class="at">author =</span> <span class="st">&quot;David&quot;</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>    <span class="at">description =</span> <span class="st">&quot;Evaluate the changes from version 5.7.1 to 5.8.6&quot;</span>,</span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>    <span class="at">output_file =</span> <span class="st">&quot;benchmark_vignette.pdf&quot;</span></span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>  )</span></code></pre></div>
 <p>This will create a PDF report in the working directory and stores the
 numerical results in the <code>benchmark_result</code> object. The
 process usually takes several minutes. It will summarize and compare the
@@ -402,12 +394,12 @@ considered, how they are processed, compared and visualized, and what
 the order of the processing and output PDF is. If no settings are
 passed, the default as given in the <code>R\default_settings.R</code>
 package file is used. Here is an excerpt of that file:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>default_settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="at">vegc  =</span> <span class="fu">c</span>(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="at">soilc =</span> <span class="fu">c</span>(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>  <span class="at">litc =</span> <span class="fu">c</span>(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>  ...</span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>default_settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">vegc  =</span> <span class="fu">c</span>(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">soilc =</span> <span class="fu">c</span>(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>  <span class="at">litc =</span> <span class="fu">c</span>(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a>  ...</span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>)</span></code></pre></div>
 <p>The settings list reads as follows: Each line corresponds to an
 output variable. The left hand side of the equality sign defines
 <em>which output is processed</em> and the right hand side defines
@@ -433,20 +425,32 @@ vignette for a tutorial.</p>
 <p>Benchmarking multiple under test runs against a baseline is also
 possible. For example, it could be interesting to compare the 5.8.1
 version with several older versions.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">benchmark</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.8.1/output&quot;</span>,   <span class="co"># nolint</span></span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">list</span>(</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.7.7/output&quot;</span>, <span class="co"># nolint</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="co"># note that older versions than 5.7.1 can at the moment not be benchmarked due</span></span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="co"># to missing terr_area output</span></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.7.1/output&quot;</span>  <span class="co"># nolint</span></span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  ),</span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">author =</span> <span class="st">&quot;David&quot;</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">&quot;Check how newer lpjml versions compare to older versions&quot;</span>,</span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>  <span class="at">output_file =</span> <span class="st">&quot;benchmark_vignette_multiple_ut.pdf&quot;</span></span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">benchmark</span>(</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.8.1/output&quot;</span>,   <span class="co"># nolint</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.7.7/output&quot;</span>, <span class="co"># nolint</span></span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="co"># note that older versions than 5.7.1 can at the moment not be benchmarked due</span></span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>    <span class="co"># to missing terr_area output</span></span>
+<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>    <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.7.1/output&quot;</span>  <span class="co"># nolint</span></span>
+<span id="cb4-8"><a href="#cb4-8" tabindex="-1"></a>  ),</span>
+<span id="cb4-9"><a href="#cb4-9" tabindex="-1"></a>  <span class="at">author =</span> <span class="st">&quot;David&quot;</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" tabindex="-1"></a>  <span class="at">description =</span> <span class="st">&quot;Check how newer lpjml versions compare to older versions&quot;</span>,</span>
+<span id="cb4-11"><a href="#cb4-11" tabindex="-1"></a>  <span class="at">output_file =</span> <span class="st">&quot;benchmark_vignette_multiple_ut.pdf&quot;</span></span>
+<span id="cb4-12"><a href="#cb4-12" tabindex="-1"></a>)</span></code></pre></div>
 <p>Comparing more than two under test to the baseline may result in
 display problems in the PDF report.</p>
+<p>You can also give short identifiers for the simulation that will be
+used throughout at this point:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">benchmark</span>(</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">my_baseline =</span> <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.8.1/output&quot;</span>),   <span class="co"># nolint</span></span>
+<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="fu">list</span>(</span>
+<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>    <span class="at">my_test1 =</span> <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.7.7/output&quot;</span>, <span class="co"># nolint</span></span>
+<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>    <span class="co"># note that older versions than 5.7.1 can at the moment not be benchmarked due</span></span>
+<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a>    <span class="co"># to missing terr_area output</span></span>
+<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>    <span class="at">my_test2 =</span> <span class="st">&quot;/p/projects/lpjml/benchmark_run_outputs/5.7.1/output&quot;</span>  <span class="co"># nolint</span></span>
+<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  ),</span>
+<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  ...</span>
+<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>)</span></code></pre></div>
 </div>
 <div id="working-with-the-benchmark-results" class="section level1">
 <h1>Working with the benchmark results</h1>
@@ -553,9 +557,7 @@ save the object for later analysis. This last step of the tutorial can
 be done for example with</p>
 <div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">saveRDS</span>(benchmark_result, <span class="at">file =</span> <span class="st">&quot;benchmark_result_vignette.rds&quot;</span>)</span></code></pre></div>
 <p>This file can also be used to recreate the benchmark report. See
-<code>?create_pdf_report</code> for details. Don’t forget to restore the
-default package settings with</p>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a><span class="fu">set_lpjmlstats_settings</span>(<span class="at">year_subset =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<code>?create_pdf_report</code> for details.</p>
 </div>
 </div>
 

@@ -101,7 +101,7 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     #' @param var Variable name
     #' @param type Type of data ("baseline" or "under_test")
     capture_summary = function(lpjml_calc, var, type) {
-      if (!is.null(self$m_options$year_range)) {
+      if (!is.null(self$m_options$year_subset)) {
         subset_years <- function(lpjml_calc, years) {
           lpjml_calc %>%
             transform("year_month_day") %>%
@@ -110,7 +110,7 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
         }
         lpjml_calc <-
           keep_units_lpjml_calc(lpjml_calc,
-                                function(x) subset_years(x, self$m_options$year_range))
+                                function(x) subset_years(x, self$m_options$year_subset))
       }
       summary <- self$summarize(lpjml_calc)
       self$store_summary(summary, var, type)
@@ -185,6 +185,7 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     generate_report_content = function() {
       self$print_metric_header()
       self$print_metric_description()
+      self$print_year_subset()
       plotlist <- self$plot()
       self$arrange_plots(plotlist)
     },
@@ -201,6 +202,15 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     #' Function to print the metric description.
     print_metric_description = function() {
       cat(self$description, "\n")
+    },
+
+    #' @description
+    #' !Package internal method!
+    #' Function to print the year_subset metric option.
+    print_year_subset = function() {
+      if (!is.null(self$m_options$year_subset)) {
+        pretty_print_year_subset(self$m_options$year_subset)
+      }
     }
   )
 )
@@ -214,28 +224,34 @@ VarGrp <- # nolint:object_linter_name
       # Function to retrieve the minimum and maximum of contained data
       # for the different types of data contained
       get_limits = function(type = "all", quantiles = c(0, 1)) {
-        get_quantiles_of_lpjml_calc_list <- function(list, quantiles) {
-          data <- sapply(c(unlist(list)), function(x) x$data) # nolint
-          lower_lim <- quantile(data, quantiles[1], na.rm = TRUE)
-          upper_lim <- quantile(data, quantiles[2], na.rm = TRUE)
+        get_quantiles_of_lpjml_calc <- function(lpjml_calc, quantiles) {
+          lower_lim <- Inf
+          upper_lim <- -Inf
+          for (band in dimnames(lpjml_calc$data)[["band"]]) {
+            data <- subset(lpjml_calc, band = band)$data
+            data[data == 0] <- NA # we assume that a zero means "no exisitng data" for the quantiles
+            if (all(is.na(data))) {
+              low <- 0
+              up <- 0
+            } else {
+              low <- unlist(quantile(data, quantiles[1], na.rm = TRUE))
+              up <- unlist(quantile(data, quantiles[2], na.rm = TRUE))
+            }
+            if (low < lower_lim) lower_lim <- low
+            if (up > upper_lim) upper_lim <- up
+          }
           return(c(lower_lim, upper_lim))
         }
-        if (type == "all") {
-          data <- list(self$under_test, self$compare, self$baseline)
-        } else {
-          data <- self[[type]]
-        }
-        limits <- get_quantiles_of_lpjml_calc_list(data, quantiles)
-        return(limits)
+        var_grp_lims <- unlist(self$apply_to_lpjml_calcs(get_quantiles_of_lpjml_calc, quantiles))
+        return(c(min(var_grp_lims), max(var_grp_lims)))
       },
 
       get_band_names = function() {
-        if (!is.null(self$baseline))
-          return(dimnames(self$baseline)[["band"]])
-        else if (!is.null(self$under_test[[1]]))
-          return(dimnames(self$under_test[[1]])[["band"]])
-        else if (!is.null(self$compare[[1]][[1]]))
-          return(dimnames(self$compare[[1]][[1]])[["band"]])
+        self$apply_to_any_lpjml_calc(function(x) dimnames(x$data)[["band"]])
+      },
+
+      get_var_name = function() {
+        self$apply_to_any_lpjml_calc(function(x) x$meta$variable)
       },
 
       # Function applies the function `fun`
@@ -342,3 +358,16 @@ VarGrp <- # nolint:object_linter_name
       compare = NULL
     )
   )
+
+# Utility functions
+pretty_print_year_subset <- function(years) {
+  numeric_years <- as.numeric(years)
+  vec_range <- range(numeric_years)
+  cat("Data subset: ")
+  if (identical(as.integer(numeric_years), as.integer(vec_range[1]:vec_range[2])))
+    cat(vec_range[1], "-", vec_range[2])
+  else
+    cat(numeric_years)
+  cat(" (years)")
+  cat("\n\n")
+}

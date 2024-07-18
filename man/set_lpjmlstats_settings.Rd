@@ -10,10 +10,6 @@ set_lpjmlstats_settings(...)
 \item{...}{Variable arguments to specify settings. The function accepts
 the following options:
 \itemize{
-\item \code{year_subset}: A vector of years passed to the
-subset argument of the \link{read_io} function. Defaults to reading
-all years. Specifying a subset of years can improve performance.
-
 \item \code{graphics_device}:  A character string specifying
 the graphics device to be used for plotting the benchmarking results.
 Defaults to "png". Use "pdf" for vector graphics.
@@ -41,7 +37,6 @@ This function configures various settings for the lpjmlstats package.
 }
 \examples{
 \dontrun{
-set_lpjmlstats_settings(year_subset = 1:5, graphics_device = "pdf")
 set_lpjmlstats_settings(unit_table_path = "path/to/my_table.csv",
 pdf_plot_dpi = 300)
 }

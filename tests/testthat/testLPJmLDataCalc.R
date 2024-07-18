@@ -194,6 +194,19 @@ test_that("broadcasting second operator works for multiplication", {
   expect_equal(product$data[1, 1, ], c(3, 2, 1), ignore_attr = TRUE) #nolint
 })
 
+test_that("multiplication with non matchin dimnames fails", {
+  array1 <- rep(c(1, 0, 0, 1), 3)
+  dim(array1) <- c(2, 2, 3)
+  dimnames(array1) <- list(cell = c("1", "2"), time = c("1", "2"), band = c("1", "2", "3"))
+  array2 <- c(3, 2, 1)
+  dim(array2) <- c(1, 1, 3)
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  lpjml_calc2 <- create_LPJmLDataCalc(array2, "")
+
+  expect_error(lpjml_calc1 * lpjml_calc2, "match")
+
+})
+
 test_that("multiplication with scalar unit object works", {
   array1 <- c(1, 0, 0, 1)
   dim(array1) <- c(2, 2, 1)
@@ -331,5 +344,19 @@ test_that("keep dimnames works as expected", {
   expect_equal(dimnames(array1), list(c("a", "b"), c("c", "d"), NULL))
   expect_equal(deparse_unit(array1), "gN")
   expect_equal(dim(array1), c(x = 2, y = 2, z = 1))
+})
 
+test_that("add band returns correct data and meta data for mean", {
+  soiln_calc <- load_soiln_layer_calc()
+  soiln_calc$add_band("mean", function(x) sum(x) / length(x))
+
+  # meta data checks
+  expect_equal(soiln_calc$meta$nbands, 6)
+  expect_equal(soiln_calc$meta$band_names[6], "mean")
+  expect_equal(dim(soiln_calc$data), c(cell = 1, time = 10, band = 6))
+
+  # data checks
+  expect_equal(soiln_calc$data[1, 1, 6], mean(soiln_calc$data[1, 1, ]))
+  expect_equal(units::deparse_unit(soiln_calc$.data_with_unit), "gN m-2")
+  expect_equal(dimnames(soiln_calc$data)$band, c("200", "500", "1000", "2000", "3000", "mean"))
 })

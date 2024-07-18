@@ -18,10 +18,13 @@ See \link{Metric} for the documentation of metrics in general.
 \item \code{font_size} integer, font size of the table
 \item \code{name_trunc} integer, indicating when to truncate the band names
 band names
-\item \code{year_range}: integer or character vector, defines the range
-of years that the metric considers. Integer indices can be between 1
-and \code{nyear}. Character vector is used to subset by actual calendar
-years (starting at \code{firstyear}).
+\item \code{year_subset}: character vector, defines which calander years the metric considers,
+i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+\item \code{num_cols}: integer, number of cols in the plot grid in the report
+\item \code{var_seperator}: NULL or character string, if is character string a
+line break is inserted for each variable and a heading with variable name added,
+additionally the text will be executed as latex command \verb{e.g. \\\\newpage} for pagebreak
+\item \code{band_seperator}: analogous to var_seperator but for bands
 }}
 
 \item{\code{title}}{Section header used in the report}
@@ -49,6 +52,7 @@ years (starting at \code{firstyear}).
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="generate_report_content"><a href='../../lpjmlstats/html/Metric.html#method-Metric-generate_report_content'><code>lpjmlstats::Metric$generate_report_content()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="print_metric_description"><a href='../../lpjmlstats/html/Metric.html#method-Metric-print_metric_description'><code>lpjmlstats::Metric$print_metric_description()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="print_metric_header"><a href='../../lpjmlstats/html/Metric.html#method-Metric-print_metric_header'><code>lpjmlstats::Metric$print_metric_header()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="print_year_subset"><a href='../../lpjmlstats/html/Metric.html#method-Metric-print_year_subset'><code>lpjmlstats::Metric$print_year_subset()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="store_summary"><a href='../../lpjmlstats/html/Metric.html#method-Metric-store_summary'><code>lpjmlstats::Metric$store_summary()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="transform_lpjml_calcs"><a href='../../lpjmlstats/html/Metric.html#method-Metric-transform_lpjml_calcs'><code>lpjmlstats::Metric$transform_lpjml_calcs()</code></a></span></li>
 </ul>

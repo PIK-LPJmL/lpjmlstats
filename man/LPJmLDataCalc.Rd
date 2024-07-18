@@ -27,6 +27,7 @@ An extended LPJmLData class that enables arithmetic and statistics.
 \itemize{
 \item \href{#method-LPJmLDataCalc-new}{\code{LPJmLDataCalc$new()}}
 \item \href{#method-LPJmLDataCalc-aggregate}{\code{LPJmLDataCalc$aggregate()}}
+\item \href{#method-LPJmLDataCalc-add_band}{\code{LPJmLDataCalc$add_band()}}
 \item \href{#method-LPJmLDataCalc-get_ref_area}{\code{LPJmLDataCalc$get_ref_area()}}
 \item \href{#method-LPJmLDataCalc-plot}{\code{LPJmLDataCalc$plot()}}
 \item \href{#method-LPJmLDataCalc-.check_internal_integrity}{\code{LPJmLDataCalc$.check_internal_integrity()}}
@@ -94,6 +95,25 @@ See \link[lpjmlstats]{aggregate}.
 \item{\code{ref_area}}{See \link[lpjmlstats]{aggregate}.}
 
 \item{\code{...}}{See \link[lpjmlstats]{aggregate}.}
+}
+\if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-LPJmLDataCalc-add_band"></a>}}
+\if{latex}{\out{\hypertarget{method-LPJmLDataCalc-add_band}{}}}
+\subsection{Method \code{add_band()}}{
+Add a band to the object by applying a function to the band vector for each spacial and temporal unit
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{LPJmLDataCalc$add_band(band_name, fun)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{band_name}}{Name of band}
+
+\item{\code{fun}}{function}
 }
 \if{html}{\out{</div>}}
 }

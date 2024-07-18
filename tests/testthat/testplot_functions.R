@@ -4,12 +4,11 @@ test_that("plot functions of metric run through", {
 
   settings <-
     list(
-      soiln = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap),
-      terr_area = list(GlobSumTimeAvgTable)
+      soiln = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap)
     )
 
   out <-
-    benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE)
+    benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE, metric_options = test_m_options)
 
   # NTODO: deal with warnings
   suppressWarnings({

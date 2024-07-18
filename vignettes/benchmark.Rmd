@@ -46,15 +46,6 @@ Start by loading the package.
 library(lpjmlstats) # nolint
 ```
 
-For a quick completion of the tutorial, we will only look at 
-the first five years of all LPJmL outputs, which significantly 
-reduces computation time. If you prefer a full comparison, 
-skip the following modification to the package settings.
-```{r set_year_subset}
-set_lpjmlstats_settings(year_subset = 1:5)
-```
-Remember to restore the default settings after the completion
-of the tutorial with `set_lpjmlstats_settings(year_subset = NULL)`.
 
 The basic usage of the benchmarking function is simple. Enter the paths of 
 the under test and baseline output directories, along with some meta-information.
@@ -146,6 +137,20 @@ benchmark(
 
 Comparing more than two under test to the baseline may result in display problems in the 
 PDF report.
+
+You can also give short identifiers for the simulation that will be used throughout at this point:
+``` {r bechmark_multiple_under_test_custom_names, eval = F}
+benchmark(
+  list(my_baseline = "/p/projects/lpjml/benchmark_run_outputs/5.8.1/output"),   # nolint
+  list(
+    my_test1 = "/p/projects/lpjml/benchmark_run_outputs/5.7.7/output", # nolint
+    # note that older versions than 5.7.1 can at the moment not be benchmarked due
+    # to missing terr_area output
+    my_test2 = "/p/projects/lpjml/benchmark_run_outputs/5.7.1/output"  # nolint
+  ),
+  ...
+)
+```
 
 
 # Working with the benchmark results
@@ -283,11 +288,3 @@ saveRDS(benchmark_result, file = "benchmark_result_vignette.rds")
 
 This file can also be used to recreate the benchmark report. See `?create_pdf_report`
 for details.
-Don't forget to restore the default package settings with
-```{r}
-set_lpjmlstats_settings(year_subset = NULL)
-```
-
-
-
-

@@ -8,23 +8,11 @@ CellSubsetTimeseries metric.
 See \link{Metric} for the documentation of metrics in general.
 }
 \section{Super classes}{
-\code{\link[lpjmlstats:Metric]{lpjmlstats::Metric}} -> \code{\link[lpjmlstats:GlobSumTimeseries]{lpjmlstats::GlobSumTimeseries}} -> \code{\link[lpjmlstats:GlobAvgTimeseries]{lpjmlstats::GlobAvgTimeseries}} -> \code{CellSubsetTimeseries}
+\code{\link[lpjmlstats:Metric]{lpjmlstats::Metric}} -> \code{\link[lpjmlstats:GlobSumTimeseries]{lpjmlstats::GlobSumTimeseries}} -> \code{\link[lpjmlstats:GlobAvgTimeseries]{lpjmlstats::GlobAvgTimeseries}} -> \code{\link[lpjmlstats:CellSubsetAnnAvgTimeseries]{lpjmlstats::CellSubsetAnnAvgTimeseries}} -> \code{CellSubsetTimeseries}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of metric options specific to this metric
-\itemize{
-\item \code{font_size} integer, font size of the table
-\item \code{name_trunc} integer, indicating when to truncate the band names
-band names
-\item \code{year_range}: integer or character vector, defines the range
-of years that the metric considers. Integer indices can be between 1
-and \code{nyear}. Character vector is used to subset by actual calendar
-years (starting at \code{firstyear}).
-\item \code{cell} cells to be subsetted
-}}
-
 \item{\code{description}}{Description used in the report}
 
 \item{\code{title}}{Section header used in the report}
@@ -48,6 +36,7 @@ years (starting at \code{firstyear}).
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="generate_report_content"><a href='../../lpjmlstats/html/Metric.html#method-Metric-generate_report_content'><code>lpjmlstats::Metric$generate_report_content()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="print_metric_description"><a href='../../lpjmlstats/html/Metric.html#method-Metric-print_metric_description'><code>lpjmlstats::Metric$print_metric_description()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="print_metric_header"><a href='../../lpjmlstats/html/Metric.html#method-Metric-print_metric_header'><code>lpjmlstats::Metric$print_metric_header()</code></a></span></li>
+<li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="print_year_subset"><a href='../../lpjmlstats/html/Metric.html#method-Metric-print_year_subset'><code>lpjmlstats::Metric$print_year_subset()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="store_summary"><a href='../../lpjmlstats/html/Metric.html#method-Metric-store_summary'><code>lpjmlstats::Metric$store_summary()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="Metric" data-id="transform_lpjml_calcs"><a href='../../lpjmlstats/html/Metric.html#method-Metric-transform_lpjml_calcs'><code>lpjmlstats::Metric$transform_lpjml_calcs()</code></a></span></li>
 <li><span class="pkg-link" data-pkg="lpjmlstats" data-topic="GlobSumTimeseries" data-id="arrange_plots"><a href='../../lpjmlstats/html/GlobSumTimeseries.html#method-GlobSumTimeseries-arrange_plots'><code>lpjmlstats::GlobSumTimeseries$arrange_plots()</code></a></span></li>

@@ -7,10 +7,6 @@
 #' @param ... Variable arguments to specify settings. The function accepts
 #' the following options:
 #' \itemize{
-#'   \item \code{year_subset}: A vector of years passed to the
-#'   subset argument of the \link{read_io} function. Defaults to reading
-#'   all years. Specifying a subset of years can improve performance.
-#'
 #'   \item \code{graphics_device}:  A character string specifying
 #'   the graphics device to be used for plotting the benchmarking results.
 #'   Defaults to "png". Use "pdf" for vector graphics.
@@ -36,7 +32,6 @@
 #'
 #' @examples
 #' \dontrun{
-#' set_lpjmlstats_settings(year_subset = 1:5, graphics_device = "pdf")
 #' set_lpjmlstats_settings(unit_table_path = "path/to/my_table.csv",
 #' pdf_plot_dpi = 300)
 #' }
@@ -50,9 +45,6 @@ set_lpjmlstats_settings <- function(...) {
   for (option_name in names(args_list)) {
     option_value <- args_list[[option_name]]
     switch(option_name,
-      "year_subset" = {
-        options(lpjmlstats.year_subset = option_value) # nolint
-      },
       "graphics_device" = {
         if (!(is.character(option_value) | is.null(option_value)))
           stop("graphics_device must be a character string")

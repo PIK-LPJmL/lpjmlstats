@@ -2,7 +2,6 @@
 #'
 #' @importFrom units set_units as_units drop_units deparse_unit
 #' @import lpjmlkit
-#' @importFrom abind abind
 #' @importFrom Matrix sparseMatrix Matrix colSums
 #' @importFrom R6 R6Class
 #' @description
@@ -32,6 +31,14 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     #' @param ... See \link[lpjmlstats]{aggregate}.
     aggregate = function(ref_area = "terr_area", ...) {
       private$.__aggregate__(ref_area, ...)
+    },
+
+    #' @description
+    #' Add a band to the object by applying a function to the band vector for each spacial and temporal unit
+    #' @param band_name Name of band
+    #' @param fun function
+    add_band = function(band_name, fun) {
+      private$.__add_band__(band_name, fun)
     },
 
     #' @description
@@ -195,10 +202,6 @@ LPJmLDataCalc$set( # nolint: object_name_linter.
     #check internal consistency of grid or region data object
     ncells_meta <- private$.meta$ncell
     if (inherits(private$.grid, "LPJmLGridData")) {
-      if (!(private$.grid$meta$ncell == ncells_meta)) {
-        stop("Number of cells in grid meta data
-             is inconsistent withLPJmLDataCalc meta data")
-      }
       if (!(private$.grid$meta$ncell == dim(private$.grid$data)[1])) {
         stop("Number of cells in grid meta data
              is inconsistent grid data array")
@@ -325,6 +328,14 @@ LPJmLDataCalc$set(
   "private",
   ".__apply_operator__",
   function(sec_operand, operator) {
+    # check for matching bandnames
+    dimnames_to_match <- which(dim(sec_operand) > 1)
+    if (length(dimnames_to_match) > 0)
+      if (!identical(dimnames(sec_operand)[dimnames_to_match],
+                     dimnames(self$data)[dimnames_to_match]))
+        stop("Dimnames of second operand do not match first operator.")
+
+    # the dimensions of "self" should stay
     tar_dim <- dim(private$.data)
 
     # this function is used to expand the second operand
@@ -513,7 +524,7 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
   if (!inherits(lpjml_data, "LPJmLData")) {
     stop("Expected an LPJmLData object")
   }
-  if (!methods::is(lpjml_data$meta, "LPJmLMetaData")) {
+  if (!inherits(lpjml_data$meta, "LPJmLMetaData")) {
     stop("Meta data is missing")
   }
   if (!lpjml_data$meta$._space_format_ == "cell") {
@@ -585,13 +596,14 @@ LPJmLDataCalc$set("private", ".__plot_aggregated__", # nolint: object_name_linte
                       lapply(1:private$.meta$nbands, function(band) {
                         as.array(region_matrix %*% self$data[, , band])
                       })
-                    disaggr_data <- abind(list_of_disaggr_bands, along = 3)
+                    first_band <- list_of_disaggr_bands[[1]]
+                    disaggr_data <- unlist(list_of_disaggr_bands)
 
                     # recover dims and dimnames
                     dim(disaggr_data) <- c(
-                      cell = unname(dim(disaggr_data)[1]),
-                      time = unname(dim(disaggr_data)[2]),
-                      band = unname(dim(disaggr_data)[3])
+                      cell = unname(dim(first_band)[1]),
+                      time = unname(dim(first_band)[2]),
+                      band = private$.meta$nbands
                     )
                     dimnames(disaggr_data) <-
                       list(
@@ -691,6 +703,32 @@ subset.LPJmLDataCalc <- function(x, ...) {
   return(.as_LPJmLDataCalc(lpjml_dat))
 }
 
+LPJmLDataCalc$set("private", ".__add_band__",
+                  function(band_name, fun) {
+                    # create new larger array and copy content
+                    old_dimnames <- dimnames(private$.data)
+                    old_dims <- dim(private$.data)
+                    new_array <- array(NA, dim = c(old_dims[1], old_dims[2], old_dims[3] + 1))
+                    new_array[, , -(old_dims[3] + 1)] <- private$.data
+
+                    # insert new band
+                    new_array[, , old_dims[3] + 1] <- apply(private$.data, MARGIN = c(1, 2), FUN = fun)
+
+                    # update unit
+                    resulting_unit <- units(fun(private$.data[1, 1, ])) # test case to get unit
+                    new_array <- units::set_units(new_array, resulting_unit)
+
+                    # update dimnames
+                    old_dimnames[["band"]] <- c(old_dimnames[["band"]], band_name)
+                    dimnames(new_array) <- old_dimnames
+
+                    private$.data <- new_array
+
+                    # meta data update
+                    private$.meta$.__set_attribute__("nbands", private$.meta$nbands + 1)
+                    private$copy_unit_array2meta()
+                    private$.meta$.__set_attribute__("band_names", c(self$.meta$band_names, band_name))
+                  })
 
 
 # ----- add_grid -----

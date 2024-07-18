@@ -27,7 +27,7 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       compare = function(var_grp) {
         var_grp$compare <-
           list(
-            `diff_to_baseline` = lapply(var_grp$under_test, function(x) {
+            `diff2base` = lapply(var_grp$under_test, function(x) {
               x - var_grp$baseline
             }),
             `diff_%` = lapply(var_grp$under_test, function(x) {
@@ -58,16 +58,14 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       #' - `font_size`: integer, font size of the table
       #' - `name_trunc`: integer, number of characters to display in the table
       #' - `disp_digits`: integer, number of significant digits to display
-      #' - `year_range`: integer or character vector, defines the range
-      #' of years that the metric considers. Integer indices can be between 1
-      #' and `nyear`. Character vector is used to subset by actual calendar
-      #' years (starting at `firstyear`).
+      #' - `year_subset`: character vector, defines which calander years the metric considers,
+      #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
       #'
       m_options = list(
         font_size = 7,
         name_trunc = 1,
         disp_digits = 4,
-        year_range = NULL
+        year_subset = as.character(1991:2000)
       ),
 
       #' @field title
@@ -151,7 +149,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' with legends pooled together in the top left
     #' @param plotlist List of time series ggplots
     arrange_plots = function(plotlist) {
-      arrange_timeseries_plots(plotlist)
+      arrange_timeseries_plots(plotlist, self$m_options)
     },
 
     #' @field m_options
@@ -159,13 +157,19 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' - `font_size` integer, font size of the table
     #' - `name_trunc` integer, indicating when to truncate the band names
     #' band names
-    #' - `year_range`: integer or character vector, defines the range
-    #' of years that the metric considers. Integer indices can be between 1
-    #' and `nyear`. Character vector is used to subset by actual calendar
-    #' years (starting at `firstyear`).
+    #' - `year_subset`: character vector, defines which calander years the metric considers,
+    #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+    #' - `num_cols`: integer, number of cols in the plot grid in the report
+    #' - `var_seperator`: NULL or character string, if is character string a
+    #' line break is inserted for each variable and a heading with variable name added,
+    #' additionally the text will be executed as latex command `e.g. \\newpage` for pagebreak
+    #' - `band_seperator`: analogous to var_seperator but for bands
     m_options = list(font_size = 6,
                      name_trunc = 1,
-                     year_range = NULL),
+                     num_cols = 2,
+                     var_seperator = NULL,
+                     band_seperator = NULL,
+                     year_subset = as.character(1901:2019)),
 
     #' @field title
     #' Section header used in the report
@@ -298,15 +302,21 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
       #' - `font_size` integer, font size of the table
       #' - `name_trunc` integer, indicating when to truncate the band names
       #' band names
-      #' - `year_range`: integer or character vector, defines the range
-      #' of years that the metric considers. Integer indices can be between 1
-      #' and `nyear`. Character vector is used to subset by actual calendar
-      #' years (starting at `firstyear`).
+      #' - `year_subset`: character vector, defines which calander years the metric considers,
+      #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
       #' - `cell` cells to be subsetted
+      #' - `num_cols`: integer, number of cols in the plot grid in the report
+      #' - `var_seperator`: NULL or character string, if is character string a
+      #' line break is inserted for each variable and a heading with variable name added,
+      #' additionally the text will be executed as latex command `e.g. \\newpage` for pagebreak
+      #' - `band_seperator`: analogous to var_seperator but for bands
       m_options = list(
         font_size = 6,
         name_trunc = 1,
-        year_range = NULL,
+        year_subset = as.character(1901:2019),
+        num_cols = 2,
+        var_seperator = NULL,
+        band_seperator = NULL,
         cell = 10000
       ),
 
@@ -332,7 +342,7 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
 CellSubsetTimeseries <- # nolint: object_name_linter.
   R6::R6Class(
     "CellSubsetTimeseries",
-    inherit = GlobAvgTimeseries,
+    inherit = CellSubsetAnnAvgTimeseries,
     public = list(
       #' @description
       #' Subset the cells.
@@ -341,23 +351,6 @@ CellSubsetTimeseries <- # nolint: object_name_linter.
       summarize = function(lpjml_data) {
         subset(lpjml_data, cell = self$m_options$cell)
       },
-
-      #' @field m_options
-      #' List of metric options specific to this metric
-      #' - `font_size` integer, font size of the table
-      #' - `name_trunc` integer, indicating when to truncate the band names
-      #' band names
-      #' - `year_range`: integer or character vector, defines the range
-      #' of years that the metric considers. Integer indices can be between 1
-      #' and `nyear`. Character vector is used to subset by actual calendar
-      #' years (starting at `firstyear`).
-      #' - `cell` cells to be subsetted
-      m_options = list(
-        font_size = 6,
-        name_trunc = 1,
-        year_range = NULL,
-        cell = 10000
-      ),
 
       #' @field description
       #' Description used in the report
@@ -399,12 +392,12 @@ TimeAvgMap <- # nolint: object_name_linter.
       compare = function(var_grp) {
 
         var_grp$compare <-
-          list(diff_to_baseline = lapply(var_grp$under_test, function(x) {
+          list(diff2base = lapply(var_grp$under_test, function(x) {
             x - var_grp$baseline
           }))
 
-        # add grids for to all diff_to_baselines
-        lapply(var_grp$compare$diff_to_baseline, function(x) x$add_grid())
+        # add grids for to all diff2bases
+        lapply(var_grp$compare$diff2base, function(x) x$add_grid())
 
         var_grp$baseline <- NULL
         var_grp$under_test <- NULL
@@ -436,17 +429,23 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' limits for the values in the map plot...
       #' - `n_breaks` number of breaks for each arm of the diverging
       #' color scale
-      #' - `year_range`: integer or character vector, defines the range
-      #' of years that the metric considers. Integer indices can be between 1
-      #' and `nyear`. Character vector is used to subset by actual calendar
-      #' years (starting at `firstyear`).
+      #' - `year_subset`: character vector, defines which calander years the metric considers,
+      #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+      #' - `num_cols`: integer, number of cols in the plot grid in the report
+      #' - `var_seperator`: NULL or character string, if is character string a
+      #' line break is inserted for each variable and a heading with variable name added,
+      #' additionally the text will be executed as latex command `e.g. \\newpage` for pagebreak
+      #' - `band_seperator`: analogous to var_seperator but for bands
       m_options = list(
         font_size = 6,
         name_trunc = 1,
         highlight = NULL,
         quantiles = c(0.05, 0.95),
-        year_range = NULL,
-        n_breaks = 3
+        year_subset = as.character(1991:2000),
+        n_breaks = 3,
+        num_cols = 2,
+        var_seperator = NULL,
+        band_seperator = NULL
       ),
 
       #' @field title
@@ -478,12 +477,12 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       compare = function(var_grp) {
 
         var_grp$compare <-
-          list(diff_to_baseline = lapply(var_grp$under_test, function(x) {
+          list(diff2base = lapply(var_grp$under_test, function(x) {
             x - var_grp$baseline
           }))
 
-        # add grids for to all diff_to_baselines
-        lapply(var_grp$compare$diff_to_baseline, function(x) x$add_grid())
+        # add grids for to all diff2bases
+        lapply(var_grp$compare$diff2base, function(x) x$add_grid())
       },
 
       #' @description
@@ -495,11 +494,41 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
                          colorbar_length = 0.8)
       },
 
+      #' @field m_options
+      #' List of metric options specific to this metric
+      #' - `font_size` integer, font size of the map plot
+      #' - `name_trunc` integer, indicating when to truncate the
+      #' band names
+      #' - `highlight` vector of strings, indicating which variables
+      #' should receive a larger full width plot
+      #' - `quantiles` quantiles used to determine the lower an upper
+      #' limits for the values in the map plot...
+      #' - `n_breaks` number of breaks for each arm of the diverging
+      #' color scale
+      #' - `year_subset`: character vector, defines which calander years the metric considers,
+      #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+      #' - `num_cols`: integer, number of cols in the plot grid in the report
+      #' - `var_seperator`: NULL or character string, if is character string a
+      #' line break is inserted for each variable and a heading with variable name added,
+      #' additionally the text will be executed as latex command `e.g. \\newpage` for pagebreak
+      #' - `band_seperator`: analogous to var_seperator but for bands
+      m_options = list(
+        font_size = 6,
+        name_trunc = 1,
+        highlight = NULL,
+        quantiles = c(0.05, 0.95),
+        year_subset = as.character(1991:2000),
+        n_breaks = 3,
+        num_cols = 3,
+        var_seperator = NULL,
+        band_seperator = NULL
+      ),
+
       #' @description
       #' Arrange the map plots side by side
       #' @param plotlist List of map ggplots
       arrange_plots = function(plotlist) {
-        arrange_map_plots(plotlist, self$m_options, num_cols = 3)
+        arrange_map_plots(plotlist, self$m_options)
       },
 
       #' @field title
@@ -530,7 +559,8 @@ GlobSumTimeAvgTablePFT_harvest <- # nolint: object_name_linter.
       #' @param data LPJmLDataCalc object to be summarized
       summarize = function(data) {
         cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir,
-                              "cftfrac")
+                              "cftfrac",
+                              subset = list(year = as.character(data$meta$firstyear:data$meta$lastyear)))
         cft_frac <- subset(cft_frac,
                            band = data$meta$band_names,
                            time = dimnames(data$data)[[2]])

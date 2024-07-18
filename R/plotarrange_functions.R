@@ -21,7 +21,7 @@ arrange_table_plot <- function(plotlist, m_options) {
   )
 }
 
-arrange_map_plots <- function(plotlist, m_options, num_cols = 2) {
+arrange_map_plots <- function(plotlist, m_options) {
   plotlist <- print_highlighted_maps(plotlist, m_options$highlight)
 
   n_plots <- length(plotlist)
@@ -29,40 +29,53 @@ arrange_map_plots <- function(plotlist, m_options, num_cols = 2) {
   if (n_plots == 0) {
     return()
   }
-  # modify all plots
-  for (i in 1:n_plots) {
-    plotlist[[i]] <-
-      plotlist[[i]] + ggplot2::theme(
-        legend.text = ggplot2::element_text(size = m_options$font_size),
-        plot.margin = ggplot2::unit(c(0.01, 0.01, 0.01, 0.01), "inches")
-      )
-  }
 
-  # remove axis text for all but the first plot
-  if (n_plots > 1) {
-    for (i in 2:(n_plots)) {
-      plotlist[[i]] <-
-        plotlist[[i]] + ggplot2::theme(
-          axis.text.x = ggplot2::element_blank(),
-          axis.text.y = ggplot2::element_blank()
-        )
-    }
-  }
+  arrange_plots_all(plotlist, m_options$num_cols, wrap = TRUE)
+}
 
-  # arrange plots
-  for (i in 0:floor(n_plots / num_cols)) {
-    patch <- NULL
-    for (k in 1:num_cols) {
-      if (i * num_cols + k <= n_plots) {
-        if (k == 1)
-          patch <- plotlist[[i * num_cols + k]]
+arrange_plots_all <- function(plotlist, num_cols, wrap) {
+  print_plotrow <- function(plotrow) {
+    if (!is.null(plotrow))
+      print(plotrow + patchwork::plot_layout(nrow = 1, widths = rep(1, num_cols)))
+  }
+  # wrapping each plot means that patchwork does not
+  # try to align plots which is sometimes more robust
+  wrap_elements_wrapper <- function(plot) {
+    if (wrap)
+      return(patchwork::wrap_elements(plot))
+    else
+      return(plot)
+  }
+  i <- 1
+  n_plots <- length(plotlist)
+
+  # put plots in rows until all are accomodated
+  while (i <= n_plots) {
+    plotrow <- NULL
+    j <- 1
+    # create plotrow
+    while (j <= num_cols) {
+      if (!is.character(plotlist[[i]])) {
+        # go here if entry is actual plot
+        if (is.null(plotrow))
+          plotrow <- wrap_elements_wrapper(plotlist[[i]])
         else
-          patch <- patch + plotlist[[i * num_cols + k]]
+          plotrow <- plotrow + wrap_elements_wrapper(plotlist[[i]])
+        j <- j + 1
+      } else {
+        # go here if entry a "control signal" e.g. newline
+        # print (prossibly unfinished) row, print the control signal
+        # and start a new row
+        print_plotrow(plotrow)
+        plotrow <- NULL
+        cat(plotlist[[i]])
+        j <- 1
       }
+      i <- i + 1
+      if (i > n_plots) break
     }
-    if (!is.null(patch))
-      print(patch + patchwork::plot_layout(ncol = num_cols))
-    cat("\\newline")
+    print_plotrow(plotrow)
+    plotrow <- NULL
   }
 }
 
@@ -89,34 +102,23 @@ print_highlighted_maps <- function(plotlist, highlight) {
   return(plotlist)
 }
 
-arrange_timeseries_plots <- function(plotlist) {
+arrange_timeseries_plots <- function(plotlist, m_options) {
   n_plots <- length(plotlist)
-
-  patch <- patchwork::guide_area() +
-    plotlist[[1]] +
-    ggplot2::scale_x_date(position = "bottom") +
-    patchwork::plot_layout(guides = "collect",
-                           ncol = 2)
-
-  print(patch)
-  cat("\\newline")
-  if (n_plots > 1) {
-    for (i in 2:(n_plots)) {
-      # remove legend
+  # get first real plot (not a control signal)
+  j <- 1
+  while (is.character(plotlist[[j]]) && j < 10^6)
+    j <- j + 1
+  g <- ggplot2::ggplotGrob(plotlist[[j]])
+  legend <- g$grobs[[which(vapply(g$grobs, function(x) x$name, character(1)) == "guide-box")]]
+  for (i in 1:(n_plots)) {
+    # remove legend
+    if (!is.character(plotlist[[i]]))
       plotlist[[i]] <-
         plotlist[[i]] + ggplot2::theme(legend.position = "none")
-    }
-
-    for (i in seq(2, n_plots, 2)) {
-      if (i < n_plots) {
-        print(plotlist[[i]] +
-                plotlist[[i + 1]] +
-                patchwork::plot_layout(ncol = 2, width = c(0.5, 0.5)))
-        cat("\\newline")
-      } else {
-        print(plotlist[[i]] + patchwork::plot_layout(ncol = 2))
-        cat("\\newline")
-      }
-    }
   }
+
+  grid::grid.newpage()
+  grid::grid.draw(legend)
+  cat("\n\n")
+  arrange_plots_all(plotlist, m_options$num_cols, wrap = FALSE)
 }

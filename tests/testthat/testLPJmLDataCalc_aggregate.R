@@ -19,7 +19,7 @@ test_that("aggregate regions via sum produces correct values and metadata", {
   data <- array(rep(c(1, 2, 3, 4, 5, 6), 2),
                 dim = c(3, 2, 2),
                 dimnames = list(
-                  NULL,
+                  cell = c("1", "2", "3"),
                   time = c("time 1", "time 2"),
                   band = c("band 1", "band 2")
                 ))
@@ -229,6 +229,7 @@ test_that("double aggregation throws error", {
 test_that("convert to absolute cell values produces correct result", {
   # create test data
   data <- array(1, dim = c(1, 1, 1))
+  dimnames(data) <- list(cell = "1", time = "1", band = "1")
   lpjml_calc <- create_LPJmLDataCalc(data, "kg/m2")
 
   # create test grid
@@ -378,14 +379,12 @@ test_that("temporal aggregation over whole simulation period correct result", {
   expect_equal(lpjml_calc_agg$meta$time_aggregation, "mean")
 })
 
+test_that("weighted sum prouced correct result fo single cell output", {
+  soiln_layer <- read_io(test_path("../testdata/path1", "soiln_layer.bin.json"))
+  soiln_agg <- aggregate(soiln_layer, cell = "global")
 
-test_that("temporal aggregation over each year runs through", {
-  skip("uses data of davids personal dir")
+  terr_area <- read_io(test_path("../testdata/path1", "terr_area.bin.json"))
+  terr_area <- subset(terr_area, cell = dimnames(soiln_layer$data)[["cell"]])
 
-  mst <- read_io("C:/Users/davidho/Desktop/LPJmLG/example_outputs/msoiltemp2.bin.json") # nolint
-
-  mst$aggregate(time = list(to = "years", stat = "mean"))
-
-  expect_equal(mst$data[1, 1, 1], 25.44759)
-
+  expect_equal(soiln_agg$.data_with_unit, (soiln_layer * terr_area)$.data_with_unit, ignore_attr = TRUE)
 })
