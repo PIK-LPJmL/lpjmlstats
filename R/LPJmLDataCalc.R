@@ -331,8 +331,8 @@ LPJmLDataCalc$set(
     # check for matching bandnames
     dimnames_to_match <- which(dim(sec_operand) > 1)
     if (length(dimnames_to_match) > 0)
-      if (!identical(dimnames(sec_operand)[[dimnames_to_match]],
-                     dimnames(self$data)[[dimnames_to_match]]))
+      if (!identical(dimnames(sec_operand)[dimnames_to_match],
+                     dimnames(self$data)[dimnames_to_match]))
         stop("Dimnames of second operand do not match first operator.")
 
     # the dimensions of "self" should stay

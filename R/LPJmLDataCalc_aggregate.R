@@ -429,7 +429,7 @@ LPJmLDataCalc$set(
   }
 )
 
-read_file <- function(searchdir, name, add_grid = TRUE) {
+read_file <- function(searchdir, name, add_grid = TRUE, ...) {
   # find path of file
   filename <- find_varfile(searchdir, name)
 
@@ -439,7 +439,7 @@ read_file <- function(searchdir, name, add_grid = TRUE) {
     " read from ",
     sQuote(basename(filename))
   ))
-  lpjml_calc <- read_io(filename)
+  lpjml_calc <- read_io(filename, ...)
 
   if (add_grid)
     lpjml_calc$add_grid()

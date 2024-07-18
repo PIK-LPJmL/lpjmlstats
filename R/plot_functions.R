@@ -267,7 +267,7 @@ create_time_series_plots <- function(var_grp_list, m_options) {
         var_name <- var_grp_band$apply_to_any_lpjml_calc(function(x) x$meta$variable)
         plot_title <- paste_custom(
           ifelse(is.null(m_options$var_seperator), var_name, ""),
-          ifelse(is.null(m_options$band_seperator) & length(band_names), band, ""),
+          ifelse(is.null(m_options$band_seperator) && length(band_names) > 1, band, ""),
           ifelse(length(spatial_units) > 1, spatial_unit, ""),
           prettify_units(var_grp_band$baseline$meta$unit),
           sep = "; "

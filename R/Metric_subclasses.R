@@ -169,7 +169,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
                      num_cols = 2,
                      var_seperator = NULL,
                      band_seperator = NULL,
-                     year_subset = as.character(1901:2011)),
+                     year_subset = as.character(1901:2019)),
 
     #' @field title
     #' Section header used in the report
@@ -313,7 +313,7 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
       m_options = list(
         font_size = 6,
         name_trunc = 1,
-        year_subset = as.character(1901:2011),
+        year_subset = as.character(1901:2019),
         num_cols = 2,
         var_seperator = NULL,
         band_seperator = NULL,
@@ -392,12 +392,12 @@ TimeAvgMap <- # nolint: object_name_linter.
       compare = function(var_grp) {
 
         var_grp$compare <-
-          list(diff_to_baseline = lapply(var_grp$under_test, function(x) {
+          list(diff2base = lapply(var_grp$under_test, function(x) {
             x - var_grp$baseline
           }))
 
-        # add grids for to all diff_to_baselines
-        lapply(var_grp$compare$diff_to_baseline, function(x) x$add_grid())
+        # add grids for to all diff2bases
+        lapply(var_grp$compare$diff2base, function(x) x$add_grid())
 
         var_grp$baseline <- NULL
         var_grp$under_test <- NULL
@@ -477,12 +477,12 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       compare = function(var_grp) {
 
         var_grp$compare <-
-          list(diff_to_baseline = lapply(var_grp$under_test, function(x) {
+          list(diff2base = lapply(var_grp$under_test, function(x) {
             x - var_grp$baseline
           }))
 
-        # add grids for to all diff_to_baselines
-        lapply(var_grp$compare$diff_to_baseline, function(x) x$add_grid())
+        # add grids for to all diff2bases
+        lapply(var_grp$compare$diff2base, function(x) x$add_grid())
       },
 
       #' @description
@@ -559,7 +559,8 @@ GlobSumTimeAvgTablePFT_harvest <- # nolint: object_name_linter.
       #' @param data LPJmLDataCalc object to be summarized
       summarize = function(data) {
         cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir,
-                              "cftfrac")
+                              "cftfrac",
+                              subset = list(year = as.character(data$meta$firstyear:data$meta$lastyear)))
         cft_frac <- subset(cft_frac,
                            band = data$meta$band_names,
                            time = dimnames(data$data)[[2]])
