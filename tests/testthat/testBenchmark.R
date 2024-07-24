@@ -3,7 +3,7 @@ test_that("benchmark produces correct results for global data", {
   under_test_dir <- testthat::test_path("../testdata/path2")
   settings <-
     list(soiln = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap))
-  out <- benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE, metric_options = test_m_options)
+  out <- benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE, metric_options = test_m_options[-4])
 
   # check that global sum of soiln is still the same
   expect_equal(
@@ -35,7 +35,7 @@ test_that("benchmark runs through for single cell data", {
                             under_test_dir,
                             settings,
                             pdf_report = FALSE,
-                            metric_options = test_m_options))
+                            metric_options = test_m_options[-4]))
 })
 
 test_that("correct meta information ends up in lpjml_calc", {
@@ -44,7 +44,11 @@ test_that("correct meta information ends up in lpjml_calc", {
   settings <-
     list(soiln_layer = list(.DoNothing))
 
-  out <- benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE, metric_options = test_m_options)
+  out <- benchmark(baseline_dir,
+                   under_test_dir,
+                   settings,
+                   pdf_report = FALSE,
+                   metric_options = test_m_options[".DoNothing"])
 
   compare_lpjml_calc <-
     out$.DoNothing$var_grp_list$soiln_layer$compare$nodiff$sim1

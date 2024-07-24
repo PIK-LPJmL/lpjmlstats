@@ -15,7 +15,7 @@ test_that("metric reordering works", {
       under_test_dir,
       settings,
       pdf_report = FALSE,
-      metric_options = test_m_options
+      metric_options = test_m_options[-4]
     )
 
   expect_true(stringr::str_detect(names(out[1]), "Map"))

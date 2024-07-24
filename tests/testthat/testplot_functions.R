@@ -8,7 +8,7 @@ test_that("plot functions of metric run through", {
     )
 
   out <-
-    benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE, metric_options = test_m_options)
+    benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE, metric_options = test_m_options[-4])
 
   # NTODO: deal with warnings
   suppressWarnings({

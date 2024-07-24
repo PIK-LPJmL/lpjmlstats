@@ -385,8 +385,12 @@ set_options <- function(metrics, m_options) {
   if (!is.null(m_options)) {
     for (metric_names in names(m_options)) {
       metric <- metrics[[metric_names]]
+      if (is.null(metric))
+        stop(paste0("An option is specified for ", metric_names, " but this metric is not used."))
       metric_opt <- m_options[[metric_names]]
       for (opt in names(metric_opt)) {
+        if (!opt %in% names(metric$m_options))
+          stop(paste0("The option ", opt, " does not exist for the metric ", metric_names))
         metric$m_options[[opt]] <- metric_opt[[opt]]
       }
     }
@@ -603,4 +607,27 @@ compare_summaries <- function(metric_list) {
   for (metric in metric_list) {
     metric$add_comparisons()
   }
+}
+
+#' Function to create a pdf with a table with literature values
+#' @export
+#' @param dir output directory for the pdf
+#' @param ... additional parameters passed to rmarkdown::render
+create_literature_pdf <- function(dir = ".", ...) {
+  path_to_rmd <- system.file("Literature_table.Rmd", package = "lpjmlstats")
+  path_to_rmd_copy <- file.path(dir, "Literature_table.Rmd")
+  file.copy(path_to_rmd, path_to_rmd_copy)
+
+  # render markdown
+  rmarkdown::render(
+    path_to_rmd_copy,
+    output_file = "literature_values.pdf",
+    # pass over current environment
+    output_dir = dir,
+    knit_root_dir = dir,
+    intermediates_dir = dir,
+    ...
+  )
+
+  unlink(path_to_rmd_copy)
 }
