@@ -254,7 +254,7 @@ create_pdf_report <- function(benchmark_result,
   # copy input Rmd to output and processing dirctory
   path_to_rmd <- system.file("Benchmark_markdown.Rmd", package = "lpjmlstats")
   process_and_out_dir <- dirname(output_file)
-  path_to_rmd_copy <- file.path(process_and_out_dir, "Benchmark_markdown.Rmd")
+  path_to_rmd_copy <- file.path(process_and_out_dir, paste0(basename(tempfile()), ".Rmd"))
   file.copy(path_to_rmd, path_to_rmd_copy)
 
   # render markdown
@@ -611,18 +611,19 @@ compare_summaries <- function(metric_list) {
 
 #' Function to create a pdf with a table with literature values
 #' @export
-#' @param dir output directory for the pdf
+#' @param output_file filename of the output pdf, can iclude directory
 #' @param ... additional parameters passed to rmarkdown::render
-create_literature_pdf <- function(dir = ".", ...) {
+create_literature_pdf <- function(output_file = "literature_values.pdf", ...) {
   path_to_rmd <- system.file("Literature_table.Rmd", package = "lpjmlstats")
-  path_to_rmd_copy <- file.path(dir, "Literature_table.Rmd")
+  dir <- dirname(output_file)
+  filename <- basename(output_file)
+  path_to_rmd_copy <- file.path(dir, paste0(basename(tempfile()), ".Rmd"))
   file.copy(path_to_rmd, path_to_rmd_copy)
 
   # render markdown
   rmarkdown::render(
     path_to_rmd_copy,
-    output_file = "literature_values.pdf",
-    # pass over current environment
+    output_file = filename,
     output_dir = dir,
     knit_root_dir = dir,
     intermediates_dir = dir,
