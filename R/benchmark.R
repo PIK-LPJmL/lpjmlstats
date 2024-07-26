@@ -260,7 +260,7 @@ create_pdf_report <- function(benchmark_result,
   # copy input Rmd to output and processing dirctory
   path_to_rmd <- system.file("Benchmark_markdown.Rmd", package = "lpjmlstats")
   process_and_out_dir <- dirname(output_file)
-  if (!file.exists(process_and_out_dir))
+  if (!dir.exists(process_and_out_dir))
     stop("Given directory does not exist")
   path_to_rmd_copy <- paste0(tempfile(), ".Rmd")
   file.copy(path_to_rmd, path_to_rmd_copy)
@@ -625,7 +625,7 @@ create_literature_pdf <- function(output_file = "literature_values.pdf", ...) {
   filename <- basename(output_file)
   path_to_rmd_copy <- paste0(tempfile(), ".Rmd")
   file.copy(path_to_rmd, path_to_rmd_copy)
-  if (!file.exists(dir))
+  if (!dir.exists(dir))
     stop("Given directory does not exist")
 
   # render markdown
