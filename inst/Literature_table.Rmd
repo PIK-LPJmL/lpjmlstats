@@ -1,0 +1,84 @@
+---
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{makecell}
+- \usepackage{float}
+- \usepackage{longtable}
+- \floatplacement{figure}{H} 
+output:
+  pdf_document:
+    toc: false
+    template: default.latex
+title: Literature Values extracted from PIKTools Benchmarking
+---
+
+```{r setup-settings-and-metadata, echo = FALSE}
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  echo = FALSE,
+  fig.pos = "H"
+)
+```
+
+```{r print-simulation-table, results='asis'}
+literature_values <- tibble::tibble(
+  Parameter = c(
+    "vegc", "soilc", "firec",
+    "npp", "harvestc$rainfed tece", "harvestc$rainfed rice",
+    "harvestc$rainfed maize", "harvestc$irrigated tece",
+    "harvestc$irrigated rice", "harvestc$irrigated maize",
+    "nbp"
+  ),
+  Estimate = c(
+    "460 - 660", "2376 - 2456, 1567, 1395", "2.14 (1.6 Nat.Fire)",
+    "66.05, 62.6, 49.52 - 59.74", "524.08", "492.66", "498.33",
+    "524.08", "492.66", "498.33", "1.8 - 3.6"
+  ),
+  Unit = c(
+    "GtC", "GtC", "GtC/year",
+    "GtC/year", "Mt DM/year", "Mt DM/year",
+    "Mt DM/year", "Mt DM/year", "Mt DM/year",
+    "Mt DM/year", "GtC/year"
+  ),
+  Source = c(
+    "1, 2, 3", "4, 5, 6", "7, 8, 9, 10",
+    "11, 2, 12", "13", "13",
+    "13", "13", "13",
+    "13", "14"
+  )
+)
+
+legend <- tibble::tibble(
+  Source = c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14),
+  Reference = c(
+    "Olson et al. 1985", "Saugier et al. 2001", "WBGU 1998",
+    "Batjes et al. 1996", "Eswaran et al. 1993", "Post et al. 1982",
+    "Seiler & Crutzen 1980", "Andreae & Merlet 2001", "Ito & Penner 2004",
+    "van der Werf et al. 2004", "Vitousek et al. 1986",
+    "Ramakrishna et al. 2003", "FAOSTAT 1990-2000",
+    "Le Quere et al. 2018"
+  )
+)
+
+# print main table
+kable <- knitr::kable(
+  literature_values,
+  format = "latex",
+  booktabs = TRUE
+)
+kableExtra::kable_styling(kable,
+                          font_size = 8,
+                          latex_options = c("HOLD_position"))
+
+# print source legend table
+kable <- knitr::kable(
+  legend,
+  format = "latex",
+  booktabs = TRUE
+)
+kableExtra::kable_styling(kable,
+                          font_size = 8,
+                          latex_options = c("HOLD_position"))
+```
+

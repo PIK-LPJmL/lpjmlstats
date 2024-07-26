@@ -199,6 +199,8 @@ get_test_m_options <- function() {
   return(m_options)
 }
 
+m_option <- list(year_subset = as.character(c(2009:2018)))
+
 # metric for testing purposes
 .DoNothing <- R6::R6Class( # nolint: object_name_linter.
   ".DoNothing", # nolint: object_name_linter.
@@ -209,12 +211,12 @@ get_test_m_options <- function() {
     },
     compare = function(var_grp) {
       var_grp$compare <- list("nodiff" = list(sim1 = var_grp$baseline))
-    }
+    },
+    m_options = m_option
   )
 )
 
 # test metric options
-m_option <- list(year_subset = as.character(c(2009:2018)))
 test_m_options <- list(GlobSumTimeAvgTable = m_option,
                        GlobSumTimeseries = m_option,
                        TimeAvgMap = m_option,

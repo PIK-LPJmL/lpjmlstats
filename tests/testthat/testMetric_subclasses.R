@@ -8,7 +8,7 @@ test_that("subset cell produces correct output", {
   metric_opt <- test_m_options
   metric_opt$CellSubsetAnnAvgTimeseries <- c(list(cell = c("10000", "10002")), m_option)
   out <- benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE,
-                   metric_options = metric_opt)
+                   metric_options = metric_opt["CellSubsetAnnAvgTimeseries"])
 
   soiln <- read_io(testthat::test_path("../testdata/path1/soiln.bin.json"))
   expected <- subset(soiln, cell = c("10000", "10002"))$.data_with_unit

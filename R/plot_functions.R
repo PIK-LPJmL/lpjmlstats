@@ -154,6 +154,13 @@ map_tibble_to_ggplot <-
            n_breaks = 3,
            limits = NULL) {
 
+    # Crop values to limits and drop NA pixels
+    if (!is.null(limits)) {
+      tibble <- tibble %>%
+        dplyr::mutate(value = pmax(pmin(.data$value, limits[2]), limits[1])) %>%
+        dplyr::filter(!is.na(.data$value))
+    }
+
     # get range
     x_range <- range(tibble$x, na.rm = TRUE)
     y_range <- range(tibble$y, na.rm = TRUE)
@@ -177,7 +184,7 @@ map_tibble_to_ggplot <-
 
     # create basic plot
     p <- ggplot2::ggplot() +
-      ggplot2::geom_tile(data = tibble, ggplot2::aes(
+      ggplot2::geom_raster(data = tibble, ggplot2::aes(
         x = .data$x,
         y = .data$y,
         fill = .data$value

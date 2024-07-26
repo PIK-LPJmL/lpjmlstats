@@ -212,8 +212,14 @@ benchmark <-
 
     if (pdf_report) {
       cat(cli::col_blue("Start report generation ...\n"))
-      create_pdf_report(benchmark_result, ...)
-      cat(cli::col_green("Report generation completed.\n"))
+      tryCatch({
+        create_pdf_report(benchmark_result, ...)
+        cat(cli::col_green("Pdf report generation completed.\n"))
+      }, error = function(e) {
+        cat(cli::col_red("Error during pdf report generation: "), e$message, "\n")
+      }, warning = function(w) {
+        cat(cli::col_yellow("Warning during pdf report generation: "), w$message, "\n")
+      })
     }
 
     return(benchmark_result)
@@ -254,7 +260,9 @@ create_pdf_report <- function(benchmark_result,
   # copy input Rmd to output and processing dirctory
   path_to_rmd <- system.file("Benchmark_markdown.Rmd", package = "lpjmlstats")
   process_and_out_dir <- dirname(output_file)
-  path_to_rmd_copy <- file.path(process_and_out_dir, "Benchmark_markdown.Rmd")
+  if (!dir.exists(process_and_out_dir))
+    stop("Given directory does not exist")
+  path_to_rmd_copy <- tempfile(fileext = ".Rmd")
   file.copy(path_to_rmd, path_to_rmd_copy)
 
   # render markdown
@@ -264,8 +272,6 @@ create_pdf_report <- function(benchmark_result,
     # pass over current environment
     envir = environment(),
     output_dir = process_and_out_dir,
-    knit_root_dir = process_and_out_dir,
-    intermediates_dir = process_and_out_dir,
     ...
   )
 
@@ -385,8 +391,12 @@ set_options <- function(metrics, m_options) {
   if (!is.null(m_options)) {
     for (metric_names in names(m_options)) {
       metric <- metrics[[metric_names]]
+      if (is.null(metric))
+        stop(paste0("An option is specified for ", metric_names, " but this metric is not used."))
       metric_opt <- m_options[[metric_names]]
       for (opt in names(metric_opt)) {
+        if (!opt %in% names(metric$m_options))
+          stop(paste0("The option ", opt, " does not exist for the metric ", metric_names))
         metric$m_options[[opt]] <- metric_opt[[opt]]
       }
     }
@@ -603,4 +613,28 @@ compare_summaries <- function(metric_list) {
   for (metric in metric_list) {
     metric$add_comparisons()
   }
+}
+
+#' Function to create a pdf with a table with literature values
+#' @export
+#' @param output_file filename of the output pdf, can iclude directory
+#' @param ... additional parameters passed to rmarkdown::render
+create_literature_pdf <- function(output_file = "literature_values.pdf", ...) {
+  path_to_rmd <- system.file("Literature_table.Rmd", package = "lpjmlstats")
+  dir <- dirname(output_file)
+  filename <- basename(output_file)
+  path_to_rmd_copy <- tempfile(fileext = ".Rmd")
+  file.copy(path_to_rmd, path_to_rmd_copy)
+  if (!dir.exists(dir))
+    stop("Given directory does not exist")
+
+  # render markdown
+  rmarkdown::render(
+    path_to_rmd_copy,
+    output_file = filename,
+    output_dir = dir,
+    ...
+  )
+
+  unlink(path_to_rmd_copy)
 }
