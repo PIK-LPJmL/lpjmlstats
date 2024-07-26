@@ -212,8 +212,14 @@ benchmark <-
 
     if (pdf_report) {
       cat(cli::col_blue("Start report generation ...\n"))
-      create_pdf_report(benchmark_result, ...)
-      cat(cli::col_green("Report generation completed.\n"))
+      tryCatch({
+        create_pdf_report(benchmark_result, ...)
+        cat(cli::col_green("Pdf report generation completed.\n"))
+      }, error = function(e) {
+        cat(cli::col_red("Error during pdf report generation: "), e$message, "\n")
+      }, warning = function(w) {
+        cat(cli::col_yellow("Warning during pdf report generation: "), w$message, "\n")
+      })
     }
 
     return(benchmark_result)
