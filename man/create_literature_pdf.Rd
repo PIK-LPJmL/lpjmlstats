@@ -4,10 +4,10 @@
 \alias{create_literature_pdf}
 \title{Function to create a pdf with a table with literature values}
 \usage{
-create_literature_pdf(dir = ".", ...)
+create_literature_pdf(output_file = "literature_values.pdf", ...)
 }
 \arguments{
-\item{dir}{output directory for the pdf}
+\item{output_file}{filename of the output pdf, can iclude directory}
 
 \item{...}{additional parameters passed to rmarkdown::render}
 }
