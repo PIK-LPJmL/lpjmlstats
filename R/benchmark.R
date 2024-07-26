@@ -254,7 +254,9 @@ create_pdf_report <- function(benchmark_result,
   # copy input Rmd to output and processing dirctory
   path_to_rmd <- system.file("Benchmark_markdown.Rmd", package = "lpjmlstats")
   process_and_out_dir <- dirname(output_file)
-  path_to_rmd_copy <- file.path(process_and_out_dir, paste0(basename(tempfile()), ".Rmd"))
+  if (!file.exists(process_and_out_dir))
+    stop("Given directory does not exist")
+  path_to_rmd_copy <- paste0(tempfile(), ".Rmd")
   file.copy(path_to_rmd, path_to_rmd_copy)
 
   # render markdown
@@ -264,8 +266,6 @@ create_pdf_report <- function(benchmark_result,
     # pass over current environment
     envir = environment(),
     output_dir = process_and_out_dir,
-    knit_root_dir = process_and_out_dir,
-    intermediates_dir = process_and_out_dir,
     ...
   )
 
@@ -617,16 +617,16 @@ create_literature_pdf <- function(output_file = "literature_values.pdf", ...) {
   path_to_rmd <- system.file("Literature_table.Rmd", package = "lpjmlstats")
   dir <- dirname(output_file)
   filename <- basename(output_file)
-  path_to_rmd_copy <- file.path(dir, paste0(basename(tempfile()), ".Rmd"))
+  path_to_rmd_copy <- paste0(tempfile(), ".Rmd")
   file.copy(path_to_rmd, path_to_rmd_copy)
+  if (!file.exists(dir))
+    stop("Given directory does not exist")
 
   # render markdown
   rmarkdown::render(
     path_to_rmd_copy,
     output_file = filename,
     output_dir = dir,
-    knit_root_dir = dir,
-    intermediates_dir = dir,
     ...
   )
 
