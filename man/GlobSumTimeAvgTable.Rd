@@ -20,6 +20,7 @@ See \link{Metric} for the documentation of metrics in general.
 \item \code{disp_digits}: integer, number of significant digits to display
 \item \code{year_subset}: character vector, defines which calander years the metric considers,
 i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+\item \code{cell_subset}: character vector, defines which cells to subset
 }}
 
 \item{\code{title}}{Section header used in the report}

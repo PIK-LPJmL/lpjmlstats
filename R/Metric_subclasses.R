@@ -60,12 +60,14 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       #' - `disp_digits`: integer, number of significant digits to display
       #' - `year_subset`: character vector, defines which calander years the metric considers,
       #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+      #' - `cell_subset`: character vector, defines which cells to subset
       #'
       m_options = list(
         font_size = 7,
         name_trunc = 1,
         disp_digits = 4,
-        year_subset = as.character(1991:2000)
+        year_subset = as.character(1991:2000),
+        cell_subset = NULL
       ),
 
       #' @field title
@@ -159,6 +161,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' band names
     #' - `year_subset`: character vector, defines which calander years the metric considers,
     #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+    #' - `cell_subset`: character vector, defines which cells to subset
     #' - `num_cols`: integer, number of cols in the plot grid in the report
     #' - `var_seperator`: NULL or character string, if is character string a
     #' line break is inserted for each variable and a heading with variable name added,
@@ -169,7 +172,8 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
                      num_cols = 2,
                      var_seperator = NULL,
                      band_seperator = NULL,
-                     year_subset = as.character(1901:2019)),
+                     year_subset = as.character(1901:2019),
+                     cell_subset = NULL),
 
     #' @field title
     #' Section header used in the report
@@ -431,6 +435,7 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' color scale
       #' - `year_subset`: character vector, defines which calander years the metric considers,
       #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+      #' - `cell_subset`: character vector, defines which cells to subset
       #' - `num_cols`: integer, number of cols in the plot grid in the report
       #' - `var_seperator`: NULL or character string, if is character string a
       #' line break is inserted for each variable and a heading with variable name added,
@@ -442,6 +447,7 @@ TimeAvgMap <- # nolint: object_name_linter.
         highlight = NULL,
         quantiles = c(0.05, 0.95),
         year_subset = as.character(1991:2000),
+        cell_subset = NULL,
         n_breaks = 3,
         num_cols = 2,
         var_seperator = NULL,
@@ -507,6 +513,7 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       #' color scale
       #' - `year_subset`: character vector, defines which calander years the metric considers,
       #' i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+      #' - `cell_subset`: character vector, defines which cells to subset
       #' - `num_cols`: integer, number of cols in the plot grid in the report
       #' - `var_seperator`: NULL or character string, if is character string a
       #' line break is inserted for each variable and a heading with variable name added,
@@ -518,6 +525,7 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
         highlight = NULL,
         quantiles = c(0.05, 0.95),
         year_subset = as.character(1991:2000),
+        cell_subset = NULL,
         n_breaks = 3,
         num_cols = 3,
         var_seperator = NULL,

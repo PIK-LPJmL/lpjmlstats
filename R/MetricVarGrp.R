@@ -111,6 +111,8 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
         lpjml_calc <-
           keep_units_lpjml_calc(lpjml_calc,
                                 function(x) subset_years(x, self$m_options$year_subset))
+        if (!is.null(self$m_options$cell_subset))
+          lpjml_calc <- subset(lpjml_calc, cell = self$m_options$cell_subset)
       }
       summary <- self$summarize(lpjml_calc)
       self$store_summary(summary, var, type)
