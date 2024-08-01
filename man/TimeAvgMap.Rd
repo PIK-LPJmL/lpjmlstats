@@ -26,6 +26,7 @@ limits for the values in the map plot...
 color scale
 \item \code{year_subset}: character vector, defines which calander years the metric considers,
 i.e. a data subset that the metric works with; e.g. c("1995", "1996").
+\item \code{cell_subset}: character vector, defines which cells to subset
 \item \code{num_cols}: integer, number of cols in the plot grid in the report
 \item \code{var_seperator}: NULL or character string, if is character string a
 line break is inserted for each variable and a heading with variable name added,
