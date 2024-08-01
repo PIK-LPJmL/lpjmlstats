@@ -23,6 +23,7 @@ default_settings <- list(
   fpc = c(GlobSumTimeAvgTableFPC, GlobSumAnnTimeseriesFPC, TimeAvgMap),
   mgpp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   mnpp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
+  anbp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   mrh = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   mevap = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   mtransp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),

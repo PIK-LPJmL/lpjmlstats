@@ -323,7 +323,7 @@ create_simulation_table <- function(paths) {
     sim_ident <- gsub("_", " ", sim_ident)
   }
 
-  sim_ident <- abbreviate(sim_ident, minlength = 4, method = "both.sides")
+  sim_ident <- abbreviate(sim_ident, minlength = 7, method = "both.sides")
 
   lpjml_version <- gsub("LPJmL C Version", "", lpjml_version)
 
@@ -617,7 +617,7 @@ compare_summaries <- function(metric_list) {
 
 #' Function to create a pdf with a table with literature values
 #' @export
-#' @param output_file filename of the output pdf, can iclude directory
+#' @param output_file filename of the output pdf, can include directory
 #' @param ... additional parameters passed to rmarkdown::render
 create_literature_pdf <- function(output_file = "literature_values.pdf", ...) {
   path_to_rmd <- system.file("Literature_table.Rmd", package = "lpjmlstats")
