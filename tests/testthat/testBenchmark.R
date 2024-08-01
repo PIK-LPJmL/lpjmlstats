@@ -7,20 +7,20 @@ test_that("benchmark produces correct results for global data", {
 
   # check that global sum of soiln is still the same
   expect_equal(
-    out$GlobSumTimeAvgTable$var_grp_list$soiln$under_test$pth2$data,
+    out$GlobSumTimeAvgTable$var_grp_list$soiln$under_test$path2$data,
     196.5053,
     ignore_attr = TRUE
   )
 
   # mean of time series should be equal to the global sum time avg
   soiln_time_ser <-
-    out$GlobSumTimeseries$var_grp_list$soiln$under_test$pth2$data
+    out$GlobSumTimeseries$var_grp_list$soiln$under_test$path2$data
   soiln_time_mean <-
-    out$GlobSumTimeAvgTable$var_grp_list$soiln$under_test$pth2$.data_with_unit
+    out$GlobSumTimeAvgTable$var_grp_list$soiln$under_test$path2$.data_with_unit
   expect_equal(mean(soiln_time_ser), soiln_time_mean, ignore_attr = TRUE)
 
   # compare of time avg should be zero since files are identical
-  soiln_time_avg_compare <- out$TimeAvgMap$var_grp_list$soiln$compare$pth2$data
+  soiln_time_avg_compare <- out$TimeAvgMap$var_grp_list$soiln$compare$path2$data
 
   expect_equal(sum(soiln_time_avg_compare), 0)
 })

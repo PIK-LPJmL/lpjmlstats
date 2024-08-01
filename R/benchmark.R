@@ -323,7 +323,7 @@ create_simulation_table <- function(paths) {
     sim_ident <- gsub("_", " ", sim_ident)
   }
 
-  sim_ident <- abbreviate(sim_ident, minlength = 4, method = "both.sides")
+  sim_ident <- abbreviate(sim_ident, minlength = 7, method = "both.sides")
 
   lpjml_version <- gsub("LPJmL C Version", "", lpjml_version)
 

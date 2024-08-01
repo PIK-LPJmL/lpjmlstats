@@ -5,7 +5,7 @@
 \alias{default_settings}
 \title{Default settings for the Benchmarking}
 \format{
-An object of class \code{list} of length 27.
+An object of class \code{list} of length 28.
 }
 \usage{
 default_settings
