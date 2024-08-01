@@ -23,12 +23,12 @@ default_settings <- list(
   fpc = c(GlobSumTimeAvgTableFPC, GlobSumAnnTimeseriesFPC, TimeAvgMap),
   mgpp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   mnpp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
+  anbp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   mrh = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   mevap = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   mtransp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   minterc = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   mrunoff = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
-  anbp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   `pft_harvest.pft$rainfed rice;
   rainfed maize;
   rainfed oil crops soybean;
