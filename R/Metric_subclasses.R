@@ -396,9 +396,14 @@ TimeAvgMap <- # nolint: object_name_linter.
       compare = function(var_grp) {
 
         var_grp$compare <-
-          list(diff2base = lapply(var_grp$under_test, function(x) {
-            x - var_grp$baseline
-          }))
+          list(
+            diff2base = lapply(var_grp$under_test, function(x) {
+              x - var_grp$baseline
+            }),
+            diff2ext = lapply(var_grp$under_test, function(x) {
+              x - var_grp$external
+            })
+          )
 
         # add grids for to all diff2bases
         lapply(var_grp$compare$diff2base, function(x) x$add_grid())
@@ -441,6 +446,7 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' line break is inserted for each variable and a heading with variable name added,
       #' additionally the text will be executed as latex command `e.g. \\newpage` for pagebreak
       #' - `band_seperator`: analogous to var_seperator but for bands
+      #' - `external_provider`: NULL or function that provides external data in LPJmLDataCalc format
       m_options = list(
         font_size = 6,
         name_trunc = 1,
@@ -451,7 +457,8 @@ TimeAvgMap <- # nolint: object_name_linter.
         n_breaks = 3,
         num_cols = 2,
         var_seperator = NULL,
-        band_seperator = NULL
+        band_seperator = NULL,
+        external_provider = NULL
       ),
 
       #' @field title

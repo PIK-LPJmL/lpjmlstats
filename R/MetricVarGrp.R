@@ -357,7 +357,8 @@ VarGrp <- # nolint:object_linter_name
 
       under_test = NULL,
       baseline = NULL,
-      compare = NULL
+      compare = NULL,
+      external = NULL
     )
   )
 
