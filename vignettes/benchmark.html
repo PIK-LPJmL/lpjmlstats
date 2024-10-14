@@ -354,9 +354,14 @@ test,” LPJmL setup against the outputs of a stable “baseline” setup.</p>
 <code>p/projects/lpjml/benchmark_run_outputs/</code> directory on the
 cluster.</p>
 <p>This package is a component of the PIAM cluster module. It is
-recommended to load this module via <code>module load piam</code> before
-starting the R session, ensuring that all necessary packages are
-loaded.</p>
+recommended to load this module via <code>module load piam</code> (on
+the hpc 2024
+<code>source /p/system/modulefiles/defaults/piam/module_load_piam</code>)
+before starting the R session, ensuring that all necessary packages are
+loaded. After loading the PIAM module you may need to temporarily
+disable personal R packages to avoid conflicts using
+<code>liboff</code>. Remember to re-enable them with <code>libon</code>
+when finished with the benchmarking.</p>
 <div id="using-the-benchmark-function" class="section level1">
 <h1>Using the benchmark function</h1>
 <p>In this vignette we will evaluate how the results of LPJmL changed,
@@ -388,12 +393,12 @@ PDF report as well as other function arguments can be defined. In the
 details section of the function documentation you can also see the
 requirements for the function to work properly.</p>
 <p>One of the most important other arguments that can be passed to the
-benchmark function is the <code>settings</code> list. It defines the
+benchmark function is the <code>settings</code> R list. It defines the
 full protocol of the benchmarking process, including which outputs are
-considered, how they are processed, compared and visualized, and what
-the order of the processing and output PDF is. If no settings are
-passed, the default as given in the <code>R\default_settings.R</code>
-package file is used. Here is an excerpt of that file:</p>
+considered, how they are processed, compared and visualized. If no
+settings are passed, the default as given in the
+<code>default_settings</code> list is used. Here is an excerpt of how
+that list is defined in <code>R\default_settings.R</code>:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>default_settings <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>  <span class="at">vegc  =</span> <span class="fu">c</span>(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),</span>
 <span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>  <span class="at">soilc =</span> <span class="fu">c</span>(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),</span>
