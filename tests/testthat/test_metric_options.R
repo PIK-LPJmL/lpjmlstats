@@ -59,12 +59,12 @@ test_that("metric option sep_cmp_lims still works when FALSE", {
   metric_options <- list(TimeAvgMapWithAbs = list(sep_cmp_lims = FALSE, year_subset = c("2010")))
 
   out <- benchmark(
-        baseline_dir,
-        under_test_dir,
-        settings,
-        pdf_report = FALSE,
-        metric_options = metric_options
-      )
+    baseline_dir,
+    under_test_dir,
+    settings,
+    pdf_report = FALSE,
+    metric_options = metric_options
+  )
   pdf(file = NULL)
   expect_no_error(out$TimeAvgMapWithAbs$generate_report_content())
   dev.off()

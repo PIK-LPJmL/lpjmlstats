@@ -13,28 +13,26 @@ See \link{Metric} for the documentation of metrics in general.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of metric options specific to this metric
+\item{\code{m_options}}{List of metric options specific to this metric:
 \itemize{
-\item \code{font_size} integer, font size of the map plot
-\item \code{name_trunc} integer, indicating when to truncate the
-band names
-\item \code{highlight} vector of strings, indicating which variables
-should receive a larger full width plot
-\item \code{quantiles} quantiles used to determine the lower an upper
-limits for the values in the map plot.
-\item \code{sep_cmp_lims} logical, if TRUE not all plots of a var_grp
+\item \code{font_size}: integer, font size of the map plot (default 6)
+\item \code{highlight}: vector of strings, indicating which variables
+should receive a larger full width plot (default NULL)
+\item \code{quantiles}: quantiles used to determine the lower and upper
+limits for the values in the map plot (default c(0.05, 0.95))
+\item \code{sep_cmp_lims}: logical, if TRUE not all plots of a var_grp
 will have the same limits anymore, but the compare plots
-have their own limits.
-\item \code{n_breaks} number of breaks for each arm of the diverging
-color scale
-\item \code{year_subset}: character vector, defines which calander years the metric considers,
-i.e. a data subset that the metric works with; e.g. c("1995", "1996").
-\item \code{cell_subset}: character vector, defines which cells to subset
-\item \code{num_cols}: integer, number of cols in the plot grid in the report
-\item \code{var_seperator}: NULL or character string, if is character string a
-line break is inserted for each variable and a heading with variable name added,
-additionally the text will be executed as latex command \verb{e.g. \\\\newpage} for pagebreak
-\item \code{band_seperator}: analogous to var_seperator but for bands
+have their own separate limits (default TRUE)
+\item \code{n_breaks}: number of breaks for each arm of the diverging
+color scale (default 3)
+\item \code{year_subset}: character vector, defines which calendar years the metric considers,
+i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
+\item \code{cell_subset}: character vector, defines which cells to subset (default NULL)
+\item \code{num_cols}: integer, number of columns in the plot grid in the report (default 3)
+\item \code{var_seperator}: NULL or character string; if a character string, a
+line break is inserted for each variable and a heading with variable name added;
+additionally the text will be executed as LaTeX command (e.g., '\\newpage' for pagebreak) (default NULL)
+\item \code{band_seperator}: analogous to var_seperator but for bands (default NULL)
 }}
 
 \item{\code{title}}{Section header used in the report}

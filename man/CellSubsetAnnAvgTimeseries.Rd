@@ -13,19 +13,17 @@ See \link{Metric} for the documentation of metrics in general.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of metric options specific to this metric
+\item{\code{m_options}}{List of metric options specific to this metric:
 \itemize{
-\item \code{font_size} integer, font size of the table
-\item \code{name_trunc} integer, indicating when to truncate the band names
-band names
-\item \code{year_subset}: character vector, defines which calander years the metric considers,
-i.e. a data subset that the metric works with; e.g. c("1995", "1996").
-\item \code{cell} cells to be subsetted
-\item \code{num_cols}: integer, number of cols in the plot grid in the report
-\item \code{var_seperator}: NULL or character string, if is character string a
-line break is inserted for each variable and a heading with variable name added,
-additionally the text will be executed as latex command \verb{e.g. \\\\newpage} for pagebreak
-\item \code{band_seperator}: analogous to var_seperator but for bands
+\item \code{font_size}: integer, font size of the plot (default 6)
+\item \code{year_subset}: character vector, defines which calendar years the metric considers,
+i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1901:2019).
+\item \code{cell}: cells to be subsetted (default 10000)
+\item \code{num_cols}: integer, number of columns in the plot grid in the report (default 2)
+\item \code{var_seperator}: NULL or character string; if character string, a
+line break is inserted for each variable and a heading with variable name added;
+additionally the text will be executed as LaTeX command (e.g., '\\newpage' for pagebreak) (default NULL)
+\item \code{band_seperator}: analogous to var_seperator but for bands (default NULL)
 }}
 
 \item{\code{description}}{Description used in the report}

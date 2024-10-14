@@ -118,22 +118,22 @@ create_map_plots <- function(var_grp_list,
 # Function to get limits for the different types of data in the var_grp, depending
 # on the options set in m_options.
 get_type_limits <- function(var_grp, m_options) {
-    if (!is.null(m_options$sep_cmp_lims) && m_options$sep_cmp_lims) {
-      var_grp_cmp <- var_grp$deep_clone()
-      var_grp_cmp$under_test <- NULL
-      var_grp_cmp$baseline <- NULL
-      limits_cmp <- var_grp_cmp$get_limits(quantiles = m_options$quantiles)
+  if (!is.null(m_options$sep_cmp_lims) && m_options$sep_cmp_lims) {
+    var_grp_cmp <- var_grp$deep_clone()
+    var_grp_cmp$under_test <- NULL
+    var_grp_cmp$baseline <- NULL
+    limits_cmp <- var_grp_cmp$get_limits(quantiles = m_options$quantiles)
 
-      var_grp_non_cmp <- var_grp$deep_clone()
-      var_grp_non_cmp$compare <- NULL
-      limits_non_cmp <- var_grp_non_cmp$get_limits(quantiles = m_options$quantiles)
+    var_grp_non_cmp <- var_grp$deep_clone()
+    var_grp_non_cmp$compare <- NULL
+    limits_non_cmp <- var_grp_non_cmp$get_limits(quantiles = m_options$quantiles)
 
-      return(list(baseline = limits_non_cmp, under_test = limits_non_cmp, compare = limits_cmp))
-      rm(var_grp_cmp, var_grp_non_cmp)
-    } else {
-      limits_all <- var_grp$get_limits(quantiles = m_options$quantiles)
-      return(list(baseline = limits_all, under_test = limits_all, compare = limits_all))
-    }
+    return(list(baseline = limits_non_cmp, under_test = limits_non_cmp, compare = limits_cmp))
+    rm(var_grp_cmp, var_grp_non_cmp)
+  } else {
+    limits_all <- var_grp$get_limits(quantiles = m_options$quantiles)
+    return(list(baseline = limits_all, under_test = limits_all, compare = limits_all))
+  }
 }
 
 # For this function the lpjml_calc is required to have only a single item
