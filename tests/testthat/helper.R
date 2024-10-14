@@ -116,9 +116,12 @@ create_LPJmLGridData <- # nolint:object_name_linter
       lpjmlkit::create_header(ncell = dim(gridarray)[1],
                               verbose = FALSE,
                               name = "GRID")
-    lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header)
+    lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header, 
+                                              additional_attributes = list(variable = "grid"))
+    dim(gridarray) <- c(cell = dim(gridarray)[1], time = 1, band = 2)
     dimnames(gridarray) <-
       list(cell = as.character(seq_len(dim(gridarray)[1])),
+           time = "1",
            band = c("lon", "lat"))
     grid <- lpjmlkit::LPJmLData$new(gridarray, lpjml_meta)
     grid <- lpjmlkit::LPJmLGridData$new(grid)
