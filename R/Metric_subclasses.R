@@ -508,7 +508,10 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       #' - `highlight` vector of strings, indicating which variables
       #' should receive a larger full width plot
       #' - `quantiles` quantiles used to determine the lower an upper
-      #' limits for the values in the map plot...
+      #' limits for the values in the map plot
+      #' - `sep_cmp_lims` logical, if TRUE not all plots of a var_grp
+      #' will have the same limits anymore, but the compare plots 
+      #' have their own limits
       #' - `n_breaks` number of breaks for each arm of the diverging
       #' color scale
       #' - `year_subset`: character vector, defines which calander years the metric considers,
@@ -524,6 +527,7 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
         name_trunc = 1,
         highlight = NULL,
         quantiles = c(0.05, 0.95),
+        sep_cmp_lims = TRUE,
         year_subset = as.character(1991:2000),
         cell_subset = NULL,
         n_breaks = 3,

@@ -21,7 +21,10 @@ band names
 \item \code{highlight} vector of strings, indicating which variables
 should receive a larger full width plot
 \item \code{quantiles} quantiles used to determine the lower an upper
-limits for the values in the map plot...
+limits for the values in the map plot.
+\item \code{sep_cmp_lims} logical, if TRUE not all plots of a var_grp
+will have the same limits anymore, but the compare plots
+have their own limits.
 \item \code{n_breaks} number of breaks for each arm of the diverging
 color scale
 \item \code{year_subset}: character vector, defines which calander years the metric considers,

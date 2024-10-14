@@ -165,10 +165,6 @@ build_global_region <- function(grid) {
 }
 
 
-
-# NTODO: Make this grid dynamically read by grid output
-
-
 #' Read default grid
 #'
 #' @description

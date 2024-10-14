@@ -187,7 +187,6 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
 )
 
 # ---------------------- internal integrity checking ------------------------- #
-# NTODO: account for time transformed lpjmldatacalc objects
 LPJmLDataCalc$set( # nolint: object_name_linter.
   "private",
   ".__check_internal_integrity__",

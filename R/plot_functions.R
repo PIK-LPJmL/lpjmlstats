@@ -94,7 +94,7 @@ create_map_plots <- function(var_grp_list,
 
   for (var_grp in var_grp_list) {
     plot_list <- add_seperator(plot_list, m_options$var_seperator, paste("##", var_grp$get_var_name()))
-    limits <- var_grp$get_limits(quantiles = m_options$quantiles)
+    limits <- get_type_limits(var_grp, m_options)
     band_names <- var_grp$get_band_names()
     for (band in band_names) {
       if (length(band_names) > 1)
@@ -115,6 +115,27 @@ create_map_plots <- function(var_grp_list,
   return(plot_list)
 }
 
+# Function to get limits for the different types of data in the var_grp, depending
+# on the options set in m_options.
+get_type_limits <- function(var_grp, m_options) {
+    if (!is.null(m_options$sep_cmp_lims) && m_options$sep_cmp_lims) {
+      var_grp_cmp <- var_grp$deep_clone()
+      var_grp_cmp$under_test <- NULL
+      var_grp_cmp$baseline <- NULL
+      limits_cmp <- var_grp_cmp$get_limits(quantiles = m_options$quantiles)
+
+      var_grp_non_cmp <- var_grp$deep_clone()
+      var_grp_non_cmp$compare <- NULL
+      limits_non_cmp <- var_grp_non_cmp$get_limits(quantiles = m_options$quantiles)
+
+      return(list(baseline = limits_non_cmp, under_test = limits_non_cmp, compare = limits_cmp))
+      rm(var_grp_cmp, var_grp_non_cmp)
+    } else {
+      limits_all <- var_grp$get_limits(quantiles = m_options$quantiles)
+      return(list(baseline = limits_all, under_test = limits_all, compare = limits_all))
+    }
+}
+
 # For this function the lpjml_calc is required to have only a single item
 # in band and time dimension.
 lpjml_calc_to_map <- function(lpjml_calc,
@@ -122,6 +143,7 @@ lpjml_calc_to_map <- function(lpjml_calc,
                               limits,
                               colorbar_length = 1.4) {
   pos_in_var_grp <- lpjml_calc$meta$pos_in_var_grp
+  limits_plot <- limits[[pos_in_var_grp$type]]
   plot_title <- paste_custom(
     ifelse(is.null(m_options$var_seperator), lpjml_calc$meta$variable, ""),
     ifelse(is.null(m_options$band_seperator) & !is.null(lpjml_calc$meta$band_names),
@@ -137,7 +159,7 @@ lpjml_calc_to_map <- function(lpjml_calc,
     plot_title,
     font_size = m_options$font_size,
     n_breaks = m_options$n_breaks,
-    limits = limits,
+    limits = limits_plot,
     colorbar_length = colorbar_length
   )
   attr(plot, "listname") <- plot_title

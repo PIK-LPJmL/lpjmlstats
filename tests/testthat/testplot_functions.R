@@ -126,7 +126,7 @@ test_that("lpjml_calc_to_map returns map", {
   soiln$.meta$.__set_pos_in_var_grp__(list(type = "compare",
                                            compare_item = "diff"))
   m_options <- get_test_m_options()
-  map <- lpjml_calc_to_map(soiln, m_options, c(-100, 100))
+  map <- lpjml_calc_to_map(soiln, m_options, list(compare = c(-100, 100)))
   expect_equal(class(map)[2], "ggplot")
 })
 

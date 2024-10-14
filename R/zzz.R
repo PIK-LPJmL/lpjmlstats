@@ -4,7 +4,6 @@
   unit_database_path <- system.file("lpjml_units",
                                     "udunits2.xml",
                                     package = "lpjmlstats")
-  # NTODO: install more LPJmL units next to gC gN?
   units::load_units_xml(unit_database_path)
 
   # configure default settings

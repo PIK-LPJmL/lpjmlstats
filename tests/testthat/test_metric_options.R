@@ -49,3 +49,23 @@ test_that("metric option cell_subset produces correct subset", {
 
   expect_true(expected_val == under_test_data)
 })
+
+test_that("metric option sep_cmp_lims still works when FALSE", {
+  baseline_dir <- testthat::test_path("../testdata/path1")
+  under_test_dir <- testthat::test_path("../testdata/path2")
+
+  settings <- list(soiln = list(TimeAvgMapWithAbs))
+
+  metric_options <- list(TimeAvgMapWithAbs = list(sep_cmp_lims = FALSE, year_subset = c("2010")))
+
+  out <- benchmark(
+        baseline_dir,
+        under_test_dir,
+        settings,
+        pdf_report = FALSE,
+        metric_options = metric_options
+      )
+  pdf(file = NULL)
+  expect_no_error(out$TimeAvgMapWithAbs$generate_report_content())
+  dev.off()
+})
