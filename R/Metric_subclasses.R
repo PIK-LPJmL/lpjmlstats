@@ -158,7 +158,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default "1901" - "2019").
     #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
     #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
-    #' - `var_subheading`: boolean, if TRUE, before plots for a new variable are added to the report, 
+    #' - `var_subheading`: logical, if TRUE, before plots for a new variable are added to the report, 
     #' a linebreak will be inserted and a subheading
     #' with the name of the variable will be added. Both things are intended to visually seperate
     #' the plots of different variables and to better organize the report,
@@ -304,7 +304,7 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
       #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default "1901" - "2019").
       #' - `cell`: cells to be subsetted (default 10000)
       #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
-      #' - `var_subheading`: boolean, if TRUE, before plots for a new variable are added to the report, 
+      #' - `var_subheading`: logical, if TRUE, before plots for a new variable are added to the report, 
       #' a linebreak will be inserted and a subheading
       #' with the name of the variable will be added. Both things are intended to visually seperate
       #' the plots of different variables and to better organize the report,
@@ -434,7 +434,7 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
       #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
       #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
-      #' - `var_subheading`: boolean, if TRUE, before plots for a new variable are added to the report, 
+      #' - `var_subheading`: logical, if TRUE, before plots for a new variable are added to the report, 
       #' a linebreak will be inserted and a subheading
       #' with the name of the variable will be added. Both things are intended to visually seperate
       #' the plots of different variables and to better organize the report,
@@ -518,7 +518,7 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
       #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
       #' - `num_cols`: integer, number of columns in the plot grid in the report (default 3)
-      #' - `var_subheading`: boolean, if TRUE, before plots for a new variable are added to the report, 
+      #' - `var_subheading`: logical, if TRUE, before plots for a new variable are added to the report, 
       #' a linebreak will be inserted and a subheading
       #' with the name of the variable will be added. Both things are intended to visually seperate
       #' the plots of different variables and to better organize the report,

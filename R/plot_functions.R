@@ -114,7 +114,8 @@ create_map_plots <- function(var_grp_list,
   return(plot_list)
 }
 
-# Function to get limits for the different types of data in the var_grp, depending
+# Function to get limits for the different types of data ("under_test", "baseline", "compare")
+# in the var_grp, depending
 # on the options set in m_options.
 get_type_limits <- function(var_grp, m_options) {
   if (!is.null(m_options$sep_cmp_lims) && m_options$sep_cmp_lims) {
@@ -142,6 +143,7 @@ lpjml_calc_to_map <- function(lpjml_calc,
                               limits,
                               colorbar_length = 1.4) {
   pos_in_var_grp <- lpjml_calc$meta$pos_in_var_grp
+  # select the limits that are defined for the type (e.g. "under_test")
   limits_plot <- limits[[pos_in_var_grp$type]]
   plot_title <- paste_custom(
     ifelse(!m_options$var_subheading, lpjml_calc$meta$variable, ""),
