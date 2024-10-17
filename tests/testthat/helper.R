@@ -196,8 +196,8 @@ get_test_m_options <- function() {
   m_options <- list(font_size = 8,
                     n_breaks = 3,
                     quantiles = c(0.05, 0.95),
-                    var_seperator = NULL,
-                    band_seperator = NULL,
+                    var_subheading = FALSE,
+                    band_subheading = FALSE,
                     num_cols = 2)
   return(m_options)
 }

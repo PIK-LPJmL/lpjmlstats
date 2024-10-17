@@ -64,7 +64,7 @@ arrange_plots_all <- function(plotlist, num_cols, wrap) {
         j <- j + 1
       } else {
         # go here if entry a "control signal" e.g. newline
-        # print (prossibly unfinished) row, print the control signal
+        # print (the possibly unfinished) row, print the control signal
         # and start a new row
         print_plotrow(plotrow)
         plotrow <- NULL
