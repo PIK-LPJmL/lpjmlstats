@@ -187,7 +187,6 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
 )
 
 # ---------------------- internal integrity checking ------------------------- #
-# NTODO: account for time transformed lpjmldatacalc objects
 LPJmLDataCalc$set( # nolint: object_name_linter.
   "private",
   ".__check_internal_integrity__",
@@ -701,6 +700,17 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
 subset.LPJmLDataCalc <- function(x, ...) {
   lpjml_dat <- lpjmlkit::subset.LPJmLData(x, ...)
   return(.as_LPJmLDataCalc(lpjml_dat))
+}
+
+# internal function to subset an LPJmLDataCalc object
+# wrapper for subset.LPJmLDataCalc
+subset_time_pattern <- function(lpjml_calc, years) {
+  timestamps <- dimnames(lpjml_calc$data)[[2]]
+  index <- grep(paste0(paste(years, collapse = "|")), timestamps)
+  timestamps <- timestamps[index]
+  lpjml_calc_subset <- subset(lpjml_calc, time = timestamps)
+
+  return(lpjml_calc_subset)
 }
 
 LPJmLDataCalc$set("private", ".__add_band__",

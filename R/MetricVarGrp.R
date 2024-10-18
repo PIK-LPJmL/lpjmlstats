@@ -103,10 +103,7 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     capture_summary = function(lpjml_calc, var, type) {
       if (!is.null(self$m_options$year_subset)) {
         subset_years <- function(lpjml_calc, years) {
-          lpjml_calc %>%
-            transform("year_month_day") %>%
-            subset(year = years) %>%
-            transform("time")
+          lpjml_calc %>% subset_time_pattern(paste0(years, "-")) # match e.g. 2023-02-01
         }
         lpjml_calc <-
           keep_units_lpjml_calc(lpjml_calc,

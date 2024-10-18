@@ -1,4 +1,3 @@
-#NTODO deal with double documentation of functions (here and method)
 #' Aggregate an LPJmLDataCalc object
 #'
 #' Function to aggregate the full data of an [`LPJmLDataCalc`] object by

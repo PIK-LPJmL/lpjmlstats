@@ -7,7 +7,7 @@
 create_literature_pdf(output_file = "literature_values.pdf", ...)
 }
 \arguments{
-\item{output_file}{filename of the output pdf, can iclude directory}
+\item{output_file}{filename of the output pdf, can include directory}
 
 \item{...}{additional parameters passed to rmarkdown::render}
 }

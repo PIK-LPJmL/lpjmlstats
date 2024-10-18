@@ -18,3 +18,13 @@ test_that("print of LPJmLMetaDataCalc works correctly for soiln", {
     "aggregation FALSE"
   )
 })
+
+test_that("subset_time_pattern works correctly for soiln", {
+  soiln <- load_soiln_calc()
+
+  soiln_calc_subset <- subset_time_pattern(soiln, c("2011-", "2012-", "2013-"))
+
+  expect_equal(soiln_calc_subset$meta$firstyear, 2011)
+  expect_equal(soiln_calc_subset$meta$lastyear, 2013)
+  expect_equal(dimnames(soiln_calc_subset$data)[[2]], c("2011-12-31", "2012-12-31", "2013-12-31"))
+})

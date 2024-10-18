@@ -13,19 +13,19 @@ See \link{Metric} for the documentation of metrics in general.
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{m_options}}{List of metric options specific to this metric
+\item{\code{m_options}}{List of metric options specific to this metric:
 \itemize{
-\item \code{font_size} integer, font size of the table
-\item \code{name_trunc} integer, indicating when to truncate the band names
-band names
-\item \code{year_subset}: character vector, defines which calander years the metric considers,
-i.e. a data subset that the metric works with; e.g. c("1995", "1996").
-\item \code{cell_subset}: character vector, defines which cells to subset
-\item \code{num_cols}: integer, number of cols in the plot grid in the report
-\item \code{var_seperator}: NULL or character string, if is character string a
-line break is inserted for each variable and a heading with variable name added,
-additionally the text will be executed as latex command \verb{e.g. \\\\newpage} for pagebreak
-\item \code{band_seperator}: analogous to var_seperator but for bands
+\item \code{font_size}: integer, font size of the plot (default 6)
+\item \code{year_subset}: character vector, defines which calendar years the metric considers,
+i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default "1901" - "2019").
+\item \code{cell_subset}: character vector, defines which cells to subset (default NULL)
+\item \code{num_cols}: integer, number of columns in the plot grid in the report (default 2)
+\item \code{var_subheading}: logical, if TRUE, a linebreak and a subheading will
+be inserted before plots for a new variable are added to the report.
+Both things are intended to visually seperate
+the plots of different variables and to better organize the report,
+especially if the metric generates many plots for each variable. (default FALSE)
+\item \code{band_subheading}: analogous to var_subheading but for bands (default FALSE)
 }}
 
 \item{\code{title}}{Section header used in the report}

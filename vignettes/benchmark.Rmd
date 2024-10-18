@@ -32,9 +32,11 @@ Results from different baseline LPJmL versions can be found in the
 `p/projects/lpjml/benchmark_run_outputs/` directory on the cluster.
 
 This package is a component of the PIAM cluster module. It is recommended to load
-this module via `module load piam` before starting the R session, ensuring that 
+this module via `module load piam` 
+(on the hpc 2024 `source /p/system/modulefiles/defaults/piam/module_load_piam`) 
+before starting the R session, ensuring that 
 all necessary packages are loaded.
-
+After loading the PIAM module you may need to temporarily disable personal R packages to avoid conflicts using `liboff`. Remember to re-enable them with `libon` when finished with the benchmarking.
 
 # Using the benchmark function
 
@@ -78,12 +80,10 @@ defined. In the details section of the function documentation you can also see t
 requirements for the function to work properly.
 
 One of the most important other arguments that can be passed to the benchmark 
-function is the `settings` list.
+function is the `settings` R list.
 It defines the full protocol of the benchmarking process, including which outputs are 
-considered, how they are processed, compared and visualized, and what the order of the 
-processing and output PDF is.  If no settings are passed, the default as given in the
-`R\default_settings.R` package file is used. Here is an excerpt of that 
-file:
+considered, how they are processed, compared and visualized.  If no settings are passed, the default as given in the
+`default_settings` list is used. Here is an excerpt of how that list is defined in `R\default_settings.R`:
 
 ``` {r, eval=FALSE}
 default_settings <- list(
