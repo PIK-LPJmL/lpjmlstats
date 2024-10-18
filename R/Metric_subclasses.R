@@ -158,7 +158,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default "1901" - "2019").
     #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
     #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
-    #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will 
+    #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will
     #' be inserted before plots for a new variable are added to the report.
     #' Both things are intended to visually seperate
     #' the plots of different variables and to better organize the report,
@@ -304,7 +304,7 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
       #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default "1901" - "2019").
       #' - `cell`: cells to be subsetted (default 10000)
       #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
-      #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will 
+      #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will
       #' be inserted before plots for a new variable are added to the report.
       #' with the name of the variable will be added. Both things are intended to visually seperate
       #' the plots of different variables and to better organize the report,
@@ -434,7 +434,7 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
       #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
       #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
-      #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will 
+      #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will
       #' be inserted before plots for a new variable are added to the report.
       #' with the name of the variable will be added. Both things are intended to visually seperate
       #' the plots of different variables and to better organize the report,
@@ -502,10 +502,10 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       #' List of metric options specific to this metric:
       #' - `font_size`: integer, font size of the map plot (default 6)
       #' - `highlight`: vector of strings, indicating which variables
-      #' should be highlighted in the report, that is receive a larger plot at the 
-      #' beginning of report content of the metric. 
-      #' All variables with a name that contains at least one these strings as a substring, 
-      #' will not be plotted in the plotgrid (see `num_cols`) but before the plot grid starts. 
+      #' should be highlighted in the report, that is receive a larger plot at the
+      #' beginning of report content of the metric.
+      #' All variables with a name that contains at least one these strings as a substring,
+      #' will not be plotted in the plotgrid (see `num_cols`) but before the plot grid starts.
       #' These plots are allowed to extent to full page width. (default NULL)
       #' - `quantiles`: quantiles used to determine the lower and upper
       #' limits for the values in the map plot (default c(0.05, 0.95))
@@ -518,7 +518,7 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
       #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
       #' - `num_cols`: integer, number of columns in the plot grid in the report (default 3)
-      #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will 
+      #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will
       #' be inserted before plots for a new variable are added to the report.
       #' with the name of the variable will be added. Both things are intended to visually seperate
       #' the plots of different variables and to better organize the report,

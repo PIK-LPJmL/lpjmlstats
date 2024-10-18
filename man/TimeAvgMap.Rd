@@ -17,7 +17,11 @@ See \link{Metric} for the documentation of metrics in general.
 \itemize{
 \item \code{font_size}: integer, font size of the map plot (default 6)
 \item \code{highlight}: vector of strings, indicating which variables
-should receive a larger full width plot (default NULL)
+should be highlighted in the report, that is receive a larger plot at the
+beginning of report content of the metric.
+All variables with a name that contains at least one these strings as a substring,
+will not be plotted in the plotgrid (see \code{num_cols}) but before the plot grid starts.
+These plots are allowed to extent to full page width. (default NULL)
 \item \code{quantiles}: quantiles used to determine the lower and upper
 limits for the values in the map plot (default c(0.05, 0.95))
 \item \code{n_breaks}: number of breaks for each arm of the diverging
@@ -26,10 +30,12 @@ color scale (default 3)
 i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
 \item \code{cell_subset}: character vector, defines which cells to subset (default NULL)
 \item \code{num_cols}: integer, number of columns in the plot grid in the report (default 2)
-\item \code{var_seperator}: NULL or character string; if a character string, a
-line break is inserted for each variable and a heading with variable name added;
-additionally the text will be executed as LaTeX command (e.g., '\\newpage' for pagebreak) (default NULL)
-\item \code{band_seperator}: analogous to var_seperator but for bands (default NULL)
+\item \code{var_subheading}: logical, if TRUE, a linebreak and a subheading will
+be inserted before plots for a new variable are added to the report.
+with the name of the variable will be added. Both things are intended to visually seperate
+the plots of different variables and to better organize the report,
+especially if the metric generates many plots for each variable. (default FALSE)
+\item \code{band_subheading}: analogous to var_subheading but for bands (default FALSE)
 }}
 
 \item{\code{title}}{Section header used in the report}

@@ -127,8 +127,8 @@ get_type_limits <- function(var_grp, m_options) {
     var_grp_non_cmp <- var_grp$deep_clone()
     var_grp_non_cmp$compare <- NULL
     limits_non_cmp <- var_grp_non_cmp$get_limits(quantiles = m_options$quantiles)
+
     rm(var_grp_cmp, var_grp_non_cmp)
-    
     return(list(baseline = limits_non_cmp, under_test = limits_non_cmp, compare = limits_cmp))
   } else {
     limits_all <- var_grp$get_limits(quantiles = m_options$quantiles)

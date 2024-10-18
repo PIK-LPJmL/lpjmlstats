@@ -3,7 +3,7 @@ message: If you use this software, please cite it using the metadata from this f
 type: software
 title: 'lpjmlstats: Statistical tools for LPJmL data analysis'
 version: 0.5.0
-date-released: '2024-10-14'
+date-released: '2024-10-18'
 abstract: This package provides statistical tools for LPJmL data analysis to be used
   for benchmarking LPJmL outputs.
 authors:
