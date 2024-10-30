@@ -168,10 +168,19 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
       return(private$.sim_ident)
     },
 
+    #' @field name
+    #' string, hopefully model version invariant name of the variable
+    name = function() {
+      if (!is.null(private$.name))
+        return(tolower(private$.name))
+      else 
+        return(tolower(private$.variable))
+    },
+
     #' @field var_and_band_disp
     #' string, variable name together with name of first band, e.g. `soiln$200`
     var_and_band_disp = function() {
-      paste0(self$variable,
+      paste0(self$name,
              ifelse(is.null(self$band_names_disp),
                     "", "$"),
              # below vanishes if band_names_disp is NULL

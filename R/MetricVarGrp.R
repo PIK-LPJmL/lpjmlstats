@@ -250,7 +250,7 @@ VarGrp <- # nolint:object_linter_name
       },
 
       get_var_name = function() {
-        self$apply_to_any_lpjml_calc(function(x) x$meta$variable)
+        self$apply_to_any_lpjml_calc(function(x) x$meta$name)
       },
 
       # Function applies the function `fun`
