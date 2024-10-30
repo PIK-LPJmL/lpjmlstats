@@ -327,12 +327,31 @@ LPJmLDataCalc$set(
   "private",
   ".__apply_operator__",
   function(sec_operand, operator) {
-    # check for matching bandnames
+    # find all dimensions for which the dimnames of sec_operand
+    # should match the dimnames of self$data,
+    # which are all dimensions where sec_operand has more than one element
     dimnames_to_match <- which(dim(sec_operand) > 1)
+
+    # subset and reorder band dimension to make sec_operand compatible with self$data
+    if ("band" %in% names(dimnames_to_match) && !is.null(dimnames(self$data)[["band"]])) {
+      tryCatch(
+        sec_operand <- sec_operand[, , dimnames(self$data)[["band"]], drop = FALSE],
+        error = function(e) {
+          stop(paste("The band dimension of the second operand does not 
+                      match the band dimension of the first operand while calculating",
+                     format(operator)))
+        }
+      )
+    }
+
+    # check if sec_operand now has the required structure
     if (length(dimnames_to_match) > 0)
       if (!identical(dimnames(sec_operand)[dimnames_to_match],
-                     dimnames(self$data)[dimnames_to_match]))
-        stop("Dimnames of second operand do not match first operator.")
+                     dimnames(self$data)[dimnames_to_match]) ||
+            any(dim(sec_operand)[dimnames_to_match] != dim(self$data)[dimnames_to_match]))
+        stop("A dimension of the second operand does not 
+              match the respective first operand dimension while calculating",
+             format(operator))
 
     # the dimensions of "self" should stay
     tar_dim <- dim(private$.data)
@@ -343,14 +362,7 @@ LPJmLDataCalc$set(
     expand <- function(x) {
       cur_dim <- dim(x) # current dimension of second operand
       keep <- which(tar_dim == cur_dim) # which dimensions are the same
-      # check if dimensions are incompatible
-      # this is the case if there is a non matching dimension that
-      # has more than one element (i.e. it is not clear how to expand it).
-      # Also, an extra check is needed for the case that no dimensions are
-      # the same which is only allowed if the second operand is a scalar.
-      if (any(cur_dim[-keep] != 1) || (length(keep) == 0 && any(cur_dim != 1)))
-        stop("Dimensions of second operand do not
-              match dimensions of first operand")
+
       if (length(keep) > 0)
         # put the dimensions to keep in front and append the rest
         perm <- c(keep, seq_along(tar_dim)[-keep])

@@ -16,9 +16,10 @@ hash_custom <- function(arg_list) {
       # extract content of the LPJmLDataCalc object
       # to avoid hashing the environment
 
-      # NTODO include grid/regiondata to be hashed
       obj <- list(utils::head(obj$data), utils::tail(obj$data),
-                  utils::capture.output(obj$meta$print()))
+                  utils::capture.output(obj$meta$print()),
+                  utils::head(obj$grid$data), utils::tail(obj$grid$data),
+                  utils::head(obj$grid$region_matrix), utils::tail(obj$grid$region_matrix))
     }
     return(obj)
   }

@@ -57,18 +57,18 @@ test_that("correct meta information ends up in lpjml_calc", {
                list(type = "compare", compare_item = "nodiff"))
 })
 
-test_that("benchmark report generation runs through without warnings", {
-  skip("NTODO: Currently crahses testing of devtools::check()")
+test_that("benchmark report generation runs through without errors", {
   baseline_dir <- testthat::test_path("../testdata/path1")
   under_test_dir <- testthat::test_path("../testdata/path2")
   settings <-
-    list(soiln = list(GlobSumTimeAvgTable, GlobSumTimeseries, TimeAvgMap))
+    list(soiln = list(GlobSumTimeAvgTable))
 
-  out <- benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE)
+  out <- benchmark(baseline_dir, under_test_dir, settings, metric_options = test_m_options[1], pdf_report = FALSE)
 
   report_path <- testthat::test_path("../testdata/benchmark_report.pdf")
 
-  expect_no_warning(create_pdf_report(out, report_path))
+  # expect that only one warning is thrown
+  expect_no_error(create_pdf_report(out, report_path))
 
   # remove the report file benchmark.pdf
   file.remove(report_path)

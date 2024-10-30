@@ -200,6 +200,7 @@ test_that("multiplication with non matchin dimnames fails", {
   dimnames(array1) <- list(cell = c("1", "2"), time = c("1", "2"), band = c("1", "2", "3"))
   array2 <- c(3, 2, 1)
   dim(array2) <- c(1, 1, 3)
+  dimnames(array2) <- list(cell = c("1"), time = c("1"), band = c("1", "2", "4"))
   lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
   lpjml_calc2 <- create_LPJmLDataCalc(array2, "")
 
@@ -242,7 +243,7 @@ test_that("multiplication with vector works", {
   array2 <- c(3, 4)
   dim(array2) <- c(1, 1, 2)
   lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
-  expect_error(lpjml_calc1 * array2, "Dimensions")
+  expect_error(lpjml_calc1 * array2, "match")
 
   # test 4 apply to bands with matching dims
   array1 <- c(1, 1, 1, 1, 1, 1, 1, 1)
@@ -256,6 +257,13 @@ test_that("multiplication with vector works", {
 
 })
 
+test_that("band name order doesn't matter for multiplication", {
+  lpjml_calc1 <- read_io(test_path("../testdata/path1/soiln_layer.bin.json"))
+
+  lpjml_calc1_reordered <- subset(lpjml_calc1, band = c("500", "200", "1000", "2000", "3000"))
+
+  expect_equal((lpjml_calc1 * lpjml_calc1_reordered)$data, (lpjml_calc1 * lpjml_calc1)$data)
+})
 
 test_that("correct units and value results from division", {
   lpjml_calc1 <- create_LPJmLDataCalc(2, "gN")
