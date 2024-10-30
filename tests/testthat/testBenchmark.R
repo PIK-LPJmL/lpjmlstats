@@ -58,6 +58,7 @@ test_that("correct meta information ends up in lpjml_calc", {
 })
 
 test_that("benchmark report generation runs through without errors", {
+  skip("X11 is not available when running buildLibrary()")
   baseline_dir <- testthat::test_path("../testdata/path1")
   under_test_dir <- testthat::test_path("../testdata/path2")
   settings <-
