@@ -346,7 +346,7 @@ test_that("temporal aggregation over whole simulation period correct result", {
                   rep(c(0, 1), 4), dim = c(2, 2, 2))
   dimnames(data) <- list(
     cell = c("cell1", "cell2"),
-    year = c("year1", "year2"),
+    time = c("year1", "year2"),
     band = c("band1", "band2")
   )
 

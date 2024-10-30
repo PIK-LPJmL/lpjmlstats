@@ -338,7 +338,7 @@ LPJmLDataCalc$set(
         sec_operand <- sec_operand[, , dimnames(self$data)[["band"]], drop = FALSE],
         error = function(e) {
           stop(paste("The band dimension of the second operand does not 
-                      match the band dimension of the first operand while calculating",
+                      match the band dimension of the first operand while calculating ",
                      format(operator)))
         }
       )
@@ -350,7 +350,7 @@ LPJmLDataCalc$set(
                      dimnames(self$data)[dimnames_to_match]) ||
             any(dim(sec_operand)[dimnames_to_match] != dim(self$data)[dimnames_to_match]))
         stop("A dimension of the second operand does not 
-              match the respective first operand dimension while calculating",
+              match the respective first operand dimension while calculating ",
              format(operator))
 
     # the dimensions of "self" should stay
@@ -542,20 +542,25 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
     stop("Currently only cell format is supported")
   }
 
-  # Ensure the data has the correct format
-  # NTODO: modify tests such that they run through with this
-  # if (!names(dim(lpjml_data$data))[1] == "cell" || # nolint start
-  #     !names(dim(lpjml_data$data))[2] == "time" ||
-  #     !names(dim(lpjml_data$data))[3] == "band"){
-  #    stop("The data must have the following order of dimensions: 1. cell, 2. time, 3. band")
-  # } # nolint end
+  data <- lpjml_data$data
 
+  # Ensure the data has all three "cell", "time", "band" dimensions, in any order
+  if (!("cell" %in% names(dimnames(data)) || "region" %in% names(dimnames(data))) ||
+      !"time" %in% names(dimnames(data)) ||
+      !"band" %in% names(dimnames(data))) {
+    stop("The data must have the following dimensions: (cell/region), time, band")
+  }
 
+  # Reorder the data array to have the dimensions in the correct order, if required
+  if (!"region" %in% names(dimnames(data)))
+    if (!identical(names(dimnames(data)), c("cell", "time", "band")))
+      data <- aperm(data, c("cell", "time", "band"))
+    
   # Create a new meta enhanced LPJmLMetaDataCalc object
   meta_calc <- LPJmLMetaDataCalc$new(lpjml_data$meta)
 
   # Copy the data from the provided LPJmLData object
-  private$.data <- lpjml_data$data
+  private$.data <- data
   private$.meta <- meta_calc
   private$.grid <- lpjml_data$grid
   private$copy_unit_meta2array()

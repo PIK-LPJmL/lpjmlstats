@@ -72,9 +72,11 @@ create_LPJmLDataCalc <- function(data,  # nolint: object_name_linter.
                                  nyear = NULL,
                                  nbands = NULL,
                                  ...) {
-  if (!is.array(data)) {
+  if (!is.array(data))
     data <- array(data, dim = c(cell = length(data), time = 1, band = 1))
-  }
+  else
+    data <- array(data, dim = c(cell = unname(dim(data)[1]), time = unname(dim(data)[2]), band = unname(dim(data)[3])), 
+                  dimnames = dimnames(data))
   if (is.null(ncell)) {
     ncell <- dim(data)[1]
   }
@@ -84,12 +86,10 @@ create_LPJmLDataCalc <- function(data,  # nolint: object_name_linter.
   if (is.null(nbands)) {
     nbands <- dim(data)[3]
   }
-  if (is.null(names(dim(data)))) {
-    dimnames <- dimnames(data)
-    dim(data) <- c(cell = dim(data)[1],
-                   time = dim(data)[2],
-                   band = dim(data)[3])
-    dimnames(data) <- dimnames
+  if (is.null(dimnames(data))) {
+    dimnames(data) <- list(cell = dimnames(data)[1],
+                           time = dimnames(data)[2],
+                           band = dimnames(data)[3])
   }
   header <-
     lpjmlkit::create_header(
