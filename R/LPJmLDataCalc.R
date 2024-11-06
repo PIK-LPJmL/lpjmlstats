@@ -671,8 +671,9 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
 #' Function to coerce (convert) an [`LPJmLData`] object into an
 #' LPJmLDataCalc object with extended functionality.
 #'
-#' @param obj LPJmLData object or an array with the following order of
-#' dimensions: 1. space, 2. time, 3. band.
+#' @param obj LPJmLData object. 
+#' For internal package development use the obj can also be an array with the dimension 
+#' 1. cell/region, 2. years, 3. bands. The items of the time dimension are then assumed to be different years.
 #'
 #' @return An LPJmLDataCalc object.
 #'
@@ -684,11 +685,12 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
 
     # check if array has the correct dimensions
     if (length(dim(obj)) != 3) {
-      stop("Array must have 3 dimensions. 1. space, 2. time, 3. band.")
+      stop("Array must have 3 dimensions. 1. cell/region, 2. years, 3. bands.")
     }
 
     header <- lpjmlkit::create_header(ncell = dim(obj)[1],
-                                      nstep = dim(obj)[2],
+                                      nyear = dim(obj)[2],
+                                      nstep = 1,
                                       nbands = dim(obj)[3])
 
     meta <- lpjmlkit::LPJmLMetaData$new(header)

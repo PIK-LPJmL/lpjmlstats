@@ -6,7 +6,7 @@ test_that("when initializing with non LPJmLData object an error is thrown", {
 })
 
 test_that("when initializing with LPJmLData the content arrives", {
-  header <- lpjmlkit::create_header(ncell = 1, verbose = FALSE)
+  header <- lpjmlkit::create_header(ncell = 1, nbands = 1, nstep = 1, nyear = 1, verbose = FALSE)
   lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header)
   lpjml_meta$.__set_attribute__("unit", "")
   lpjml_dat <- lpjmlkit::LPJmLData$new(array(1, dim = c(cell = 1, band = 1, time = 1),
@@ -20,7 +20,7 @@ test_that("when initializing with LPJmLData the content arrives", {
 })
 
 test_that("when initializing, dimensions are reordered correctly", {
-  header <- lpjmlkit::create_header(ncell = 6, verbose = FALSE)
+  header <- lpjmlkit::create_header(ncell = 6, nbands = 1, nstep = 1, nyear = 4, verbose = FALSE)
   lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header)
   lpjml_meta$.__set_attribute__("unit", "")
   data <- array(1, dim = c(cell = 6, band = 1, time = 4))
@@ -45,7 +45,7 @@ test_that("the object returned when calling obj$data doesn't have class", {
 })
 
 test_that(".as_LPJmLDataCalc returns LPJmLDataCalc object", {
-  header <- create_header(ncell = 1, verbose = FALSE)
+  header <- create_header(ncell = 1, nbands = 1, nstep = 1, nyear = 1, verbose = FALSE)
   lpjml_meta <-
     lpjmlkit::LPJmLMetaData$new(header, list(unit = "g"))
 

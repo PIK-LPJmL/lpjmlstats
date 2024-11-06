@@ -95,6 +95,7 @@ create_LPJmLDataCalc <- function(data,  # nolint: object_name_linter.
     lpjmlkit::create_header(
       ncell = ncell,
       nbands = nbands,
+      nstep = 1,
       nyear = nyear,
       verbose = FALSE,
       ...
@@ -114,6 +115,9 @@ create_LPJmLGridData <- # nolint:object_name_linter
   function(gridarray) {
     header <-
       lpjmlkit::create_header(ncell = dim(gridarray)[1],
+                              nbands = 2,
+                              nstep = 1,
+                              nyear = 1,
                               verbose = FALSE,
                               name = "GRID")
     lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header,
