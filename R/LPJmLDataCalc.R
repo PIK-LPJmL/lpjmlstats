@@ -552,6 +552,8 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
   }
 
   # Reorder the data array to have the dimensions in the correct order, if required
+  # Note that "region" is only used by lpjmlstats, hence if that dimname is present, 
+  # the order can be asumed to be correct
   if (!"region" %in% names(dimnames(data)))
     if (!identical(names(dimnames(data)), c("cell", "time", "band")))
       data <- aperm(data, c("cell", "time", "band"))
