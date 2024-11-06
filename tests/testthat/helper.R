@@ -87,9 +87,9 @@ create_LPJmLDataCalc <- function(data,  # nolint: object_name_linter.
     nbands <- dim(data)[3]
   }
   if (is.null(dimnames(data))) {
-    dimnames(data) <- list(cell = dimnames(data)[1],
-                           time = dimnames(data)[2],
-                           band = dimnames(data)[3])
+    dimnames(data) <- list(cell = NULL,
+                           time = NULL,
+                           band = NULL)
   }
   header <-
     lpjmlkit::create_header(
