@@ -701,17 +701,19 @@ TimeAvgMapTreeCover <- # nolint: object_name_linter.
     "TimeAvgMapTreeCover",
     inherit = TimeAvgMapWithAbs,
     public = list(
-
       #' @description
-      #' add up bands for tree fpcs and plot them
+      #' add up bands for tree fpcs
       #' @param data LPJmLDataCalc object to be summarized
       summarize = function(data) {
         bands <- data$meta$band_names
         data <- subset(data, band = bands[grep("tree", bands)])
         data$add_band("treecover_band", function(x) sum(x))
-        data <- aggregate(data, time = list(to = "sim_period", stat = "mean"))
         data <- subset(data, band = "treecover_band")
+        data <- aggregate(data, time = list(to = "sim_period", stat = "mean"))
       },
+
+      #' @field m_options
+      #' See \link{TimeAvgMapWithAbs} for the documentation of the options of this metric.
       m_options = list(
         font_size = 4,
         highlight = NULL,
@@ -724,6 +726,7 @@ TimeAvgMapTreeCover <- # nolint: object_name_linter.
         var_subheading = FALSE,
         band_subheading = FALSE
       ),
+
       #' @field title
       #' Section header used in the report
       title = "Time Average Maps With Absolute Values of total Tree Cover",
@@ -731,7 +734,7 @@ TimeAvgMapTreeCover <- # nolint: object_name_linter.
       #' @field description
       #' Description used in the report
       description = "The cell-time values of each variable are averaged over time.
-        Tree bands (currently 2:9) are added up.
-        This is then plotted on a map. \n"
+        Bands that contain the string `tree` are added up.
+        The resulting sum is then plotted on a map. \n"
     )
   )
