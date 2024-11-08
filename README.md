@@ -48,14 +48,14 @@ In case of questions / problems please contact David Hötten <davidho@pik-potsda
 
 To cite package **lpjmlstats** in publications use:
 
-Hötten D, Breier J (2024). _lpjmlstats: Statistical tools for LPJmL data analysis_. R package version 0.6.0, <https://github.com/PIK-LPJmL/lpjmlstats>.
+Hötten D, Breier J, Müller C (2024). _lpjmlstats: Statistical tools for LPJmL data analysis_. R package version 0.6.0, <https://github.com/PIK-LPJmL/lpjmlstats>.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
 @Manual{,
   title = {lpjmlstats: Statistical tools for LPJmL data analysis},
-  author = {David Hötten and Jannes Breier},
+  author = {David Hötten and Jannes Breier and Christoph Müller},
   year = {2024},
   note = {R package version 0.6.0},
   url = {https://github.com/PIK-LPJmL/lpjmlstats},
