@@ -691,3 +691,50 @@ GlobSumAnnTimeseriesFPC <- R6::R6Class( # nolint: object_name_linter.
     }
   )
 )
+
+#' @title TimeAvgMapTreeCover
+#' @description
+#' TimeAvgMapTreeCover metric
+#' @export
+TimeAvgMapTreeCover <- # nolint: object_name_linter.
+  R6::R6Class(
+    "TimeAvgMapTreeCover",
+    inherit = TimeAvgMapWithAbs,
+    public = list(
+      #' @description
+      #' add up bands for tree fpcs
+      #' @param data LPJmLDataCalc object to be summarized
+      summarize = function(data) {
+        bands <- data$meta$band_names
+        data <- subset(data, band = bands[grep("tree", bands)])
+        data$add_band("treecover_band", function(x) sum(x))
+        data <- subset(data, band = "treecover_band")
+        data <- aggregate(data, time = list(to = "sim_period", stat = "mean"))
+      },
+
+      #' @field m_options
+      #' See \link{TimeAvgMapWithAbs} for the documentation of the options of this metric.
+      m_options = list(
+        font_size = 4,
+        highlight = NULL,
+        quantiles = c(0.05, 0.95),
+        sep_cmp_lims = TRUE,
+        year_subset = as.character(1991:2000),
+        cell_subset = NULL,
+        n_breaks = 8,
+        num_cols = 3,
+        var_subheading = FALSE,
+        band_subheading = FALSE
+      ),
+
+      #' @field title
+      #' Section header used in the report
+      title = "Time Average Maps With Absolute Values of total Tree Cover",
+
+      #' @field description
+      #' Description used in the report
+      description = "The cell-time values of each variable are averaged over time.
+        Bands that contain the string `tree` are added up.
+        The resulting sum is then plotted on a map. \n"
+    )
+  )
