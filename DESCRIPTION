@@ -45,4 +45,4 @@ Config/testthat/edition: 3
 VignetteBuilder: knitr
 Depends:
     R (>= 3.5.0)
-Date: 2024-11-08
+Date: 2024-11-11
