@@ -146,7 +146,7 @@ lpjml_calc_to_map <- function(lpjml_calc,
   # select the limits that are defined for the type (e.g. "under_test")
   limits_plot <- limits[[pos_in_var_grp$type]]
   plot_title <- paste_custom(
-    ifelse(!m_options$var_subheading, lpjml_calc$meta$variable, ""),
+    ifelse(!m_options$var_subheading, lpjml_calc$meta$name, ""),
     ifelse(!m_options$band_subheading && !is.null(lpjml_calc$meta$band_names),
            lpjml_calc$meta$band_names[[1]], ""),
     lpjml_calc$meta$sim_ident,
@@ -295,7 +295,7 @@ create_time_series_plots <- function(var_grp_list, m_options) {
         var_grp_band$transform_lpjml_calcs(function(x) {
           do.call("subset", c(list(x = x), args))
         })
-        var_name <- var_grp_band$apply_to_any_lpjml_calc(function(x) x$meta$variable)
+        var_name <- var_grp_band$apply_to_any_lpjml_calc(function(x) x$meta$name)
         plot_title <- paste_custom(
           ifelse(!m_options$var_subheading, var_name, ""),
           ifelse(!m_options$band_subheading && length(band_names) > 1, band, ""),

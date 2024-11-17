@@ -327,12 +327,31 @@ LPJmLDataCalc$set(
   "private",
   ".__apply_operator__",
   function(sec_operand, operator) {
-    # check for matching bandnames
+    # find all dimensions for which the dimnames of sec_operand
+    # should match the dimnames of self$data,
+    # which are all dimensions where sec_operand has more than one element
     dimnames_to_match <- which(dim(sec_operand) > 1)
+
+    # subset and reorder band dimension to make sec_operand compatible with self$data
+    if ("band" %in% names(dimnames_to_match) && !is.null(dimnames(self$data)[["band"]])) {
+      tryCatch(
+        sec_operand <- sec_operand[, , dimnames(self$data)[["band"]], drop = FALSE],
+        error = function(e) {
+          stop(paste("The band dimension of the second operand does not 
+                      match the band dimension of the first operand while calculating ",
+                     format(operator)))
+        }
+      )
+    }
+
+    # check if sec_operand now has the required structure
     if (length(dimnames_to_match) > 0)
       if (!identical(dimnames(sec_operand)[dimnames_to_match],
-                     dimnames(self$data)[dimnames_to_match]))
-        stop("Dimnames of second operand do not match first operator.")
+                     dimnames(self$data)[dimnames_to_match]) ||
+            any(dim(sec_operand)[dimnames_to_match] != dim(self$data)[dimnames_to_match]))
+        stop("A dimension of the second operand does not 
+              match the respective first operand dimension while calculating ",
+             format(operator))
 
     # the dimensions of "self" should stay
     tar_dim <- dim(private$.data)
@@ -343,14 +362,7 @@ LPJmLDataCalc$set(
     expand <- function(x) {
       cur_dim <- dim(x) # current dimension of second operand
       keep <- which(tar_dim == cur_dim) # which dimensions are the same
-      # check if dimensions are incompatible
-      # this is the case if there is a non matching dimension that
-      # has more than one element (i.e. it is not clear how to expand it).
-      # Also, an extra check is needed for the case that no dimensions are
-      # the same which is only allowed if the second operand is a scalar.
-      if (any(cur_dim[-keep] != 1) || (length(keep) == 0 && any(cur_dim != 1)))
-        stop("Dimensions of second operand do not
-              match dimensions of first operand")
+
       if (length(keep) > 0)
         # put the dimensions to keep in front and append the rest
         perm <- c(keep, seq_along(tar_dim)[-keep])
@@ -530,20 +542,27 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
     stop("Currently only cell format is supported")
   }
 
-  # Ensure the data has the correct format
-  # NTODO: modify tests such that they run through with this
-  # if (!names(dim(lpjml_data$data))[1] == "cell" || # nolint start
-  #     !names(dim(lpjml_data$data))[2] == "time" ||
-  #     !names(dim(lpjml_data$data))[3] == "band"){
-  #    stop("The data must have the following order of dimensions: 1. cell, 2. time, 3. band")
-  # } # nolint end
+  data <- lpjml_data$data
 
+  # Ensure the data has all three "cell", "time", "band" dimensions, in any order
+  if (!("cell" %in% names(dimnames(data)) || "region" %in% names(dimnames(data))) ||
+      !"time" %in% names(dimnames(data)) ||
+      !"band" %in% names(dimnames(data))) {
+    stop("The data must have the following dimensions: (cell/region), time, band")
+  }
 
+  # Reorder the data array to have the dimensions in the correct order, if required
+  # Note that "region" is only used by lpjmlstats, hence if that dimname is present, 
+  # the order can be asumed to be correct
+  if (!"region" %in% names(dimnames(data)))
+    if (!identical(names(dimnames(data)), c("cell", "time", "band")))
+      data <- aperm(data, c("cell", "time", "band"))
+    
   # Create a new meta enhanced LPJmLMetaDataCalc object
   meta_calc <- LPJmLMetaDataCalc$new(lpjml_data$meta)
 
   # Copy the data from the provided LPJmLData object
-  private$.data <- lpjml_data$data
+  private$.data <- data
   private$.meta <- meta_calc
   private$.grid <- lpjml_data$grid
   private$copy_unit_meta2array()
@@ -652,8 +671,9 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
 #' Function to coerce (convert) an [`LPJmLData`] object into an
 #' LPJmLDataCalc object with extended functionality.
 #'
-#' @param obj LPJmLData object or an array with the following order of
-#' dimensions: 1. space, 2. time, 3. band.
+#' @param obj LPJmLData object. 
+#' For internal package development use the obj can also be an array with the dimension 
+#' 1. cell/region, 2. years, 3. bands. The items of the time dimension are then assumed to be different years.
 #'
 #' @return An LPJmLDataCalc object.
 #'
@@ -665,11 +685,12 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
 
     # check if array has the correct dimensions
     if (length(dim(obj)) != 3) {
-      stop("Array must have 3 dimensions. 1. space, 2. time, 3. band.")
+      stop("Array must have 3 dimensions. 1. cell/region, 2. years, 3. bands.")
     }
 
     header <- lpjmlkit::create_header(ncell = dim(obj)[1],
-                                      nstep = dim(obj)[2],
+                                      nyear = dim(obj)[2],
+                                      nstep = 1,
                                       nbands = dim(obj)[3])
 
     meta <- lpjmlkit::LPJmLMetaData$new(header)

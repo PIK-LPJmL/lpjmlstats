@@ -6,16 +6,36 @@ test_that("when initializing with non LPJmLData object an error is thrown", {
 })
 
 test_that("when initializing with LPJmLData the content arrives", {
-  header <- lpjmlkit::create_header(ncell = 6, verbose = FALSE)
+  header <- lpjmlkit::create_header(ncell = 1, nbands = 1, nstep = 1, nyear = 1, verbose = FALSE)
   lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header)
   lpjml_meta$.__set_attribute__("unit", "")
-  lpjml_dat <- lpjmlkit::LPJmLData$new(1,
+  lpjml_dat <- lpjmlkit::LPJmLData$new(array(1, dim = c(cell = 1, band = 1, time = 1),
+                                             dimnames = list(cell = "1", band = "1", time = "1")),
                                        meta_data = lpjml_meta)
 
   lpjml_calc <- LPJmLDataCalc$new(lpjml_dat)
 
-  expect_equal(lpjml_calc$meta$ncell, 6)
+  expect_equal(lpjml_calc$meta$ncell, 1)
   expect_equal(as.numeric(lpjml_calc$data), 1, ignore_attr = TRUE)
+})
+
+test_that("when initializing, dimensions are reordered correctly", {
+  header <- lpjmlkit::create_header(ncell = 6, nbands = 1, nstep = 1, nyear = 4, verbose = FALSE)
+  lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header)
+  lpjml_meta$.__set_attribute__("unit", "")
+  data <- array(1, dim = c(cell = 6, band = 1, time = 4))
+  dimnames(data) <- list(cell = c("1", "2", "3", "4", "5", "6"), band = "1", time = c("1", "2", "3", "4"))
+
+  lpjml_dat <- lpjmlkit::LPJmLData$new(data,
+                                       meta_data = lpjml_meta)
+
+  lpjml_calc <- LPJmLDataCalc$new(lpjml_dat)
+
+  expect_equal(dimnames(lpjml_calc$data)$cell, c("1", "2", "3", "4", "5", "6"))
+  expect_equal(dimnames(lpjml_calc$data)$time, c("1", "2", "3", "4"))
+  expect_equal(dimnames(lpjml_calc$data)$band, "1")
+
+  expect_equal(dim(lpjml_calc$data), c(cell = 6, time = 4, band = 1))
 })
 
 test_that("the object returned when calling obj$data doesn't have class", {
@@ -25,11 +45,13 @@ test_that("the object returned when calling obj$data doesn't have class", {
 })
 
 test_that(".as_LPJmLDataCalc returns LPJmLDataCalc object", {
-  header <- create_header(ncell = 1, verbose = FALSE)
+  header <- create_header(ncell = 1, nbands = 1, nstep = 1, nyear = 1, verbose = FALSE)
   lpjml_meta <-
     lpjmlkit::LPJmLMetaData$new(header, list(unit = "g"))
 
-  lpjml_dat <- lpjmlkit::LPJmLData$new(c(1), lpjml_meta)
+  lpjml_dat <- lpjmlkit::LPJmLData$new(array(1, dim = c(cell = 1, band = 1, time = 1),
+                                             dimnames = list(cell = "1", band = "1", time = "1")),
+                                       meta_data = lpjml_meta)
   lpjml_calc <- .as_LPJmLDataCalc(lpjml_dat)
 
   expect_true(inherits(lpjml_calc, "LPJmLDataCalc"))
@@ -200,6 +222,7 @@ test_that("multiplication with non matchin dimnames fails", {
   dimnames(array1) <- list(cell = c("1", "2"), time = c("1", "2"), band = c("1", "2", "3"))
   array2 <- c(3, 2, 1)
   dim(array2) <- c(1, 1, 3)
+  dimnames(array2) <- list(cell = c("1"), time = c("1"), band = c("1", "2", "4"))
   lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
   lpjml_calc2 <- create_LPJmLDataCalc(array2, "")
 
@@ -220,42 +243,53 @@ test_that("multiplication with scalar unit object works", {
 
 test_that("multiplication with vector works", {
   array1 <- c(1, 1, 1, 1)
-  dim(array1) <- c(2, 2, 1)
+  dim(array1) <- c(cell = 2, time = 2, band = 1)
+  dimnames(array1) <- list(cell = c("1", "2"), time = c("1", "2"), band = "1")
+  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
 
   # test 1 apply to cells
   array2 <- c(3, 4)
-  dim(array2) <- c(2, 1, 1)
-  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  dim(array2) <- c(cell = 2, time = 1, band = 1)
+  dimnames(array2) <- list(cell = c("1", "2"), time = "1", band = "1")
   product <- lpjml_calc1 * array2
   result <- array(c(3, 4, 3, 4), dim = c(2, 2, 1))
   expect_equal(product$data, result, ignore_attr = TRUE)
 
   # test 2 apply to time
   array2 <- c(3, 4)
-  dim(array2) <- c(1, 2, 1)
-  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  dim(array2) <- c(cell = 1, time = 2, band = 1)
+  dimnames(array2) <- list(cell = "1", time = c("1", "2"), band = "1")
   product <- lpjml_calc1 * array2
   result <- array(c(3, 3, 4, 4), dim = c(2, 2, 1))
   expect_equal(product$data, result, ignore_attr = TRUE)
 
   # test 3 apply to bands with not matching dims
   array2 <- c(3, 4)
-  dim(array2) <- c(1, 1, 2)
-  lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
-  expect_error(lpjml_calc1 * array2, "Dimensions")
+  dim(array2) <- c(cell = 1, time = 1, band = 2)
+  dimnames(array2) <- list(cell = "1", time = "1", band = c("4", "2"))
+  expect_error(lpjml_calc1 * array2, "match")
 
   # test 4 apply to bands with matching dims
   array1 <- c(1, 1, 1, 1, 1, 1, 1, 1)
-  dim(array1) <- c(2, 2, 2)
-  array2 <- c(3, 4)
-  dim(array2) <- c(1, 1, 2)
+  dim(array1) <- c(cell = 2, time = 2, band = 2)
+  dimnames(array1) <- list(cell = c("1", "2"), time = c("1", "2"), band = c("1", "2"))
   lpjml_calc1 <- create_LPJmLDataCalc(array1, "")
+  array2 <- c(3, 4)
+  dim(array2) <- c(cell = 1, time = 1, band = 2)
+  dimnames(array2) <- list(cell = "1", time = "1", band = c("1", "2"))
   product <- lpjml_calc1 * array2
   result <- array(c(3, 3, 3, 3, 4, 4, 4, 4), dim = c(2, 2, 2))
   expect_equal(product$data, result, ignore_attr = TRUE)
 
 })
 
+test_that("band name order doesn't matter for multiplication", {
+  lpjml_calc1 <- read_io(test_path("../testdata/path1/soiln_layer.bin.json"))
+
+  lpjml_calc1_reordered <- subset(lpjml_calc1, band = c("500", "200", "1000", "2000", "3000"))
+
+  expect_equal((lpjml_calc1 * lpjml_calc1_reordered)$data, (lpjml_calc1 * lpjml_calc1)$data)
+})
 
 test_that("correct units and value results from division", {
   lpjml_calc1 <- create_LPJmLDataCalc(2, "gN")

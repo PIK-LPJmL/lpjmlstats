@@ -25,6 +25,8 @@ subject to time aggregation.}
 
 \item{\code{sim_ident}}{string, simulation identifier}
 
+\item{\code{name}}{string, hopefully model version invariant name of the variable}
+
 \item{\code{var_and_band_disp}}{string, variable name together with name of first band, e.g. \verb{soiln$200}}
 }
 \if{html}{\out{</div>}}
