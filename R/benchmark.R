@@ -167,6 +167,7 @@ benchmark <-
            author = "",
            description = "",
            pdf_report = TRUE,
+           ilamb_report = FALSE,
            ...) {
 
     cat(cli::col_blue("Start the core numerical benchmarking...\n"))
@@ -221,6 +222,9 @@ benchmark <-
         cat(cli::col_yellow("Warning during pdf report generation: "), w$message, "\n")
       })
     }
+
+    if(ilamb_report)
+      create_ilamb_report(baseline_dir, under_test_dirs, sim_table, ...)
 
     return(benchmark_result)
   }
