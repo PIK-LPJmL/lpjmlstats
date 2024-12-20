@@ -20,7 +20,7 @@ default_settings <- list(
   mbnf  = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   firec = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   flux_estab = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
-  fpc = c(GlobSumTimeAvgTableFPC, GlobSumAnnTimeseriesFPC, TimeAvgMap),
+  fpc = c(GlobSumTimeAvgTableFPC, GlobSumAnnTimeseriesFPC, TimeAvgMap, TimeAvgMapTreeCover),
   mgpp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   mnpp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),
   anbp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMap),

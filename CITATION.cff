@@ -2,8 +2,8 @@ cff-version: 1.2.0
 message: If you use this software, please cite it using the metadata from this file.
 type: software
 title: 'lpjmlstats: Statistical tools for LPJmL data analysis'
-version: 0.5.2
-date-released: '2024-12-20'
+version: 0.6.0
+date-released: '2024-11-11'
 abstract: This package provides statistical tools for LPJmL data analysis to be used
   for benchmarking LPJmL outputs.
 authors:
@@ -14,6 +14,10 @@ authors:
   given-names: Jannes
   email: jannes.breier@pik-potsdam.de
   orcid: https://orcid.org/0000-0002-9055-6904
+- family-names: Müller
+  given-names: Christoph
+  email: cmueller@pik-potsdam.de
+  orcid: https://orcid.org/0000-0002-9491-3550
 license: AGPL-3.0
 repository-code: https://github.com/PIK-LPJmL/lpjmlstats
 
