@@ -546,18 +546,18 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
 
   # Ensure the data has all three "cell", "time", "band" dimensions, in any order
   if (!("cell" %in% names(dimnames(data)) || "region" %in% names(dimnames(data))) ||
-      !"time" %in% names(dimnames(data)) ||
-      !"band" %in% names(dimnames(data))) {
+        !"time" %in% names(dimnames(data)) ||
+        !"band" %in% names(dimnames(data))) {
     stop("The data must have the following dimensions: (cell/region), time, band")
   }
 
   # Reorder the data array to have the dimensions in the correct order, if required
-  # Note that "region" is only used by lpjmlstats, hence if that dimname is present, 
+  # Note that "region" is only used by lpjmlstats, hence if that dimname is present,
   # the order can be asumed to be correct
   if (!"region" %in% names(dimnames(data)))
     if (!identical(names(dimnames(data)), c("cell", "time", "band")))
       data <- aperm(data, c("cell", "time", "band"))
-    
+
   # Create a new meta enhanced LPJmLMetaDataCalc object
   meta_calc <- LPJmLMetaDataCalc$new(lpjml_data$meta)
 
@@ -671,8 +671,8 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
 #' Function to coerce (convert) an [`LPJmLData`] object into an
 #' LPJmLDataCalc object with extended functionality.
 #'
-#' @param obj LPJmLData object. 
-#' For internal package development use the obj can also be an array with the dimension 
+#' @param obj LPJmLData object.
+#' For internal package development use the obj can also be an array with the dimension
 #' 1. cell/region, 2. years, 3. bands. The items of the time dimension are then assumed to be different years.
 #'
 #' @return An LPJmLDataCalc object.

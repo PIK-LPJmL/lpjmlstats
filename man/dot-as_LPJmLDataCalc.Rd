@@ -7,8 +7,11 @@
 .as_LPJmLDataCalc(obj)
 }
 \arguments{
-\item{obj}{LPJmLData object or an array with the following order of
-dimensions: 1. space, 2. time, 3. band.}
+\item{obj}{LPJmLData object.
+For internal package development use the obj can also be an array with the dimension
+\enumerate{
+\item cell/region, 2. years, 3. bands. The items of the time dimension are then assumed to be different years.
+}}
 }
 \value{
 An LPJmLDataCalc object.
