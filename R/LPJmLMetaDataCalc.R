@@ -149,9 +149,8 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
     #' @field band_names_disp
     #' named vector, versions of band names used for display, usually shorter
     band_names_disp = function() {
-      # NTODO: check if bandname abbreviation is still needed and posibly add it here
       if (!is.null(private$.band_names))
-        return(private$.band_names)
+        return(private$.band_names)  # abbreviation of band names could be added here if needed
       else
         return(NULL)
     },
@@ -168,10 +167,19 @@ LPJmLMetaDataCalc <- R6::R6Class( # nolint
       return(private$.sim_ident)
     },
 
+    #' @field name
+    #' string, hopefully model version invariant name of the variable
+    name = function() {
+      if (!is.null(private$.name))
+        return(tolower(private$.name))
+      else
+        return(tolower(private$.variable))
+    },
+
     #' @field var_and_band_disp
     #' string, variable name together with name of first band, e.g. `soiln$200`
     var_and_band_disp = function() {
-      paste0(self$variable,
+      paste0(self$name,
              ifelse(is.null(self$band_names_disp),
                     "", "$"),
              # below vanishes if band_names_disp is NULL

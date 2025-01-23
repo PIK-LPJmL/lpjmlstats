@@ -473,6 +473,8 @@ calc_cellarea_wrapper <- function(lpjml_grid) {
     cellsize_lat = lpjml_grid$meta$cellsize_lat,
     ncell = ncell,
     nbands = 1,
+    nstep = 1,
+    nyear = 1,
     verbose = FALSE
   )
   meta <- lpjmlkit::LPJmLMetaData$new(header, list(unit = "m2",
