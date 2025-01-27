@@ -75,7 +75,7 @@ create_LPJmLDataCalc <- function(data,  # nolint: object_name_linter.
   if (!is.array(data))
     data <- array(data, dim = c(cell = length(data), time = 1, band = 1))
   else
-    data <- array(data, dim = c(cell = unname(dim(data)[1]), time = unname(dim(data)[2]), band = unname(dim(data)[3])), 
+    data <- array(data, dim = c(cell = unname(dim(data)[1]), time = unname(dim(data)[2]), band = unname(dim(data)[3])),
                   dimnames = dimnames(data))
   if (is.null(ncell)) {
     ncell <- dim(data)[1]

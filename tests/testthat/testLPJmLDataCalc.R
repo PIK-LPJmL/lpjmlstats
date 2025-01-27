@@ -1,18 +1,20 @@
-
-
-
 test_that("when initializing with non LPJmLData object an error is thrown", {
   expect_error(LPJmLDataCalc$new(1), regexp = "LPJmLData")
 })
 
 test_that("when initializing with LPJmLData the content arrives", {
-  header <- lpjmlkit::create_header(ncell = 1, nbands = 1, nstep = 1, nyear = 1, verbose = FALSE)
+  header <- lpjmlkit::create_header(ncell = 1,
+                                    nbands = 1,
+                                    nstep = 1,
+                                    nyear = 1,
+                                    verbose = FALSE)
   lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header)
   lpjml_meta$.__set_attribute__("unit", "")
-  lpjml_dat <- lpjmlkit::LPJmLData$new(array(1, dim = c(cell = 1, band = 1, time = 1),
-                                             dimnames = list(cell = "1", band = "1", time = "1")),
-                                       meta_data = lpjml_meta)
+  data <- array(1, dim = c(cell = 1, band = 1, time = 1),
+                dimnames = list(cell = "1", band = "1", time = "1"))
 
+  lpjml_dat <- lpjmlkit::LPJmLData$new(data,
+                                       meta_data = lpjml_meta)
   lpjml_calc <- LPJmLDataCalc$new(lpjml_dat)
 
   expect_equal(lpjml_calc$meta$ncell, 1)
@@ -20,21 +22,25 @@ test_that("when initializing with LPJmLData the content arrives", {
 })
 
 test_that("when initializing, dimensions are reordered correctly", {
-  header <- lpjmlkit::create_header(ncell = 6, nbands = 1, nstep = 1, nyear = 4, verbose = FALSE)
+  header <- lpjmlkit::create_header(ncell = 6,
+                                    nbands = 1,
+                                    nstep = 1,
+                                    nyear = 4,
+                                    verbose = FALSE)
   lpjml_meta <- lpjmlkit::LPJmLMetaData$new(header)
   lpjml_meta$.__set_attribute__("unit", "")
   data <- array(1, dim = c(cell = 6, band = 1, time = 4))
-  dimnames(data) <- list(cell = c("1", "2", "3", "4", "5", "6"), band = "1", time = c("1", "2", "3", "4"))
+  dimnames(data) <- list(cell = c("1", "2", "3", "4", "5", "6"),
+                         band = "1",
+                         time = c("1", "2", "3", "4"))
 
   lpjml_dat <- lpjmlkit::LPJmLData$new(data,
                                        meta_data = lpjml_meta)
-
   lpjml_calc <- LPJmLDataCalc$new(lpjml_dat)
 
   expect_equal(dimnames(lpjml_calc$data)$cell, c("1", "2", "3", "4", "5", "6"))
   expect_equal(dimnames(lpjml_calc$data)$time, c("1", "2", "3", "4"))
   expect_equal(dimnames(lpjml_calc$data)$band, "1")
-
   expect_equal(dim(lpjml_calc$data), c(cell = 6, time = 4, band = 1))
 })
 
@@ -280,7 +286,6 @@ test_that("multiplication with vector works", {
   product <- lpjml_calc1 * array2
   result <- array(c(3, 3, 3, 3, 4, 4, 4, 4), dim = c(2, 2, 2))
   expect_equal(product$data, result, ignore_attr = TRUE)
-
 })
 
 test_that("band name order doesn't matter for multiplication", {
