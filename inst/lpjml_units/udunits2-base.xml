@@ -64,4 +64,16 @@ SI base units.
         <symbol>gN</symbol>
         <definition>gram nitrogen</definition>
     </unit>
+    <unit>
+        <base/>
+        <name><singular>gram methane</singular></name>
+        <symbol>gCH4</symbol>
+        <definition>gram methane</definition>
+    </unit>
+    <unit>
+        <base/>
+        <name><singular>gram oxygen</singular></name>
+        <symbol>gO2</symbol>
+        <definition>gram oxygen</definition>
+    </unit>
 </unit-system>
