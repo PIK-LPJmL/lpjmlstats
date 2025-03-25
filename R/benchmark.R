@@ -427,6 +427,24 @@ create_benchmarkResult_obj <- function(metrics, # nolint: object_name_linter.
   attr(metrics, "author") <- author
   attr(metrics, "description") <- description
   attr(metrics, "sim_table") <- sim_table
+
+  metrics <- escape_latex_special_chars_in_meta(metrics)
+  return(metrics)
+}
+
+# Function to escape all latex special characters
+escape_latex_special_chars <- function(string) {
+  special_chars <- c("{", "}", "$", "&", "%", "#", "_", "^")
+  for (char in special_chars) {
+    string <- gsub(char, paste0("\\", char), string, fixed = TRUE)
+  }
+  return(string)
+}
+
+# Function to escape latex special characters in description and author as well metric descriptions
+escape_latex_special_chars_in_meta <- function(metrics) {
+  attr(metrics, "author") <- escape_latex_special_chars(attr(metrics, "author"))
+  attr(metrics, "description") <- escape_latex_special_chars(attr(metrics, "description"))
   return(metrics)
 }
 
