@@ -423,7 +423,7 @@ LPJmLDataCalc$set(
       stop("The ref_area must be either 'terr_area' or
            'cell_area'")
     }
-    cell_areas <- subset(cell_areas, cell = dimnames(self$data)[["cell"]])
+    cell_areas <- subset_calc(cell_areas, cell = dimnames(self$data)[["cell"]])
     return(cell_areas)
   }
 )
@@ -438,7 +438,7 @@ read_file <- function(searchdir, name, add_grid = TRUE, ...) {
     " read from ",
     sQuote(basename(filename))
   ))
-  lpjml_calc <- read_io(filename, ...)
+  lpjml_calc <- read_io_calc(filename, ...)
 
   if (add_grid)
     lpjml_calc$add_grid()

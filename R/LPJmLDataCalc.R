@@ -639,7 +639,7 @@ LPJmLDataCalc$set("private", ".__plot_aggregated__", # nolint: object_name_linte
                     lpjmlkit::plot.LPJmLData(plot_obj, ...)
                   })
 
-# ----- read_io -----
+# ----- read_io_calc -----
 #' Read in LPJmL input and output files as LPJmLDataCalc
 #'
 #' The function acts a wrapper of \link[lpjmlkit]{read_io} from lpjmlkit,
@@ -653,7 +653,7 @@ LPJmLDataCalc$set("private", ".__plot_aggregated__", # nolint: object_name_linte
 #'
 #' @export
 
-read_io <- function(..., output_type = "LPJmLDataCalc") {
+read_io_calc <- function(..., output_type = "LPJmLDataCalc") {
   lpjml_dat <- lpjmlkit::read_io(...)
   if (output_type == "LPJmLDataCalc") {
     lpjml_calc <- .as_LPJmLDataCalc(lpjml_dat)
@@ -705,7 +705,7 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
   return(calc)
 }
 
-# ----- subset -----
+# ----- subset_calc -----
 #' Subset an LPJmLDataCalc object
 #'
 #' Function to subset an LPJmLDataCalc object. The function acts as a wrapper
@@ -718,18 +718,18 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
 #' @return An [`LPJmLDataCalc`] object.
 #' @export
 
-subset.LPJmLDataCalc <- function(x, ...) {
+subset_calc <- function(x, ...) {
   lpjml_dat <- lpjmlkit::subset.LPJmLData(x, ...)
   return(.as_LPJmLDataCalc(lpjml_dat))
 }
 
 # internal function to subset an LPJmLDataCalc object
-# wrapper for subset.LPJmLDataCalc
+# wrapper for subset_calc.LPJmLDataCalc
 subset_time_pattern <- function(lpjml_calc, years) {
   timestamps <- dimnames(lpjml_calc$data)[[2]]
   index <- grep(paste0(paste(years, collapse = "|")), timestamps)
   timestamps <- timestamps[index]
-  lpjml_calc_subset <- subset(lpjml_calc, time = timestamps)
+  lpjml_calc_subset <- subset_calc(lpjml_calc, time = timestamps)
 
   return(lpjml_calc_subset)
 }
@@ -778,7 +778,7 @@ LPJmLDataCalc$set(
       #   does not say if cell is subsetted - but ok for now.
       if (private$.meta$._subset_space_) {
         cells <- self$dimnames()[["cell"]]
-        grid <- subset(grid, cell = cells)
+        grid <- subset_calc(grid, cell = cells)
       }
     } else {
       # All arguments have to be provided manually to read_io.
@@ -787,9 +787,9 @@ LPJmLDataCalc$set(
       # Add support for cell subsets. This is a rough filter since $subset
       #   does not say if cell is subsetted - but ok for now.
       if (private$.meta$._subset_space_) {
-        grid <- read_io(..., subset = list(cell = self$dimnames()[["cell"]]))
+        grid <- read_io_calc(..., subset = list(cell = self$dimnames()[["cell"]]))
       } else {
-        grid <- read_io(...)
+        grid <- read_io_calc(...)
       }
     }
 

@@ -289,9 +289,9 @@ test_that("multiplication with vector works", {
 })
 
 test_that("band name order doesn't matter for multiplication", {
-  lpjml_calc1 <- read_io(test_path("../testdata/path1/soiln_layer.bin.json"))
+  lpjml_calc1 <- read_io_calc(test_path("../testdata/path1/soiln_layer.bin.json"))
 
-  lpjml_calc1_reordered <- subset(lpjml_calc1, band = c("500", "200", "1000", "2000", "3000"))
+  lpjml_calc1_reordered <- subset_calc(lpjml_calc1, band = c("500", "200", "1000", "2000", "3000"))
 
   expect_equal((lpjml_calc1 * lpjml_calc1_reordered)$data, (lpjml_calc1 * lpjml_calc1)$data)
 })

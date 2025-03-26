@@ -209,7 +209,7 @@ This also means that we can employ the functionality of this latter package
 to work with the benchmark results. 
 For example, to output the first 5 years of `vegc_old_ts` we use 
 ```{r subset_vegc}
-subset(vegc_old_ts, time = 1:5)$data
+subset_calc(vegc_old_ts, time = 1:5)$data
 ```
 
 For under test results the simulation identifiers are used to access the data.
@@ -229,7 +229,7 @@ vegc_new_ts <- benchmark_result$GlobSumAnnAvgTimeseries$var_grp_list$vegc$under_
 ```
 To check the difference between the two time series we use 
 ```{r calculate_vegc_difference}
-subset(vegc_new_ts, time = 1:5)$data - subset(vegc_old_ts, time = 1:5)$data
+subset_calc(vegc_new_ts, time = 1:5)$data - subset_calc(vegc_old_ts, time = 1:5)$data
 ```
 Observe that the newer version produced less vegetation carbon 
 in the first five years. 

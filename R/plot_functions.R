@@ -63,7 +63,7 @@ lpjml_calc_to_table <- function(lpjml_calc) {
   for (band_name in dimnames(lpjml_calc$.data_with_unit)[["band"]]) {
     # extract band value
     # !! assumes the lpjml_calc contains only a single value per band !!
-    lpjml_calc_sub <- subset(lpjml_calc, band = band_name)
+    lpjml_calc_sub <- subset_calc(lpjml_calc, band = band_name)
     band_value <- lpjml_calc_sub$.data_with_unit[1, 1, 1]
     band_values[[lpjml_calc_sub$meta$var_and_band_disp]] <- band_value
   }
@@ -102,7 +102,7 @@ create_map_plots <- function(var_grp_list,
         plot_list <- add_seperator(plot_list, paste("###", band))
       var_grp_band <- var_grp$deep_clone()
       var_grp_band$transform_lpjml_calcs(function(x) {
-        subset(x, band = band)
+        subset_calc(x, band = band)
       })
       band_plot_list <- var_grp_band$apply_to_lpjml_calcs(lpjml_calc_to_map,
                                                           m_options,
@@ -293,7 +293,7 @@ create_time_series_plots <- function(var_grp_list, m_options) {
         args <- list(band = band)
         args[[spatial_dim]] <- spatial_unit
         var_grp_band$transform_lpjml_calcs(function(x) {
-          do.call("subset", c(list(x = x), args))
+          do.call("subset_calc", c(list(x = x), args))
         })
         var_name <- var_grp_band$apply_to_any_lpjml_calc(function(x) x$meta$name)
         plot_title <- paste_custom(

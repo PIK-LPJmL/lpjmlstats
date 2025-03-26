@@ -24,7 +24,7 @@ test_that("metric option year_subset works with strings", {
 
 test_that("metric option cell_subset produces correct subset", {
   soiln <- load_soiln_calc()
-  soiln <- subset(soiln, cell = c("1000"), time = c("2010-12-31"))
+  soiln <- subset_calc(soiln, cell = c("1000"), time = c("2010-12-31"))
   expected_val <- aggregate(soiln, cell = "global")$.data_with_unit
 
   baseline_dir <- testthat::test_path("../testdata/path1")

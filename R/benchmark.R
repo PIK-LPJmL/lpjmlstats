@@ -536,7 +536,7 @@ retrieve_summaries <-
         cat(paste0("Process ", type, " ", cli::col_blue(var), " ...\n"))
         raw_data <- read_in_time_subsetted(dir, filename, metrics_of_var)
         if (!is.null(var_band$band)) {
-          raw_data <- subset(raw_data, band = var_band$band)
+          raw_data <- subset_calc(raw_data, band = var_band$band)
         }
 
         # add some context of the data object to the meta
@@ -619,7 +619,7 @@ read_in_time_subsetted <- function(dir, filename, metrics_of_var) {
     path <- filename
 
   # read the data
-  raw_data <- read_io(path, subset = list(year = as.character(min_year:max_year)))
+  raw_data <- read_io_calc(path, subset = list(year = as.character(min_year:max_year)))
 
   return(raw_data)
 }
