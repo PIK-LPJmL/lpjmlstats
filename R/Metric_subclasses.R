@@ -389,6 +389,9 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' subtracting the baseline from the under test.
       #' @param var_grp variable group
       compare = function(var_grp) {
+        if (length(var_grp$under_test)==0 | length(var_grp$baseline)==0) {
+          stop("The metric ", class(self)[1], " requires a baseline and at least one under test output.")
+        }
 
         var_grp$compare <-
           list(diff2base = lapply(var_grp$under_test, function(x) {
