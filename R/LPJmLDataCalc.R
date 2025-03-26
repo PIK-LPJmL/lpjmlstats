@@ -561,6 +561,11 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
   # Create a new meta enhanced LPJmLMetaDataCalc object
   meta_calc <- LPJmLMetaDataCalc$new(lpjml_data$meta)
 
+  if(is.null(meta_calc$unit)) {
+    warning("No unit information found in meta data. Setting unit to 1.")
+    meta_calc$.__set_attribute__("unit", "1")
+  }
+
   # Copy the data from the provided LPJmLData object
   private$.data <- data
   private$.meta <- meta_calc
