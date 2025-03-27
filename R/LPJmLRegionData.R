@@ -103,7 +103,7 @@ read_cow_regions <- function() {
     # read cow region file
     path_to_cow <-
       system.file("cow_full_2018.bin.json", package = "lpjmlstats")
-    cow <- lpjmlkit::read_io_calc(path_to_cow)
+    cow <- read_io_calc(path_to_cow)
 
     # extract first item of third dimension which contains countries
     cow_mat <- cow$data[, , 1]
