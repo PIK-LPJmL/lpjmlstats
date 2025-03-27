@@ -256,7 +256,6 @@ map_tibble_to_ggplot <-
   }
 
 lpjml_calc_to_map_tibble <- function(lpjml_calc) {
-  lpjml_calc$add_grid()
   grid <- lpjml_calc$grid$subset(cell = dimnames(lpjml_calc)[["cell"]])
   lpjml_calc$.__set_grid__(grid)
 

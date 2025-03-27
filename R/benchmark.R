@@ -535,6 +535,7 @@ retrieve_summaries <-
         # load potentially large raw dataset into memory
         cat(paste0("Process ", type, " ", cli::col_blue(var), " ...\n"))
         raw_data <- read_in_time_subsetted(dir, filename, metrics_of_var)
+        raw_data$add_grid()
         if (!is.null(var_band$band)) {
           raw_data <- subset_calc(raw_data, band = var_band$band)
         }

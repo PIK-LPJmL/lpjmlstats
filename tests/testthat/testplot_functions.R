@@ -134,6 +134,7 @@ test_that("create_map_plots returns map list", {
   dir <- test_path("../testdata/path1/soiln.bin.json")
   lpjml_calc <- read_io_calc(dir)
   lpjml_calc <- aggregate(lpjml_calc, time = "sim_period")
+  lpjml_calc$add_grid()
   var_grp1 <- create_var_grp(lpjml_calc)
   var_grp2 <- var_grp1$clone(deep = TRUE)
   var_grp_list <- list(var_grp1, var_grp2)

@@ -398,9 +398,6 @@ TimeAvgMap <- # nolint: object_name_linter.
             x - var_grp$baseline
           }))
 
-        # add grids for to all diff2bases
-        lapply(var_grp$compare$diff2base, function(x) x$add_grid())
-
         var_grp$baseline <- NULL
         var_grp$under_test <- NULL
       },
@@ -487,9 +484,6 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
           list(diff2base = lapply(var_grp$under_test, function(x) {
             x - var_grp$baseline
           }))
-
-        # add grids for to all diff2bases
-        lapply(var_grp$compare$diff2base, function(x) x$add_grid())
       },
 
       #' @description
