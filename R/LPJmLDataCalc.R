@@ -563,7 +563,7 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
 
   if(is.null(meta_calc$unit)) {
     warning("No unit information found in meta data. Setting unit to 1.")
-    meta_calc$.__set_attribute__("unit", "1")
+    meta_calc$.__set_attribute__("unit", "1") # "1" means unit-less
   }
 
   # Copy the data from the provided LPJmLData object
