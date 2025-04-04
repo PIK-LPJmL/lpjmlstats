@@ -109,7 +109,7 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
           keep_units_lpjml_calc(lpjml_calc,
                                 function(x) subset_years(x, self$m_options$year_subset))
         if (!is.null(self$m_options$cell_subset))
-          lpjml_calc <- subset_calc(lpjml_calc, cell = self$m_options$cell_subset)
+          lpjml_calc <- subset(lpjml_calc, cell = self$m_options$cell_subset)
       }
       summary <- self$summarize(lpjml_calc)
       self$store_summary(summary, var, type)
@@ -227,7 +227,7 @@ VarGrp <- # nolint:object_linter_name
           lower_lim <- Inf
           upper_lim <- -Inf
           for (band in dimnames(lpjml_calc$data)[["band"]]) {
-            data <- subset_calc(lpjml_calc, band = band)$data
+            data <- subset(lpjml_calc, band = band)$data
             data[data == 0] <- NA # we assume that a zero means "no exisitng data" for the quantiles
             if (all(is.na(data))) {
               low <- 0

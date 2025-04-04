@@ -434,11 +434,7 @@ create_benchmarkResult_obj <- function(metrics, # nolint: object_name_linter.
 
 # Function to escape all latex special characters
 escape_latex_special_chars <- function(string) {
-  special_chars <- c("{", "}", "$", "&", "%", "#", "_", "^")
-  for (char in special_chars) {
-    string <- gsub(char, paste0("\\", char), string, fixed = TRUE)
-  }
-  return(string)
+  getFromNamespace("escape_latex", "knitr")(string) # nolint
 }
 
 # Function to escape latex special characters in description and author as well metric descriptions
@@ -537,7 +533,7 @@ retrieve_summaries <-
         raw_data <- read_in_time_subsetted(dir, filename, metrics_of_var)
         raw_data$add_grid()
         if (!is.null(var_band$band)) {
-          raw_data <- subset_calc(raw_data, band = var_band$band)
+          raw_data <- subset(raw_data, band = var_band$band)
         }
 
         # add some context of the data object to the meta

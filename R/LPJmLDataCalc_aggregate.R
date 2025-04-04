@@ -423,7 +423,7 @@ LPJmLDataCalc$set(
       stop("The ref_area must be either 'terr_area' or
            'cell_area'")
     }
-    cell_areas <- subset_calc(cell_areas, cell = dimnames(self$data)[["cell"]])
+    cell_areas <- subset(cell_areas, cell = dimnames(self$data)[["cell"]])
     return(cell_areas)
   }
 )

@@ -182,7 +182,7 @@ test_that("create_timeseries_plots returns timeseries plotlist
           {
             dir <- test_path("../testdata/path1/soiln.bin.json")
             lpjml_calc <- read_io_calc(dir)
-            lpjml_calc <- subset_calc(lpjml_calc, cell = c(1, 10000))
+            lpjml_calc <- subset(lpjml_calc, cell = c(1, 10000))
             var_grp1 <- create_var_grp(lpjml_calc)
             var_grp1$compare <- NULL
             var_grp2 <- var_grp1$deep_clone()

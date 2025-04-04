@@ -138,13 +138,13 @@ test_that("usecases of aggregation with cow and plotting runs error free", {
   soiln$add_grid()
 
   # usecase 1: subset and plot
-  expect_no_error(soiln %>% subset_calc(time = 1) %>% plot())
+  expect_no_error(soiln %>% subset(time = 1) %>% plot())
 
   # usecase 2: aggregate, subset and plot
   expect_no_error(
     soiln %>%
       aggregate(cell = list(to = "countries", stat = "sum")) %>%
-      subset_calc(time = 1) %>%
+      subset(time = 1) %>%
       plot()
   )
 })
@@ -384,7 +384,7 @@ test_that("weighted sum prouced correct result fo single cell output", {
   soiln_agg <- aggregate(soiln_layer, cell = "global")
 
   terr_area <- read_io_calc(test_path("../testdata/path1", "terr_area.bin.json"))
-  terr_area <- subset_calc(terr_area, cell = dimnames(soiln_layer$data)[["cell"]])
+  terr_area <- subset(terr_area, cell = dimnames(soiln_layer$data)[["cell"]])
 
   expect_equal(soiln_agg$.data_with_unit, (soiln_layer * terr_area)$.data_with_unit, ignore_attr = TRUE)
 })

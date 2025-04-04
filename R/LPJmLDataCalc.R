@@ -710,7 +710,7 @@ read_io_calc <- function(..., output_type = "LPJmLDataCalc") {
   return(calc)
 }
 
-# ----- subset_calc -----
+# ----- subset.LPJmLDataCalc -----
 #' Subset an LPJmLDataCalc object
 #'
 #' Function to subset an LPJmLDataCalc object. The function acts as a wrapper
@@ -723,18 +723,18 @@ read_io_calc <- function(..., output_type = "LPJmLDataCalc") {
 #' @return An [`LPJmLDataCalc`] object.
 #' @export
 
-subset_calc <- function(x, ...) {
+subset.LPJmLDataCalc <- function(x, ...) {
   lpjml_dat <- lpjmlkit::subset.LPJmLData(x, ...)
   return(.as_LPJmLDataCalc(lpjml_dat))
 }
 
 # internal function to subset an LPJmLDataCalc object
-# wrapper for subset_calc.LPJmLDataCalc
+# wrapper for subset
 subset_time_pattern <- function(lpjml_calc, years) {
   timestamps <- dimnames(lpjml_calc$data)[[2]]
   index <- grep(paste0(paste(years, collapse = "|")), timestamps)
   timestamps <- timestamps[index]
-  lpjml_calc_subset <- subset_calc(lpjml_calc, time = timestamps)
+  lpjml_calc_subset <- subset(lpjml_calc, time = timestamps)
 
   return(lpjml_calc_subset)
 }
@@ -783,7 +783,7 @@ LPJmLDataCalc$set(
       #   does not say if cell is subsetted - but ok for now.
       if (private$.meta$._subset_space_) {
         cells <- self$dimnames()[["cell"]]
-        grid <- subset_calc(grid, cell = cells)
+        grid <- subset(grid, cell = cells)
       }
     } else {
       # All arguments have to be provided manually to read_io.

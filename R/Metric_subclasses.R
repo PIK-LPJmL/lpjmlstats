@@ -293,7 +293,7 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
       #' @param lpjml_data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(lpjml_data) {
-        subset_calc(lpjml_data, cell = self$m_options$cell) %>%
+        subset(lpjml_data, cell = self$m_options$cell) %>%
           aggregate(time = list(to = "years", stat = "mean"))
       },
 
@@ -348,7 +348,7 @@ CellSubsetTimeseries <- # nolint: object_name_linter.
       #' @param lpjml_data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(lpjml_data) {
-        subset_calc(lpjml_data, cell = self$m_options$cell)
+        subset(lpjml_data, cell = self$m_options$cell)
       },
 
       #' @field description
@@ -571,7 +571,7 @@ GlobSumTimeAvgTablePFT_harvest <- # nolint: object_name_linter.
         cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir,
                               "cftfrac",
                               subset = list(year = as.character(data$meta$firstyear:data$meta$lastyear)))
-        cft_frac <- subset_calc(cft_frac,
+        cft_frac <- subset(cft_frac,
                            band = data$meta$band_names,
                            time = dimnames(data$data)[[2]])
         super$summarize(data * cft_frac)
@@ -604,7 +604,7 @@ GlobSumTimeAvgTableFPC <- R6::R6Class( # nolint: object_name_linter.
     summarize = function(data) {
       nat_stand_frac <- subset(data, band = "natural stand fraction")
       bands <- data$meta$band_names
-      data_s <- subset_calc(data, band = bands[!bands %in% "natural stand fraction"])
+      data_s <- subset(data, band = bands[!bands %in% "natural stand fraction"])
       super$summarize(data_s * nat_stand_frac)
     },
 
@@ -637,7 +637,7 @@ GlobSumAnnTimeseriesPFT_harvest <- # nolint: object_name_linter.
       summarize = function(data) {
         cft_frac <- read_file(data$meta$.__enclos_env__$private$.data_dir,
                               "cftfrac")
-        cft_frac <- subset_calc(cft_frac,
+        cft_frac <- subset(cft_frac,
                            band = data$meta$band_names,
                            time = dimnames(data$data)[[2]])
         super$summarize(data * cft_frac)
@@ -669,9 +669,9 @@ GlobSumAnnTimeseriesFPC <- R6::R6Class( # nolint: object_name_linter.
     #' GlobSumAnnAvgTimeseries
     #' @param data LPJmLDataCalc object to be summarized
     summarize = function(data) {
-      nat_stand_frac <- subset_calc(data, band = "natural stand fraction")
+      nat_stand_frac <- subset(data, band = "natural stand fraction")
       bands <- data$meta$band_names
-      data_s <- subset_calc(data, band = bands[!bands %in% "natural stand fraction"])
+      data_s <- subset(data, band = bands[!bands %in% "natural stand fraction"])
       super$summarize(data_s * nat_stand_frac)
     },
 
@@ -703,9 +703,9 @@ TimeAvgMapTreeCover <- # nolint: object_name_linter.
       #' @param data LPJmLDataCalc object to be summarized
       summarize = function(data) {
         bands <- data$meta$band_names
-        data <- subset_calc(data, band = bands[grep("tree", bands)])
+        data <- subset(data, band = bands[grep("tree", bands)])
         data$add_band("treecover_band", function(x) sum(x))
-        data <- subset_calc(data, band = "treecover_band")
+        data <- subset(data, band = "treecover_band")
         data <- aggregate(data, time = list(to = "sim_period", stat = "mean"))
       },
 
