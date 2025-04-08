@@ -26,7 +26,7 @@
 #'   will be in the same order as the vector.
 #'
 #'   \item \code{file_extension}: A string indicating the file extension
-#'   to be used by read_io.
+#'   to be used by read_io_calc.
 #' }
 #'
 #'

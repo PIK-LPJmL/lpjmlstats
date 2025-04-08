@@ -53,7 +53,7 @@ sim_table <- attr(bench_data, "sim_table")
 # manually escape special character ":" and "_"
 sim_table <-
   sim_table %>%
-  dplyr::mutate_all(function(x) gsub("([_:]+)", "\\\\\\1", x))
+  dplyr::mutate_all(escape_latex_special_chars)
 
 # reorder columns as they should be displayed
 tabl <- sim_table %>% dplyr::select(sim_names,

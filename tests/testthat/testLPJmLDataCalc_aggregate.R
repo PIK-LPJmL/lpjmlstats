@@ -134,7 +134,7 @@ test_that("usecases of aggregation with cow and plotting runs error free", {
   # load test data
   pdf(NULL)
   path_to_soil_n_json <- test_path("../testdata/path1", "soiln.bin.json")
-  soiln <- read_io(path_to_soil_n_json)
+  soiln <- read_io_calc(path_to_soil_n_json)
   soiln$add_grid()
 
   # usecase 1: subset and plot
@@ -154,7 +154,7 @@ test_that("usecases of aggregation with cow integral on multiple timesteps ",
             # load test data
             path_to_soil_n_json <-
               test_path("../testdata/path1", "soiln.bin.json")
-            soiln <- read_io(path_to_soil_n_json)
+            soiln <- read_io_calc(path_to_soil_n_json)
             soiln$add_grid()
 
             # aggregate multiple time steps #nolint
@@ -333,7 +333,7 @@ test_that("area mean aggregation works for edge cases", {
 test_that("grid for aggregation is loaded automatically", {
   path_to_soil_n_json <-
     test_path("../testdata/path1", "soiln.bin.json")
-  soiln <- read_io(path_to_soil_n_json)
+  soiln <- read_io_calc(path_to_soil_n_json)
   expect_no_error(soiln %>% aggregate(cell = list(to = "global", stat = "sum")))
 })
 
@@ -380,10 +380,10 @@ test_that("temporal aggregation over whole simulation period correct result", {
 })
 
 test_that("weighted sum prouced correct result fo single cell output", {
-  soiln_layer <- read_io(test_path("../testdata/path1", "soiln_layer.bin.json"))
+  soiln_layer <- read_io_calc(test_path("../testdata/path1", "soiln_layer.bin.json"))
   soiln_agg <- aggregate(soiln_layer, cell = "global")
 
-  terr_area <- read_io(test_path("../testdata/path1", "terr_area.bin.json"))
+  terr_area <- read_io_calc(test_path("../testdata/path1", "terr_area.bin.json"))
   terr_area <- subset(terr_area, cell = dimnames(soiln_layer$data)[["cell"]])
 
   expect_equal(soiln_agg$.data_with_unit, (soiln_layer * terr_area)$.data_with_unit, ignore_attr = TRUE)

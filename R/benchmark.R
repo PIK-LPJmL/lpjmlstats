@@ -157,6 +157,8 @@
 #' @md
 #'
 #' @importFrom dplyr %>%
+#' @importFrom lpjmlstats read_io_calc
+#' @importFrom utils getFromNamespace
 #' @export
 #'
 benchmark <-
@@ -427,6 +429,20 @@ create_benchmarkResult_obj <- function(metrics, # nolint: object_name_linter.
   attr(metrics, "author") <- author
   attr(metrics, "description") <- description
   attr(metrics, "sim_table") <- sim_table
+
+  metrics <- escape_latex_special_chars_in_meta(metrics)
+  return(metrics)
+}
+
+# Function to escape all latex special characters
+escape_latex_special_chars <- function(string) {
+  getFromNamespace("escape_latex", "knitr")(string) # nolint
+}
+
+# Function to escape latex special characters in description and author as well metric descriptions
+escape_latex_special_chars_in_meta <- function(metrics) {
+  attr(metrics, "author") <- escape_latex_special_chars(attr(metrics, "author"))
+  attr(metrics, "description") <- escape_latex_special_chars(attr(metrics, "description"))
   return(metrics)
 }
 
@@ -517,6 +533,7 @@ retrieve_summaries <-
         # load potentially large raw dataset into memory
         cat(paste0("Process ", type, " ", cli::col_blue(var), " ...\n"))
         raw_data <- read_in_time_subsetted(dir, filename, metrics_of_var)
+        raw_data$add_grid()
         if (!is.null(var_band$band)) {
           raw_data <- subset(raw_data, band = var_band$band)
         }
@@ -601,7 +618,7 @@ read_in_time_subsetted <- function(dir, filename, metrics_of_var) {
     path <- filename
 
   # read the data
-  raw_data <- read_io(path, subset = list(year = as.character(min_year:max_year)))
+  raw_data <- read_io_calc(path, subset = list(year = as.character(min_year:max_year)))
 
   return(raw_data)
 }

@@ -561,6 +561,11 @@ LPJmLDataCalc$set("private", ".initialize",  function(lpjml_data) {
   # Create a new meta enhanced LPJmLMetaDataCalc object
   meta_calc <- LPJmLMetaDataCalc$new(lpjml_data$meta)
 
+  if (is.null(meta_calc$unit)) {
+    warning("No unit information found in meta data. Setting unit to 1.")
+    meta_calc$.__set_attribute__("unit", "1") # "1" means unit-less
+  }
+
   # Copy the data from the provided LPJmLData object
   private$.data <- data
   private$.meta <- meta_calc
@@ -639,7 +644,7 @@ LPJmLDataCalc$set("private", ".__plot_aggregated__", # nolint: object_name_linte
                     lpjmlkit::plot.LPJmLData(plot_obj, ...)
                   })
 
-# ----- read_io -----
+# ----- read_io_calc -----
 #' Read in LPJmL input and output files as LPJmLDataCalc
 #'
 #' The function acts a wrapper of \link[lpjmlkit]{read_io} from lpjmlkit,
@@ -653,7 +658,7 @@ LPJmLDataCalc$set("private", ".__plot_aggregated__", # nolint: object_name_linte
 #'
 #' @export
 
-read_io <- function(..., output_type = "LPJmLDataCalc") {
+read_io_calc <- function(..., output_type = "LPJmLDataCalc") {
   lpjml_dat <- lpjmlkit::read_io(...)
   if (output_type == "LPJmLDataCalc") {
     lpjml_calc <- .as_LPJmLDataCalc(lpjml_dat)
@@ -705,7 +710,7 @@ read_io <- function(..., output_type = "LPJmLDataCalc") {
   return(calc)
 }
 
-# ----- subset -----
+# ----- subset.LPJmLDataCalc -----
 #' Subset an LPJmLDataCalc object
 #'
 #' Function to subset an LPJmLDataCalc object. The function acts as a wrapper
@@ -724,7 +729,7 @@ subset.LPJmLDataCalc <- function(x, ...) {
 }
 
 # internal function to subset an LPJmLDataCalc object
-# wrapper for subset.LPJmLDataCalc
+# wrapper for subset
 subset_time_pattern <- function(lpjml_calc, years) {
   timestamps <- dimnames(lpjml_calc$data)[[2]]
   index <- grep(paste0(paste(years, collapse = "|")), timestamps)
@@ -787,9 +792,9 @@ LPJmLDataCalc$set(
       # Add support for cell subsets. This is a rough filter since $subset
       #   does not say if cell is subsetted - but ok for now.
       if (private$.meta$._subset_space_) {
-        grid <- read_io(..., subset = list(cell = self$dimnames()[["cell"]]))
+        grid <- read_io_calc(..., subset = list(cell = self$dimnames()[["cell"]]))
       } else {
-        grid <- read_io(...)
+        grid <- read_io_calc(...)
       }
     }
 
