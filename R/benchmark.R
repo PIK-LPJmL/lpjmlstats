@@ -157,6 +157,8 @@
 #' @md
 #'
 #' @importFrom dplyr %>%
+#' @importFrom lpjmlstats read_io_calc
+#' @importFrom utils getFromNamespace
 #' @export
 #'
 benchmark <-
