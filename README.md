@@ -1,6 +1,6 @@
 # Statistical tools for LPJmL data analysis
 
-R package **lpjmlstats**, version **0.7.0**
+R package **lpjmlstats**, version **0.7.1**
 
 [![CRAN status](https://www.r-pkg.org/badges/version/lpjmlstats)](https://cran.r-project.org/package=lpjmlstats) [![R build status](https://github.com/PIK-LPJmL/lpjmlstats/workflows/check/badge.svg)](https://github.com/PIK-LPJmL/lpjmlstats/actions) [![codecov](https://codecov.io/gh/PIK-LPJmL/lpjmlstats/branch/master/graph/badge.svg)](https://app.codecov.io/gh/PIK-LPJmL/lpjmlstats) [![r-universe](https://pik-piam.r-universe.dev/badges/lpjmlstats)](https://pik-piam.r-universe.dev/builds)
 
@@ -48,7 +48,7 @@ In case of questions / problems please contact David Hötten <davidho@pik-potsda
 
 To cite package **lpjmlstats** in publications use:
 
-Hötten D, Breier J, Müller C (2025). "lpjmlstats: Statistical tools for LPJmL data analysis." Version: 0.7.0, <https://github.com/PIK-LPJmL/lpjmlstats>.
+Hötten D, Breier J, Müller C (2025). "lpjmlstats: Statistical tools for LPJmL data analysis." Version: 0.7.1, <https://github.com/PIK-LPJmL/lpjmlstats>.
 
 A BibTeX entry for LaTeX users is
 
@@ -56,9 +56,9 @@ A BibTeX entry for LaTeX users is
 @Misc{,
   title = {lpjmlstats: Statistical tools for LPJmL data analysis},
   author = {David Hötten and Jannes Breier and Christoph Müller},
-  date = {2025-04-08},
+  date = {2025-04-09},
   year = {2025},
   url = {https://github.com/PIK-LPJmL/lpjmlstats},
-  note = {Version: 0.7.0},
+  note = {Version: 0.7.1},
 }
 ```
