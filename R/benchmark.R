@@ -242,8 +242,12 @@ benchmark <-
       })
     }
 
-    if(ilamb_report)
+    # create ILAMB report if requested
+    if(ilamb_report) {
+      cat(cli::col_blue("Start ILAMB evaluation ... \n"))
       create_ilamb_report(baseline_dir, under_test_dirs, sim_table, ...)
+      cat(cli::col_green("ILAMB evaluation completed.\n"))
+    }
 
     return(benchmark_result)
   }
