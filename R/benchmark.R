@@ -150,6 +150,23 @@
 #'                   = c(GlobSumTimeAvgTable))
 #' benchmark("path_to_baseline_results", "path_to_under_test_results",
 #'           settings)
+#' 
+#' # Example 8
+#' # Benchmark only a single run
+#' # It is also possible to benchmark only a single run, by setting the
+#' # under_test_dirs argument to NULL
+#' benchmark("path_to_baseline_results", NULL)
+#' 
+#' # Example 9
+#' # Custom simulation names
+#' # Custom simulation names to under test 
+#' # and baseline runs can be provided by passing a list. 
+#' # This only has an effect if custom names are provided
+#' # for all simulations.
+#' # The maximum number of characters is 7.
+#' benchmark(list(sim1 = "path_to_baseline_results"), 
+#'           list(sim2 = "path_to_under_test_results"))
+#' 
 #' }
 #'
 #' @seealso \code{\link{create_pdf_report}}

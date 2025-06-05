@@ -45,7 +45,9 @@ settings <- list(
 ```
 Each line corresponds to an lpjml output variable. The left hand side defines *which output is processed*, 
 while the right hand side defines *how this output is processed*, 
-that is which metrics are used.
+that is which metrics are used. More specifically, the left hand side needs to be the exact filename as given in the 
+output directories, but without the file extension. The file extension is set to ```.bin.json``` by default
+and can be change using ```set_lpjmlstats_settings()```.
 
 All the available metrics are defined in the `R/metric_subclasses.R` file. We can see that 
 the `GlobAvgTimeAvgTable` and `GlobAvgAnnAvgTimeseries` metric provide what we need, as they 
