@@ -364,7 +364,11 @@ needed. The structure of the lpjml settings list is as follows:</p>
 <p>Each line corresponds to an lpjml output variable. The left hand side
 defines <em>which output is processed</em>, while the right hand side
 defines <em>how this output is processed</em>, that is which metrics are
-used.</p>
+used. More specifically, the left hand side needs to be the exact
+filename as given in the output directories, but without the file
+extension. The file extension is set to <code>.bin.json</code> by
+default and can be changed using
+<code>set_lpjmlstats_settings()</code>.</p>
 <p>All the available metrics are defined in the
 <code>R/metric_subclasses.R</code> file. We can see that the
 <code>GlobAvgTimeAvgTable</code> and

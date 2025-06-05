@@ -20,7 +20,7 @@ test_that("plot functions of metric run through", {
 
 test_that("lpjml_calc_to_table returns correct table", {
   soiln_dir <- test_path("../testdata/path1/soiln_layer.bin.json")
-  soiln <- read_io(soiln_dir)
+  soiln <- read_io_calc(soiln_dir)
 
   soiln <- aggregate(soiln, time = "sim_period")
   soiln$.meta$.__set_pos_in_var_grp__(list(type = "baseline"))
@@ -47,7 +47,7 @@ test_that("lpjml_calc_to_table returns correct table", {
 
 test_that("apply_to_lpjml_calcs returns correct list", {
   dir <- test_path("../testdata/path1/soiln_layer.bin.json")
-  lpjml_calc <- read_io(dir)
+  lpjml_calc <- read_io_calc(dir)
   lpjml_calc <- aggregate(lpjml_calc, time = "sim_period")
   var_grp <- create_var_grp(lpjml_calc)
 
@@ -78,7 +78,7 @@ test_that("apply_to_lpjml_calcs returns correct list", {
 
 test_that("var_grp_to_table returns correct table", {
   dir <- test_path("../testdata/path1/soiln_layer.bin.json")
-  lpjml_calc <- read_io(dir)
+  lpjml_calc <- read_io_calc(dir)
   lpjml_calc <- aggregate(lpjml_calc, time = "sim_period")
   var_grp <- create_var_grp(lpjml_calc)
 
@@ -98,7 +98,7 @@ test_that("var_grp_to_table returns correct table", {
 
 test_that("var_grp_list_to_table returns correct table", {
   dir <- test_path("../testdata/path1/soiln_layer.bin.json")
-  lpjml_calc <- read_io(dir)
+  lpjml_calc <- read_io_calc(dir)
   lpjml_calc <- aggregate(lpjml_calc, time = "sim_period")
   var_grp <- create_var_grp(lpjml_calc)
   var_grp2 <- var_grp$clone(deep = TRUE)
@@ -132,8 +132,9 @@ test_that("lpjml_calc_to_map returns map", {
 
 test_that("create_map_plots returns map list", {
   dir <- test_path("../testdata/path1/soiln.bin.json")
-  lpjml_calc <- read_io(dir)
+  lpjml_calc <- read_io_calc(dir)
   lpjml_calc <- aggregate(lpjml_calc, time = "sim_period")
+  lpjml_calc$add_grid()
   var_grp1 <- create_var_grp(lpjml_calc)
   var_grp2 <- var_grp1$clone(deep = TRUE)
   var_grp_list <- list(var_grp1, var_grp2)
@@ -162,7 +163,7 @@ test_that("create_timeseries_plots returns timeseries plotlist
                     for multibanded output",
           {
             dir <- test_path("../testdata/path1/soiln_layer.bin.json")
-            lpjml_calc <- read_io(dir)
+            lpjml_calc <- read_io_calc(dir)
             var_grp1 <- create_var_grp(lpjml_calc)
             var_grp2 <- var_grp1$deep_clone()
             var_grp2$compare <- NULL
@@ -180,7 +181,7 @@ test_that("create_timeseries_plots returns timeseries plotlist
                     for multicell output",
           {
             dir <- test_path("../testdata/path1/soiln.bin.json")
-            lpjml_calc <- read_io(dir)
+            lpjml_calc <- read_io_calc(dir)
             lpjml_calc <- subset(lpjml_calc, cell = c(1, 10000))
             var_grp1 <- create_var_grp(lpjml_calc)
             var_grp1$compare <- NULL

@@ -57,14 +57,6 @@ load_test_grid <- function() {
   return(grid)
 }
 
-load_soiln_david_local <- function() {
-  path_to_soil_layer_n_json <-
-    "C:\\Users\\davidho\\Desktop\\LPJmLG\\example_outputs\\soiln_layer.bin.json" # nolint: absolute_path_linter.
-  soiln <- lpjmlkit::read_io(path_to_soil_layer_n_json)
-  soiln$add_grid()
-  return(soiln)
-}
-
 create_LPJmLDataCalc <- function(data,  # nolint: object_name_linter.
                                  my_unit,
                                  grid = NULL,
@@ -152,7 +144,7 @@ create_test_global_LPJmLDataCalc <- function(unit = "gN", value = NULL) { # noli
 load_soiln_calc <- function() {
   path_to_soil_n_json <-
     testthat::test_path("../testdata/path1", "soiln.bin.json")
-  soiln <- lpjmlstats::read_io(path_to_soil_n_json)
+  soiln <- read_io_calc(path_to_soil_n_json)
   soiln$add_grid()
   return(soiln)
 }
@@ -160,7 +152,7 @@ load_soiln_calc <- function() {
 load_soiln_layer_calc <- function() {
   path_to_soil_n_json <-
     testthat::test_path("../testdata/path1", "soiln_layer.bin.json")
-  soiln <- lpjmlstats::read_io(path_to_soil_n_json)
+  soiln <- read_io_calc(path_to_soil_n_json)
   soiln$add_grid()
   return(soiln)
 }

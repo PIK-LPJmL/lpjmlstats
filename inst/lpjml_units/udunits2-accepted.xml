@@ -202,6 +202,7 @@ Units accepted for use with the SI
             <comment>Unit is temporarily accepted for use with the SI.</comment>
             <def>100 are</def>
             <aliases> <name><singular>hectare</singular></name> </aliases>
+            <symbol>ha</symbol>
             <definition>unit of area equal to 100 are ('hectoare'), or 10000 square meters</definition>
         </unit>
         <unit>
