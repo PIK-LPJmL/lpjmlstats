@@ -1,28 +1,34 @@
 create_ilamb_report <- function(baseline_dir, 
                                 under_test_dirs, 
-                                output_file, 
+                                output_file,
                                 sim_ident,
                                 eval_vars = c("mgpp", "mevap", "mtransp"),
                                 ilamb_run_script = file.path(ilamb_dir, "ilamb_run_cmd.sh")) {
   
   # 1. Create the iLAMB output directory
+  if (is.null(output_file) || length(output_file) == 0)
+    output_file <- "benchmark.pdf"
+  browser
   ilamb_dir <- file.path(dirname(output_file), paste0(gsub(".pdf", "", basename(output_file)), "_ilamb"))
   dir.create(ilamb_dir, showWarnings = FALSE, recursive = TRUE)
 
-  # 2. Symlink the data folder
-  system(paste(
-    "ln -s",
-    file.path("/p/projects/lpjml/reference_data/iLAMB"),
-    file.path(ilamb_dir, "DATA")
-  ))
+  # 2. Symlink the data folder if doesn't exist
+  if (!dir.exists(file.path(ilamb_dir, "DATA"))) {
+    system(paste(
+      "ln -s",
+      file.path("/p/projects/lpjml/reference_data/iLAMB"),
+      file.path(ilamb_dir, "DATA")
+    ))
+  }
   
   # 3. Create MODELS folder structure
   get_subfolder_name <- function(dir) {
-    x <- sim_ident[dir]
+    x <- sim_ident[sim_ident$sim_paths == dir,]$sim_ident
     gsub("/", "_", x)
   }
   
-  base_subfolder <- get_subfolder_name(baseline_dir)
+  browser()
+  base_subfolder <- get_subfolder_name(unlist(baseline_dir))
   dir.create(file.path(ilamb_dir, "MODELS", base_subfolder), recursive = TRUE)
   
   for (dir in under_test_dirs) {
@@ -51,6 +57,7 @@ create_ilamb_report <- function(baseline_dir,
   bin2cdf_path <- system.file("bin2cdf", package = "lpjmlstats")
   process_var <- function(var) {
     for (dir in c(baseline_dir, under_test_dirs)) {
+      browser()
       meta <- read_meta(file.path(dir, paste0(var, ".bin.json")))
       name <- LPJmLMetaDataCalc$new(meta)$name
       ident <- get_subfolder_name(dir)
