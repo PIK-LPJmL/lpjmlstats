@@ -2,7 +2,7 @@ create_ilamb_report <- function(baseline_dir,
                                 under_test_dirs, 
                                 output_file,
                                 sim_ident,
-                                eval_vars = c("mgpp", "mevap", "mtransp"),
+                                eval_vars = c("mgpp", "mevap", "mtransp", "mrh", "mnpp", "vegc"),
                                 ilamb_run_script = file.path(ilamb_dir, "ilamb_run_cmd.sh")) {
   
   # 1. Create the iLAMB output directory

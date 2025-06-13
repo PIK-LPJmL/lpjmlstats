@@ -11,4 +11,4 @@ cd "$ILAMB_DIR"
 export ILAMB_ROOT=$PWD
 
 # Run ILAMB
-ilamb-run --config sample.cfg --model_root "$ILAMB_ROOT/MODELS/" --regions global
+srun --qos=priority --mem=64G ilamb-run --config sample.cfg --model_root "$ILAMB_ROOT/MODELS/" --regions global
