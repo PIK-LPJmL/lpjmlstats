@@ -50,7 +50,7 @@ create_ilamb_report <- function(baseline_dir,
     }
   }
   
-  # 5. Convert vars to NetCDF using the bin2cdf_cmd.sh script
+  # 5. Convert vars to NetCDF using the bin2cdf function
   bin2cdf_path <- system.file("bin2cdf", package = "lpjmlstats")
   process_var <- function(var) {
     for (dir in c(baseline_dir, under_test_dirs)) {
