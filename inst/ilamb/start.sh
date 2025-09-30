@@ -7,5 +7,5 @@ PORT=$(( ( RANDOM % 1001 ) + 4000 ))
 echo "Starting server on port $PORT..."
 
 cd _build
-module load anaconda
-python -m http.server "$PORT"
+module load python
+python3 -m http.server "$PORT"
