@@ -4,7 +4,8 @@ Version: 0.8.0
 Authors@R: c(
     person("David","Hötten", , "davidho@pik-potsdam.de", role = c("aut", "cre")),
     person("Jannes","Breier", , "jannes.breier@pik-potsdam.de", role = c("aut"), comment = c(ORCID = "0000-0002-9055-6904")),
-    person("Christoph","Müller", , "cmueller@pik-potsdam.de", role = c("aut"), comment = c(ORCID = "0000-0002-9491-3550"))
+    person("Christoph","Müller", , "cmueller@pik-potsdam.de", role = c("aut"), comment = c(ORCID = "0000-0002-9491-3550")),
+    person("Stephen B.","Wirth", , "stephen.wirth@pik-potsdam.de", role = c("aut"), comment = c(ORCID = "0000-0003-3090-3318"))
   )
 Description: This package provides statistical tools for LPJmL data analysis
     to be used for benchmarking LPJmL outputs.
