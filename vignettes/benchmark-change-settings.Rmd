@@ -109,4 +109,34 @@ the new metrics.
 Also note the large map highlighting the time averaged soil temperature
 distribution at the beginning of the "Time Average" section.
 
+The following is a more complex example where I modified the outputs, metrics and time period for a run with POEM LPJml: 
+
+```
+library(lpjmlstats)
+
+# --- adapt the default settings to the POEM outputs
+settings <- lpjmlstats::default_settings # get the default settings list
+names(settings) # check which outputs are analyzed
+settings <- settings[-c(4:16,22,28)] # remove some outputs that are not available in POEM
+settings <- lapply(settings, function(x) c(x[-3], TimeAvgMapWithAbs)) # remove the TimeAvgMap and add TimeAvgMapWithAbs
+
+# --- adjust the time period
+metric_names <- unique(unname(unlist(
+                    lapply(settings, function(x) lapply(x, function(x) x$classname))
+                ))) # get all the metric names that where used
+mopt <- sapply(metric_names, 
+               FUN = function(x) list(year_subset = as.character(1961:1975)), 
+               simplify = FALSE) # set the year subset for all metrics
+
+# ---- add subheadings to the maps
+mopt[["TimeAvgMapWithAbs"]] <- c(mopt[["TimeAvgMapWithAbs"]], list(var_subheading = TRUE)) 
+
+# --- run the benchmark
+benchmark(list("1.1" = "/p/projects/path/to/baseline"),
+          list("1.2" = "/p/projects/path/to/under_test"),
+          metric_options = mopt,
+          settings = settings
+          )
+```
+
 This concludes the vignette.

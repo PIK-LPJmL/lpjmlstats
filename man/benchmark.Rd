@@ -12,6 +12,7 @@ benchmark(
   author = "",
   description = "",
   pdf_report = TRUE,
+  ilamb_report = FALSE,
   ...
 )
 }
@@ -43,7 +44,10 @@ The list has to have the following structure:
 \item{pdf_report}{Logical, if TRUE a pdf report will be created with
 the \link{create_pdf_report} function.}
 
-\item{...}{additional arguments to be passed to \link{create_pdf_report}}
+\item{ilamb_report}{Logical, if TRUE a basic ILAMB report will be created}
+
+\item{...}{additional arguments to be passed to \link{create_pdf_report} like
+\code{output_file} for the directory and filename of the pdf report.}
 }
 \value{
 A benchmarkResult object containing the numerical results of the
@@ -171,6 +175,27 @@ settings <- list(`pft_harvest.pft$rainfed maize; irrigated maize`
                   = c(GlobSumTimeAvgTable))
 benchmark("path_to_baseline_results", "path_to_under_test_results",
           settings)
+
+# Example 8
+# Benchmark only a single run
+# It is also possible to benchmark only a single run, by setting the
+# under_test_dirs argument to NULL
+benchmark("path_to_baseline_results", NULL)
+
+# Example 9
+# Custom simulation names and ILAMB report
+# Custom simulation names to under test
+# and baseline runs can be provided by passing a list.
+# This only has an effect if custom names are provided
+# for all simulations.
+# The maximum number of characters is 7.
+# In addition an ILAMB report is created, which is a webpage
+# that will appear as a folder in the driectory specified
+# by the `output_file` argument.
+benchmark(list(sim1 = "path_to_baseline_results"),
+          list(sim2 = "path_to_under_test_results"),
+          ILAMB_report = TRUE)
+
 }
 
 }
