@@ -46,3 +46,4 @@ VignetteBuilder: knitr
 Depends:
     R (>= 3.5.0)
 Date: 2025-04-09
+BinaryFiles: inst/bin2cdf

@@ -4,7 +4,10 @@ AcceptedWarnings:
 - 'Warning: package ''.*'' was built under R version'
 - 'Warning: namespace ''.*'' is not available and has been replaced'
 - .*partial argument match of .*
-AcceptedNotes: checking installed package size
+- 'checking for executable files'
+AcceptedNotes: 
+- 'checking installed package size'
+- 'checking for future file timestamps'
 allowLinterWarnings: no
 enforceVersionUpdate: no
 skipCoverage: no
