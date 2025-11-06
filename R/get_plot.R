@@ -189,30 +189,30 @@ extract_plot_data <- function(bm, metric, variable) {
   tryCatch({
     # Access the var_grp from the benchmark structure
     var_grp <- bm[[metric]]$var_grp_list[[variable]]
-    
+
     if (is.null(var_grp)) {
       warning(paste0(
         "Variable '", variable, "' not found in metric '", metric, "'."
       ))
       return(NULL)
     }
-    
+
     # Use the var_grp's method to get any available lpjml_calc object
     # This handles metrics that may only have compare data (not baseline)
     lpjml_calc <- var_grp$apply_to_any_lpjml_calc(function(x) x)
-    
+
     if (is.null(lpjml_calc)) {
       warning(paste0(
-        "No data found for variable '", variable, 
+        "No data found for variable '", variable,
         "' in metric '", metric, "'."
       ))
       return(NULL)
     }
-    
+
     return(lpjml_calc)
   }, error = function(e) {
     warning(paste0(
-      "Failed to extract data for variable '", variable, 
+      "Failed to extract data for variable '", variable,
       "' from metric '", metric, "': ", conditionMessage(e)
     ))
     return(NULL)

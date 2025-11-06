@@ -19,16 +19,18 @@ plots for. If \code{NULL}, plots for all variables associated with the
 specified metric(s) will be returned. Variable names should match those
 used in the benchmark settings (e.g., \code{"vegc"}, \code{"soilc"}).}
 
-\item{data_only}{Logical. If \code{TRUE}, returns the underlying data used
-to generate the plots instead of the plot objects themselves. Default is
+\item{data_only}{Logical. If \code{TRUE}, returns the underlying data
+directly from the benchmark object instead of generating plot objects.
+This returns lpjml_calc R6 objects which contain both data arrays and
+metadata, providing more flexibility for custom analysis. Default is
 \code{FALSE}.}
 }
 \value{
 \itemize{
-\item If a single metric is specified: A list of plot objects (or data
-frames if \code{data_only = TRUE}) for the requested variables.
+\item If a single metric is specified: A list of plot objects (or lpjml_calc
+R6 objects if \code{data_only = TRUE}) for the requested variables.
 \item If multiple metrics are specified: A named list where each element
-corresponds to a metric and contains a list of plots (or data frames)
+corresponds to a metric and contains a list of plots (or lpjml_calc objects)
 for that metric's variables.
 }
 }
@@ -46,11 +48,23 @@ plots from a benchmarkResult object. This is useful when you want to:
 \item Access the underlying data for custom visualizations
 }
 
+When \code{data_only = TRUE}, the function efficiently retrieves data directly
+from the benchmark object without generating plots, which significantly
+improves performance. The returned lpjml_calc objects include both the data
+array and associated metadata (units, variable names, dimensions, etc.),
+making them suitable for custom analyses outside of ggplot.
+
+\strong{Note:} \code{GlobSumTimeAvgTable} metrics are automatically excluded
+from \code{get_plot()} because their plot method returns tibbles (data tables)
+rather than plot objects. To access GlobSumTimeAvgTable output, use
+\code{bm$GlobSumTimeAvgTable$plot()} directly.
+
 The function validates all inputs and will issue warnings or errors if:
 \itemize{
 \item The specified metric does not exist in the benchmark results
 \item The specified variables are not available for the given metric
 \item Invalid argument types are provided
+\item GlobSumTimeAvgTable metrics are requested (with a warning)
 }
 }
 \examples{

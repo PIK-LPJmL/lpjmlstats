@@ -460,11 +460,11 @@ test_that("get_plot excludes GlobSumTimeAvgTable but processes other metrics", {
   # Should warn about GlobSumTimeAvgTable but still return TimeAvgMap
   # Specify variables explicitly to avoid "No variables specified" warning
   expect_warning(
-    plots <- get_plot(bm, metric = c("GlobSumTimeAvgTable", "TimeAvgMap"), 
+    plots <- get_plot(bm, metric = c("GlobSumTimeAvgTable", "TimeAvgMap"),
                       variables = "soiln"),
     "GlobSumTimeAvgTable metric\\(s\\) excluded"
   )
-  
+
   # Should only have TimeAvgMap in the result (single metric left, so named by variable)
   expect_true(is.list(plots))
   expect_equal(length(plots), 1)
@@ -487,7 +487,7 @@ test_that("get_plot returns plots with correct nested structure for multiple met
     metric_options = test_m_options[c(2, 3)]
   )
 
-  plots <- get_plot(bm, metric = c("TimeAvgMap", "GlobSumTimeseries"), 
+  plots <- get_plot(bm, metric = c("TimeAvgMap", "GlobSumTimeseries"),
                     variables = "soiln")
 
   # Should return nested list: first level = metrics, second level = variables
