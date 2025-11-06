@@ -170,30 +170,51 @@ generate_plots <- function(bm, metric, available_vars) {
   plots
 }
 
-#' Extract data from ggplot objects
+#' Extract data from benchmark object
 #'
-#' Internal helper function that extracts the underlying data from a ggplot
-#' object. Returns the plot object as-is if it's not a ggplot.
+#' Internal helper function that extracts the underlying data directly from
+#' the benchmark object for a specific metric and variable. Returns an
+#' lpjml_calc object which contains both data and metadata (R6 class).
+#' This is more efficient than generating plots first when only data is needed.
 #'
-#' @param plot_obj A plot object (typically ggplot)
+#' @param bm Benchmark result object
+#' @param metric Character string with the name of a single metric
+#' @param variable Character string with the name of a single variable
 #'
-#' @return Data frame with plot data (if ggplot), or the original object
+#' @return An lpjml_calc object (R6 class with data and metadata),
+#'   or NULL if not found
 #'
 #' @noRd
-extract_plot_data <- function(plot_obj) {
+extract_plot_data <- function(bm, metric, variable) {
   tryCatch({
-    if (inherits(plot_obj, "ggplot")) {
-      return(plot_obj$data)
-    } else {
+    # Access the var_grp from the benchmark structure
+    var_grp <- bm[[metric]]$var_grp_list[[variable]]
+    
+    if (is.null(var_grp)) {
       warning(paste0(
-        "Plot object is not a ggplot object (class: ",
-        paste(class(plot_obj), collapse = ", "),
-        "). Returning the object as-is."
+        "Variable '", variable, "' not found in metric '", metric, "'."
       ))
-      return(plot_obj)
+      return(NULL)
     }
+    
+    # Use the var_grp's method to get any available lpjml_calc object
+    # This handles metrics that may only have compare data (not baseline)
+    lpjml_calc <- var_grp$apply_to_any_lpjml_calc(function(x) x)
+    
+    if (is.null(lpjml_calc)) {
+      warning(paste0(
+        "No data found for variable '", variable, 
+        "' in metric '", metric, "'."
+      ))
+      return(NULL)
+    }
+    
+    return(lpjml_calc)
   }, error = function(e) {
-    warning(paste0("Failed to extract data from plot: ", conditionMessage(e)))
+    warning(paste0(
+      "Failed to extract data for variable '", variable, 
+      "' from metric '", metric, "': ", conditionMessage(e)
+    ))
     return(NULL)
   })
 }
@@ -212,16 +233,18 @@ extract_plot_data <- function(plot_obj) {
 #'   plots for. If \code{NULL}, plots for all variables associated with the
 #'   specified metric(s) will be returned. Variable names should match those
 #'   used in the benchmark settings (e.g., \code{"vegc"}, \code{"soilc"}).
-#' @param data_only Logical. If \code{TRUE}, returns the underlying data used
-#'   to generate the plots instead of the plot objects themselves. Default is
+#' @param data_only Logical. If \code{TRUE}, returns the underlying data
+#'   directly from the benchmark object instead of generating plot objects.
+#'   This returns lpjml_calc R6 objects which contain both data arrays and
+#'   metadata, providing more flexibility for custom analysis. Default is
 #'   \code{FALSE}.
 #'
 #' @return
 #' \itemize{
-#'   \item If a single metric is specified: A list of plot objects (or data
-#'     frames if \code{data_only = TRUE}) for the requested variables.
+#'   \item If a single metric is specified: A list of plot objects (or lpjml_calc
+#'     R6 objects if \code{data_only = TRUE}) for the requested variables.
 #'   \item If multiple metrics are specified: A named list where each element
-#'     corresponds to a metric and contains a list of plots (or data frames)
+#'     corresponds to a metric and contains a list of plots (or lpjml_calc objects)
 #'     for that metric's variables.
 #' }
 #'
@@ -235,11 +258,23 @@ extract_plot_data <- function(plot_obj) {
 #'   \item Access the underlying data for custom visualizations
 #' }
 #'
+#' When \code{data_only = TRUE}, the function efficiently retrieves data directly
+#' from the benchmark object without generating plots, which significantly
+#' improves performance. The returned lpjml_calc objects include both the data
+#' array and associated metadata (units, variable names, dimensions, etc.),
+#' making them suitable for custom analyses outside of ggplot.
+#'
+#' \strong{Note:} \code{GlobSumTimeAvgTable} metrics are automatically excluded
+#' from \code{get_plot()} because their plot method returns tibbles (data tables)
+#' rather than plot objects. To access GlobSumTimeAvgTable output, use
+#' \code{bm$GlobSumTimeAvgTable$plot()} directly.
+#'
 #' The function validates all inputs and will issue warnings or errors if:
 #' \itemize{
 #'   \item The specified metric does not exist in the benchmark results
 #'   \item The specified variables are not available for the given metric
 #'   \item Invalid argument types are provided
+#'   \item GlobSumTimeAvgTable metrics are requested (with a warning)
 #' }
 #'
 #' @examples
@@ -284,6 +319,26 @@ get_plot <- function(bm, metric = NULL, variables = NULL, data_only = FALSE) {
     metric <- names(bm)
   }
 
+  # Filter out GlobSumTimeAvgTable metrics (they return tibbles, not plots)
+  table_metrics <- metric[metric == "GlobSumTimeAvgTable"]
+  if (length(table_metrics) > 0) {
+    warning(paste0(
+      "GlobSumTimeAvgTable metric(s) excluded from get_plot as they return ",
+      "tibbles, not plot objects. Use bm$GlobSumTimeAvgTable$plot() directly ",
+      "to access the table."
+    ))
+    metric <- metric[metric != "GlobSumTimeAvgTable"]
+  }
+
+  # Check if any metrics remain after filtering
+  if (length(metric) == 0) {
+    stop(paste0(
+      "No valid metrics remaining after filtering. ",
+      "GlobSumTimeAvgTable metrics cannot be retrieved with get_plot() as they ",
+      "return tibbles instead of plot objects."
+    ))
+  }
+
   # Handle multiple metrics
   if (length(metric) > 1) {
     plots <- lapply(metric, function(m) {
@@ -315,13 +370,18 @@ get_plot <- function(bm, metric = NULL, variables = NULL, data_only = FALSE) {
   # Get valid variable indices
   var_index <- get_variable_indices(available_vars, variables, metric)
 
+  # Extract data if requested (more efficient than generating plots first)
+  if (data_only) {
+    selected_vars <- available_vars[var_index]
+    data_list <- lapply(selected_vars, function(var) {
+      extract_plot_data(bm, metric, var)
+    })
+    names(data_list) <- selected_vars
+    return(data_list)
+  }
+
   # Generate plots
   plots <- generate_plots(bm, metric, available_vars)
-
-  # Extract data if requested
-  if (data_only) {
-    return(lapply(plots[var_index], extract_plot_data))
-  }
 
   plots[var_index]
 }

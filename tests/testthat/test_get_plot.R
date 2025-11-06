@@ -225,7 +225,7 @@ test_that("get_plot works with valid benchmark object", {
   under_test_dir <- test_path("../testdata/path2")
 
   settings <- list(
-    soiln = list(GlobSumTimeAvgTable, TimeAvgMap)
+    soiln = list(TimeAvgMap)
   )
 
   bm <- benchmark(
@@ -233,71 +233,20 @@ test_that("get_plot works with valid benchmark object", {
     under_test_dir,
     settings,
     pdf_report = FALSE,
-    metric_options = test_m_options[c(1, 3)]
+    metric_options = test_m_options[3]
   )
 
-  # Get plots for single metric
-  suppressWarnings({
-    plots <- get_plot(bm, metric = "TimeAvgMap")
-  })
+  # Get plots for single metric with variables specified (no warnings)
+  plots <- get_plot(bm, metric = "TimeAvgMap", variables = "soiln")
 
   expect_true(is.list(plots))
   expect_equal(length(plots), 1)
-})
-
-test_that("get_plot works with specific variables", {
-  baseline_dir <- test_path("../testdata/path1")
-  under_test_dir <- test_path("../testdata/path2")
-
-  settings <- list(
-    soiln = list(GlobSumTimeAvgTable, TimeAvgMap)
-  )
-
-  bm <- benchmark(
-    baseline_dir,
-    under_test_dir,
-    settings,
-    pdf_report = FALSE,
-    metric_options = test_m_options[c(1, 3)]
-  )
-
-  # Get plots for specific variable
-  suppressWarnings({
-    plots <- get_plot(bm, metric = "TimeAvgMap", variables = "soiln")
-  })
-
-  expect_true(is.list(plots))
   expect_equal(names(plots), "soiln")
 })
 
-test_that("get_plot works when no metric specified (defaults to all metrics)", {
-  baseline_dir <- test_path("../testdata/path1")
-  under_test_dir <- test_path("../testdata/path2")
 
-  settings <- list(
-    soiln = list(GlobSumTimeAvgTable)
-  )
 
-  bm <- benchmark(
-    baseline_dir,
-    under_test_dir,
-    settings,
-    pdf_report = FALSE,
-    metric_options = test_m_options[1]
-  )
-
-  # When no metric specified, should use all available metrics
-  # Suppress warnings about defaults
-  suppressWarnings(
-    result <- get_plot(bm)
-  )
-  # Should return results for all metrics in the benchmark
-  expect_true(is.list(result))
-  # Result should have at least one metric
-  expect_true(length(result) > 0)
-})
-
-test_that("get_plot works when no variables specified (defaults to all variables)", {
+test_that("get_plot warns and defaults when no metric specified", {
   baseline_dir <- test_path("../testdata/path1")
   under_test_dir <- test_path("../testdata/path2")
 
@@ -313,10 +262,38 @@ test_that("get_plot works when no variables specified (defaults to all variables
     metric_options = test_m_options[3]
   )
 
-  # When no variables specified, should use all available variables
-  # Suppress warnings about defaults
-  suppressWarnings(
-    plots <- get_plot(bm, metric = "TimeAvgMap")
+  # Should warn about both defaults (metric and variables)
+  expect_warning(
+    expect_warning(
+      result <- get_plot(bm),
+      "No metric specified"
+    ),
+    "No variables specified"
+  )
+  expect_true(is.list(result))
+  expect_true(length(result) > 0)
+})
+
+test_that("get_plot warns and defaults when no variables specified", {
+  baseline_dir <- test_path("../testdata/path1")
+  under_test_dir <- test_path("../testdata/path2")
+
+  settings <- list(
+    soiln = list(TimeAvgMap)
+  )
+
+  bm <- benchmark(
+    baseline_dir,
+    under_test_dir,
+    settings,
+    pdf_report = FALSE,
+    metric_options = test_m_options[3]
+  )
+
+  # Should warn about default and return all variables
+  expect_warning(
+    plots <- get_plot(bm, metric = "TimeAvgMap"),
+    "No variables specified"
   )
   expect_equal(length(plots), 1)
   expect_true("soiln" %in% names(plots))
@@ -327,7 +304,7 @@ test_that("get_plot handles multiple metrics", {
   under_test_dir <- test_path("../testdata/path2")
 
   settings <- list(
-    soiln = list(GlobSumTimeAvgTable, TimeAvgMap, GlobSumTimeseries)
+    soiln = list(TimeAvgMap, GlobSumTimeseries)
   )
 
   bm <- benchmark(
@@ -335,15 +312,15 @@ test_that("get_plot handles multiple metrics", {
     under_test_dir,
     settings,
     pdf_report = FALSE,
-    metric_options = test_m_options[c(1, 2, 3)]
+    metric_options = test_m_options[c(2, 3)]
   )
 
-  suppressWarnings({
-    plots <- get_plot(
-      bm,
-      metric = c("TimeAvgMap", "GlobSumTimeseries")
-    )
-  })
+  # Specify variables to avoid warnings
+  plots <- get_plot(
+    bm,
+    metric = c("TimeAvgMap", "GlobSumTimeseries"),
+    variables = "soiln"
+  )
 
   expect_true(is.list(plots))
   expect_equal(length(plots), 2)
@@ -407,8 +384,6 @@ test_that("get_plot errors when all metrics fail", {
 })
 
 test_that("get_plot returns data when data_only = TRUE", {
-  skip_if_not_installed("ggplot2")
-
   baseline_dir <- test_path("../testdata/path1")
   under_test_dir <- test_path("../testdata/path2")
 
@@ -424,45 +399,26 @@ test_that("get_plot returns data when data_only = TRUE", {
     metric_options = test_m_options[3]
   )
 
-  suppressWarnings({
-    data <- get_plot(
-      bm,
-      metric = "TimeAvgMap",
-      variables = "soiln",
-      data_only = TRUE
-    )
-  })
+  # No warnings when all parameters specified
+  data <- get_plot(
+    bm,
+    metric = "TimeAvgMap",
+    variables = "soiln",
+    data_only = TRUE
+  )
 
   expect_true(is.list(data))
-  # Data should be extracted from ggplot
-  expect_true(is.data.frame(data[[1]]) || is.list(data[[1]]))
+  # Data should be lpjml_calc R6 objects from benchmark
+  expect_true(inherits(data[[1]], "LPJmLDataCalc"))
+  # Should have data field
+  expect_true(!is.null(data[[1]]$data))
+  # Should have meta field
+  expect_true(!is.null(data[[1]]$meta))
 })
 
-test_that("get_plot works with GlobSumTimeseries", {
-  baseline_dir <- test_path("../testdata/path1")
-  under_test_dir <- test_path("../testdata/path2")
 
-  settings <- list(
-    soiln = list(GlobSumTimeseries)
-  )
 
-  bm <- benchmark(
-    baseline_dir,
-    under_test_dir,
-    settings,
-    pdf_report = FALSE,
-    metric_options = test_m_options[2]
-  )
-
-  suppressWarnings({
-    plots <- get_plot(bm, metric = "GlobSumTimeseries")
-  })
-
-  expect_true(is.list(plots))
-  expect_equal(length(plots), 1)
-})
-
-test_that("get_plot works with GlobSumTimeAvgTable", {
+test_that("get_plot excludes GlobSumTimeAvgTable with warning", {
   baseline_dir <- test_path("../testdata/path1")
   under_test_dir <- test_path("../testdata/path2")
 
@@ -478,15 +434,44 @@ test_that("get_plot works with GlobSumTimeAvgTable", {
     metric_options = test_m_options[1]
   )
 
-  suppressWarnings({
-    plots <- get_plot(bm, metric = "GlobSumTimeAvgTable")
-  })
-
-  expect_true(is.list(plots))
-  expect_equal(length(plots), 1)
+  # Should error when only GlobSumTimeAvgTable is requested
+  expect_error(
+    suppressWarnings(get_plot(bm, metric = "GlobSumTimeAvgTable")),
+    "No valid metrics remaining after filtering"
+  )
 })
 
-test_that("get_plot returns plots with correct structure", {
+test_that("get_plot excludes GlobSumTimeAvgTable but processes other metrics", {
+  baseline_dir <- test_path("../testdata/path1")
+  under_test_dir <- test_path("../testdata/path2")
+
+  settings <- list(
+    soiln = list(GlobSumTimeAvgTable, TimeAvgMap)
+  )
+
+  bm <- benchmark(
+    baseline_dir,
+    under_test_dir,
+    settings,
+    pdf_report = FALSE,
+    metric_options = test_m_options[c(1, 3)]
+  )
+
+  # Should warn about GlobSumTimeAvgTable but still return TimeAvgMap
+  # Specify variables explicitly to avoid "No variables specified" warning
+  expect_warning(
+    plots <- get_plot(bm, metric = c("GlobSumTimeAvgTable", "TimeAvgMap"), 
+                      variables = "soiln"),
+    "GlobSumTimeAvgTable metric\\(s\\) excluded"
+  )
+  
+  # Should only have TimeAvgMap in the result (single metric left, so named by variable)
+  expect_true(is.list(plots))
+  expect_equal(length(plots), 1)
+  expect_equal(names(plots), "soiln")
+})
+
+test_that("get_plot returns plots with correct nested structure for multiple metrics", {
   baseline_dir <- test_path("../testdata/path1")
   under_test_dir <- test_path("../testdata/path2")
 
@@ -502,12 +487,14 @@ test_that("get_plot returns plots with correct structure", {
     metric_options = test_m_options[c(2, 3)]
   )
 
-  suppressWarnings({
-    plots <- get_plot(bm, metric = c("TimeAvgMap", "GlobSumTimeseries"))
-  })
+  plots <- get_plot(bm, metric = c("TimeAvgMap", "GlobSumTimeseries"), 
+                    variables = "soiln")
 
   # Should return nested list: first level = metrics, second level = variables
   expect_true(is.list(plots))
   expect_equal(length(plots), 2)
+  expect_equal(names(plots), c("TimeAvgMap", "GlobSumTimeseries"))
   expect_true(all(sapply(plots, is.list)))
+  # Each metric should have the requested variables
+  expect_true(all(sapply(plots, function(p) "soiln" %in% names(p))))
 })
