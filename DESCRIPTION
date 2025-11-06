@@ -1,6 +1,6 @@
 Package: lpjmlstats
 Title: Statistical tools for LPJmL data analysis
-Version: 0.8.0
+Version: 0.9.0
 Authors@R: c(
     person("David","Hötten", , "davidho@pik-potsdam.de", role = c("aut", "cre")),
     person("Jannes","Breier", , "jannes.breier@pik-potsdam.de", role = c("aut"), comment = c(ORCID = "0000-0002-9055-6904")),
