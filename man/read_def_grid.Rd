@@ -12,6 +12,3 @@ An LPJmLGridData object containing the default grid.
 \description{
 The default grid is the standard global grid used in LPJmL.
 }
-\seealso{
-\code{\link{LPJmLGridData}}
-}

@@ -171,7 +171,6 @@ build_global_region <- function(grid) {
 #' The default grid is the standard global grid used in LPJmL.
 #'
 #' @return An LPJmLGridData object containing the default grid.
-#' @seealso \code{\link{LPJmLGridData}}
 #'
 #' @export
 
