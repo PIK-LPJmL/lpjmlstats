@@ -23,7 +23,9 @@
 #' @param description Description of the purpose of the benchmark.
 #' @param pdf_report Logical, if TRUE a pdf report will be created with
 #'  the \link{create_pdf_report} function.
-#' @param ... additional arguments to be passed to \link{create_pdf_report}
+#' @param ilamb_report Logical, if TRUE a basic ILAMB report will be created
+#' @param ... additional arguments to be passed to \link{create_pdf_report} like
+#'  `output_file` for the directory and filename of the pdf report.
 #'
 #' @return A benchmarkResult object containing the numerical results of the
 #' benchmarking. This data object is basically a list of all metrics
@@ -150,6 +152,27 @@
 #'                   = c(GlobSumTimeAvgTable))
 #' benchmark("path_to_baseline_results", "path_to_under_test_results",
 #'           settings)
+#'
+#' # Example 8
+#' # Benchmark only a single run
+#' # It is also possible to benchmark only a single run, by setting the
+#' # under_test_dirs argument to NULL
+#' benchmark("path_to_baseline_results", NULL)
+#'
+#' # Example 9
+#' # Custom simulation names and ILAMB report
+#' # Custom simulation names to under test
+#' # and baseline runs can be provided by passing a list.
+#' # This only has an effect if custom names are provided
+#' # for all simulations.
+#' # The maximum number of characters is 7.
+#' # In addition an ILAMB report is created, which is a webpage
+#' # that will appear as a folder in the driectory specified
+#' # by the `output_file` argument.
+#' benchmark(list(sim1 = "path_to_baseline_results"),
+#'           list(sim2 = "path_to_under_test_results"),
+#'           ILAMB_report = TRUE)
+#'
 #' }
 #'
 #' @seealso \code{\link{create_pdf_report}}
@@ -169,6 +192,7 @@ benchmark <-
            author = "",
            description = "",
            pdf_report = TRUE,
+           ilamb_report = FALSE,
            ...) {
 
     cat(cli::col_blue("Start the core numerical benchmarking...\n"))
@@ -222,6 +246,12 @@ benchmark <-
       }, warning = function(w) {
         cat(cli::col_yellow("Warning during pdf report generation: "), w$message, "\n")
       })
+    }
+
+    # create ILAMB report if requested
+    if (ilamb_report) {
+      cat(cli::col_blue("Start ILAMB evaluation ... \n"))
+      create_ilamb_report(baseline_dir, under_test_dirs, sim_table, ...)
     }
 
     return(benchmark_result)

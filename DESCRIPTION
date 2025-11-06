@@ -46,4 +46,5 @@ Config/testthat/edition: 3
 VignetteBuilder: knitr
 Depends:
     R (>= 3.5.0)
-Date: 2025-10-28
+Date: 2025-11-05
+BinaryFiles: inst/bin2cdf

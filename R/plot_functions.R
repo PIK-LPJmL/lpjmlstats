@@ -93,7 +93,7 @@ create_map_plots <- function(var_grp_list,
   plot_list <- list()
 
   for (var_grp in var_grp_list) {
-    if (m_options$band_subheading)
+    if (m_options$var_subheading)
       plot_list <- add_seperator(plot_list, paste("##", var_grp$get_var_name()))
     limits <- get_type_limits(var_grp, m_options)
     band_names <- var_grp$get_band_names()

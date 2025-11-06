@@ -4,6 +4,7 @@
 ^CONTRIBUTING\.md$
 ^INSTALL\.md$
 ^\.github$
+^\.git$
 ^\.buildlibrary$
 ^\.pre-commit-config\.yaml$
 ^Makefile$
