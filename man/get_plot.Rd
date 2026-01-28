@@ -21,16 +21,17 @@ used in the benchmark settings (e.g., \code{"vegc"}, \code{"soilc"}).}
 
 \item{data_only}{Logical. If \code{TRUE}, returns the underlying data
 directly from the benchmark object instead of generating plot objects.
-This returns lpjml_calc R6 objects which contain both data arrays and
-metadata, providing more flexibility for custom analysis. Default is
-\code{FALSE}.}
+This returns a list for each variable containing baseline and under_test
+lpjml_calc objects, and optionally compare data (only included if the
+metric calculates comparisons). This provides full access to all benchmark
+data for custom analysis. Default is \code{FALSE}.}
 }
 \value{
 \itemize{
-\item If a single metric is specified: A list of plot objects (or lpjml_calc
-R6 objects if \code{data_only = TRUE}) for the requested variables.
+\item If a single metric is specified: A list of plot objects (or data lists
+if \code{data_only = TRUE}) for the requested variables.
 \item If multiple metrics are specified: A named list where each element
-corresponds to a metric and contains a list of plots (or lpjml_calc objects)
+corresponds to a metric and contains a list of plots (or data lists)
 for that metric's variables.
 }
 }
@@ -50,9 +51,16 @@ plots from a benchmarkResult object. This is useful when you want to:
 
 When \code{data_only = TRUE}, the function efficiently retrieves data directly
 from the benchmark object without generating plots, which significantly
-improves performance. The returned lpjml_calc objects include both the data
-array and associated metadata (units, variable names, dimensions, etc.),
-making them suitable for custom analyses outside of ggplot.
+improves performance. The returned data lists include:
+\itemize{
+\item \code{baseline}: The baseline scenario lpjml_calc object (may be NULL)
+\item \code{under_test}: List of all under_test scenario lpjml_calc objects (may be NULL)
+\item \code{compare}: List of comparison data between scenarios (only included if
+the metric calculates comparisons and compare data exists)
+}
+Each lpjml_calc object contains the data array and associated metadata
+(units, variable names, dimensions, etc.), making them suitable for custom
+analyses outside of ggplot.
 
 \strong{Note:} \code{GlobSumTimeAvgTable} metrics are automatically excluded
 from \code{get_plot()} because their plot method returns tibbles (data tables)
@@ -81,9 +89,25 @@ vegc_plot <- get_plot(bm_result, metric = "TimeAvgMap", variables = "vegc")
 # Get plots for multiple metrics
 plots <- get_plot(bm_result, metric = c("TimeAvgMap", "GlobSumTimeseries"))
 
-# Get underlying data instead of plots
-plot_data <- get_plot(bm_result, metric = "TimeAvgMap",
-                      variables = "vegc", data_only = TRUE)
+# Get underlying data instead of plots (returns data lists)
+var_data <- get_plot(bm_result, metric = "TimeAvgMap",
+                     variables = "vegc", data_only = TRUE)
+
+# Access different scenarios from data list
+baseline_data <- var_data$vegc$baseline        # Baseline scenario (may be NULL)
+undertest_data <- var_data$vegc$under_test     # List of under_test scenarios (may be NULL)
+
+# Access compare data if it exists (only present for metrics that calculate it)
+if (!is.null(var_data$vegc$compare)) {
+  compare_data <- var_data$vegc$compare        # Comparison data
+  diff_data <- var_data$vegc$compare$diff2base # Specific comparison type
+}
+
+# Access lpjml_calc data and metadata
+if (!is.null(var_data$vegc$baseline)) {
+  baseline_array <- var_data$vegc$baseline$data  # Data array
+  baseline_meta <- var_data$vegc$baseline$meta   # Metadata (units, etc.)
+}
 
 # Display a specific plot
 plots <- get_plot(bm_result, metric = "TimeAvgMap", variables = "vegc")

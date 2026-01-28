@@ -173,16 +173,17 @@ generate_plots <- function(bm, metric, available_vars) {
 #' Extract data from benchmark object
 #'
 #' Internal helper function that extracts the underlying data directly from
-#' the benchmark object for a specific metric and variable. Returns an
-#' lpjml_calc object which contains both data and metadata (R6 class).
+#' the benchmark object for a specific metric and variable. Returns a list
+#' containing baseline and under_test scenarios. The compare field is only
+#' included if it exists and contains meaningful comparison data.
 #' This is more efficient than generating plots first when only data is needed.
 #'
 #' @param bm Benchmark result object
 #' @param metric Character string with the name of a single metric
 #' @param variable Character string with the name of a single variable
 #'
-#' @return An lpjml_calc object (R6 class with data and metadata),
-#'   or NULL if not found
+#' @return A list containing baseline, under_test, and optionally compare
+#'   (only if compare data exists and has meaning for this metric)
 #'
 #' @noRd
 extract_plot_data <- function(bm, metric, variable) {
@@ -197,19 +198,19 @@ extract_plot_data <- function(bm, metric, variable) {
       return(NULL)
     }
 
-    # Use the var_grp's method to get any available lpjml_calc object
-    # This handles metrics that may only have compare data (not baseline)
-    lpjml_calc <- var_grp$apply_to_any_lpjml_calc(function(x) x)
+    # Extract the data fields we want to return
+    result <- list(
+      baseline = var_grp$baseline,
+      under_test = var_grp$under_test
+    )
 
-    if (is.null(lpjml_calc)) {
-      warning(paste0(
-        "No data found for variable '", variable,
-        "' in metric '", metric, "'."
-      ))
-      return(NULL)
+    # Only include compare if it exists and has data
+    # (some metrics don't create compare, or it may be NULL)
+    if (!is.null(var_grp$compare) && length(var_grp$compare) > 0) {
+      result$compare <- var_grp$compare
     }
 
-    return(lpjml_calc)
+    return(result)
   }, error = function(e) {
     warning(paste0(
       "Failed to extract data for variable '", variable,
@@ -235,16 +236,17 @@ extract_plot_data <- function(bm, metric, variable) {
 #'   used in the benchmark settings (e.g., \code{"vegc"}, \code{"soilc"}).
 #' @param data_only Logical. If \code{TRUE}, returns the underlying data
 #'   directly from the benchmark object instead of generating plot objects.
-#'   This returns lpjml_calc R6 objects which contain both data arrays and
-#'   metadata, providing more flexibility for custom analysis. Default is
-#'   \code{FALSE}.
+#'   This returns a list for each variable containing baseline and under_test
+#'   lpjml_calc objects, and optionally compare data (only included if the
+#'   metric calculates comparisons). This provides full access to all benchmark
+#'   data for custom analysis. Default is \code{FALSE}.
 #'
 #' @return
 #' \itemize{
-#'   \item If a single metric is specified: A list of plot objects (or lpjml_calc
-#'     R6 objects if \code{data_only = TRUE}) for the requested variables.
+#'   \item If a single metric is specified: A list of plot objects (or data lists
+#'     if \code{data_only = TRUE}) for the requested variables.
 #'   \item If multiple metrics are specified: A named list where each element
-#'     corresponds to a metric and contains a list of plots (or lpjml_calc objects)
+#'     corresponds to a metric and contains a list of plots (or data lists)
 #'     for that metric's variables.
 #' }
 #'
@@ -260,9 +262,16 @@ extract_plot_data <- function(bm, metric, variable) {
 #'
 #' When \code{data_only = TRUE}, the function efficiently retrieves data directly
 #' from the benchmark object without generating plots, which significantly
-#' improves performance. The returned lpjml_calc objects include both the data
-#' array and associated metadata (units, variable names, dimensions, etc.),
-#' making them suitable for custom analyses outside of ggplot.
+#' improves performance. The returned data lists include:
+#' \itemize{
+#'   \item \code{baseline}: The baseline scenario lpjml_calc object (may be NULL)
+#'   \item \code{under_test}: List of all under_test scenario lpjml_calc objects (may be NULL)
+#'   \item \code{compare}: List of comparison data between scenarios (only included if
+#'     the metric calculates comparisons and compare data exists)
+#' }
+#' Each lpjml_calc object contains the data array and associated metadata
+#' (units, variable names, dimensions, etc.), making them suitable for custom
+#' analyses outside of ggplot.
 #'
 #' \strong{Note:} \code{GlobSumTimeAvgTable} metrics are automatically excluded
 #' from \code{get_plot()} because their plot method returns tibbles (data tables)
@@ -291,9 +300,25 @@ extract_plot_data <- function(bm, metric, variable) {
 #' # Get plots for multiple metrics
 #' plots <- get_plot(bm_result, metric = c("TimeAvgMap", "GlobSumTimeseries"))
 #'
-#' # Get underlying data instead of plots
-#' plot_data <- get_plot(bm_result, metric = "TimeAvgMap",
-#'                       variables = "vegc", data_only = TRUE)
+#' # Get underlying data instead of plots (returns data lists)
+#' var_data <- get_plot(bm_result, metric = "TimeAvgMap",
+#'                      variables = "vegc", data_only = TRUE)
+#'
+#' # Access different scenarios from data list
+#' baseline_data <- var_data$vegc$baseline        # Baseline scenario (may be NULL)
+#' undertest_data <- var_data$vegc$under_test     # List of under_test scenarios (may be NULL)
+#'
+#' # Access compare data if it exists (only present for metrics that calculate it)
+#' if (!is.null(var_data$vegc$compare)) {
+#'   compare_data <- var_data$vegc$compare        # Comparison data
+#'   diff_data <- var_data$vegc$compare$diff2base # Specific comparison type
+#' }
+#'
+#' # Access lpjml_calc data and metadata
+#' if (!is.null(var_data$vegc$baseline)) {
+#'   baseline_array <- var_data$vegc$baseline$data  # Data array
+#'   baseline_meta <- var_data$vegc$baseline$meta   # Metadata (units, etc.)
+#' }
 #'
 #' # Display a specific plot
 #' plots <- get_plot(bm_result, metric = "TimeAvgMap", variables = "vegc")

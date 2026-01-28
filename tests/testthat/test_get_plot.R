@@ -408,12 +408,17 @@ test_that("get_plot returns data when data_only = TRUE", {
   )
 
   expect_true(is.list(data))
-  # Data should be lpjml_calc R6 objects from benchmark
-  expect_true(inherits(data[[1]], "LPJmLDataCalc"))
-  # Should have data field
-  expect_true(!is.null(data[[1]]$data))
-  # Should have meta field
-  expect_true(!is.null(data[[1]]$meta))
+  # Data should be lists with baseline, under_test, and optionally compare
+  expect_true(is.list(data[[1]]))
+  # Should have baseline and/or under_test fields
+  has_baseline <- "baseline" %in% names(data[[1]])
+  has_under_test <- "under_test" %in% names(data[[1]])
+  expect_true(has_baseline || has_under_test)
+  # Compare field should only be present if it exists and has data
+  if ("compare" %in% names(data[[1]])) {
+    expect_true(!is.null(data[[1]]$compare))
+    expect_true(length(data[[1]]$compare) > 0)
+  }
 })
 
 
