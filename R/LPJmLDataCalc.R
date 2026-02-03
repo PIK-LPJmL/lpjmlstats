@@ -228,70 +228,44 @@ formula_to_internal <- c(
 )
 internal_to_formula <- setNames(names(formula_to_internal), formula_to_internal)
 
-# Convert unit string: chemical formulas -> internal names
-map_formula_to_internal <- function(unit_str) {
-  for (formula in names(formula_to_internal)) {
-    unit_str <- gsub(formula, formula_to_internal[[formula]], unit_str, fixed = TRUE)
-  }
-  unit_str
-}
-
-# Convert unit string: internal names -> chemical formulas (for display)
-map_internal_to_formula <- function(unit_str) {
-  for (internal in names(internal_to_formula)) {
-    unit_str <- gsub(internal, internal_to_formula[[internal]], unit_str, fixed = TRUE)
+# Generic unit string mapping function
+map_units <- function(unit_str, mapping) {
+  for (from in names(mapping)) {
+    unit_str <- gsub(from, mapping[[from]], unit_str, fixed = TRUE)
   }
   unit_str
 }
 
 # Wrapper for set_units that maps chemical formulas to internal names
 safe_set_units <- function(x, unit_str) {
-  mapped_str <- map_formula_to_internal(unit_str)
+  mapped_str <- map_units(unit_str, formula_to_internal)
   units::set_units(x, units::as_units(mapped_str))
 }
 
 # Copy the unit attribute from the meta data to the units data array
 LPJmLDataCalc$set("private", "copy_unit_meta2array",
                   function() {
-                    insert_caret <- function(input_string) {
-                      if (is.null(input_string)) {
-                        return(NULL)
-                      }
-                      # Protect chemical formulas (numbers would be converted to exponents)
-                      formulas <- c("CH4", "CO2", "N2O", "H2O", "NH4", "NO3", "N2")
-                      x <- input_string
-                      for (i in seq_along(formulas)) {
-                        x <- gsub(formulas[i], paste0("__", i, "__"), x, fixed = TRUE)
-                      }
-                      # Insert carets for unit exponents (e.g., m2 -> m^2)
-                      x <- gsub("(?<=[a-zA-Z])([1-9]+)", "^\\1", x, perl = TRUE)
-                      # Restore chemical formulas
-                      for (i in seq_along(formulas)) {
-                        x <- gsub(paste0("__", i, "__"), formulas[i], x, fixed = TRUE)
-                      }
-                      return(x)
-                    }
-                    set_minussign_to_nounit <- function(input_string) {
-                      # i.e. "-" -> ""
-                      x <- gsub("^-$", "", input_string)
-                      if (is.null(input_string)) {
-                        x <- NULL
-                      }
-                      return(x)
+                    # Insert carets for unit exponents (e.g., m2 -> m^2)
+                    # Must be called after formula mapping since internal names have no numbers
+                    insert_caret <- function(x) {
+                      if (is.null(x)) return(NULL)
+                      gsub("(?<=[a-zA-Z])([1-9]+)", "^\\1", x, perl = TRUE)
                     }
 
                     unit <- private$.meta$unit
-                    # The units::set_units methods only accepts two formats
-                    # either using "g/m" and "m^2" or using "g m-1" and "m2".
-                    # Therefore, if the unit string contains the division
-                    # symbol "/", also the caret must be there.
-                    # Once the data is read in one time, both "/" and "^" are
-                    # eliminated, and only the standard second format is used.
-                    if (stringr::str_detect(private$.meta$unit, "/"))
+                    if (is.null(unit) || unit == "-") {
+                      unit <- "1"  # unitless
+                    }
+                    # Map formulas to internal names first (removes numbers from symbols)
+                    unit <- map_units(unit, formula_to_internal)
+                    # Now safe to insert carets for exponents (e.g., m2 -> m^2)
+                    # Only needed when "/" format is used
+                    if (stringr::str_detect(unit, "/"))
                       unit <- insert_caret(unit)
-                    unit <- set_minussign_to_nounit(unit)
 
-                    private$.data <- safe_set_units(private$.data, unit)
+                    # Unit already mapped, call set_units directly
+                    private$.data <- units::set_units(private$.data,
+                                                      units::as_units(unit))
                   })
 
 
@@ -300,7 +274,7 @@ LPJmLDataCalc$set("private", "copy_unit_array2meta",
                   function() {
                     deparsed_unit <- units::deparse_unit(private$.data)
                     # Map internal unit names back to chemical formulas for display
-                    deparsed_unit <- map_internal_to_formula(deparsed_unit)
+                    deparsed_unit <- map_units(deparsed_unit, internal_to_formula)
                     private$.meta$.__set_attribute__("unit", deparsed_unit)
                   })
 
