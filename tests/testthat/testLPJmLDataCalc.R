@@ -399,3 +399,29 @@ test_that("add band returns correct data and meta data for mean", {
   expect_equal(units::deparse_unit(soiln_calc$.data_with_unit), "gN m-2")
   expect_equal(dimnames(soiln_calc$data)$band, c("200", "500", "1000", "2000", "3000", "mean"))
 })
+
+# ------ test chemical formula units ------
+
+test_that("gCH4 unit is recognized and works correctly", {
+  lpjml_calc <- create_LPJmLDataCalc(1, "gCH4")
+
+  expect_equal(lpjml_calc$meta$unit, "gCH4")
+  # Internal representation uses gMethane, but meta unit displays gCH4
+  x <- lpjml_calc$.data_with_unit
+  expect_equal(attr(x, "units")$numerator, "gMethane")
+})
+
+test_that("gCH4/m2 unit conversion works", {
+  lpjml_calc <- create_LPJmLDataCalc(1, "gCH4/m2")
+
+  expect_equal(lpjml_calc$meta$unit, "gCH4 m-2")
+})
+
+test_that("arithmetic with gCH4 units works", {
+  lpjml_calc1 <- create_LPJmLDataCalc(2, "gCH4")
+  lpjml_calc2 <- create_LPJmLDataCalc(1, "gCH4")
+
+  sum_calc <- lpjml_calc1 + lpjml_calc2
+  expect_equal(sum_calc$data[[1]], 3, ignore_attr = TRUE)
+  expect_equal(sum_calc$meta$unit, "gCH4")
+})
