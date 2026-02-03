@@ -224,13 +224,20 @@ keep_units_lpjml_calc <- function(lpjml_calc, fun) {
 LPJmLDataCalc$set("private", "copy_unit_meta2array",
                   function() {
                     insert_caret <- function(input_string) {
-                      # matches any number directly preceded by a letter i.e. m2
-                      pattern <- "(?<=[a-zA-Z])([1-9]+)"
-                      replacement <- "^\\1"
-                      # e.g. m2 -> m^2
-                      x <- gsub(pattern, replacement, input_string, perl = TRUE)
                       if (is.null(input_string)) {
-                        x <- NULL
+                        return(NULL)
+                      }
+                      # Protect chemical formulas (numbers would be converted to exponents)
+                      formulas <- c("CH4", "CO2", "N2O", "H2O", "NH4", "NO3", "N2")
+                      x <- input_string
+                      for (i in seq_along(formulas)) {
+                        x <- gsub(formulas[i], paste0("__", i, "__"), x, fixed = TRUE)
+                      }
+                      # Insert carets for unit exponents (e.g., m2 -> m^2)
+                      x <- gsub("(?<=[a-zA-Z])([1-9]+)", "^\\1", x, perl = TRUE)
+                      # Restore chemical formulas
+                      for (i in seq_along(formulas)) {
+                        x <- gsub(paste0("__", i, "__"), formulas[i], x, fixed = TRUE)
                       }
                       return(x)
                     }
