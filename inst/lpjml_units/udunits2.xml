@@ -13,33 +13,4 @@ redistribution conditions.
     <import>udunits2-derived.xml</import>
     <import>udunits2-accepted.xml</import>
     <import>udunits2-common.xml</import>
-
-    <!-- LPJmL-specific element and chemical formula units -->
-    <!-- Single elements (as mass of element, dimensionless multiplier) -->
-    <unit>
-        <def>1</def>
-        <name><singular>carbon</singular></name>
-        <symbol>C</symbol>
-    </unit>
-    <unit>
-        <def>1</def>
-        <name><singular>nitrogen</singular></name>
-        <symbol>N</symbol>
-    </unit>
-    <!-- Chemical formulas -->
-    <unit>
-        <def>1</def>
-        <name><singular>CH4</singular></name>
-        <symbol>CH4</symbol>
-    </unit>
-    <unit>
-        <def>1</def>
-        <name><singular>CO2</singular></name>
-        <symbol>CO2</symbol>
-    </unit>
-    <unit>
-        <def>1</def>
-        <name><singular>N2O</singular></name>
-        <symbol>N2O</symbol>
-    </unit>
 </unit-system>

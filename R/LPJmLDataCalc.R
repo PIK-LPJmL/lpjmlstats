@@ -141,7 +141,7 @@ LPJmLDataCalc <- R6::R6Class( # nolint:object_linter_name
     #' !Internal method only to be used for package development!
     #' @param unit_str A string with the unit to be set.
     .set_unit = function(unit_str) {
-      private$.data <- units::set_units(private$.data, unit_str)
+      private$.data <- safe_set_units(private$.data, unit_str)
       private$copy_unit_array2meta()
     },
 
@@ -220,6 +220,36 @@ keep_units_lpjml_calc <- function(lpjml_calc, fun) {
   return(lpjml_calc)
 }
 
+# Map chemical formula units to internal names that udunits can parse
+# (numbers in symbols get interpreted as exponents)
+formula_to_internal <- c(
+  "gCH4" = "gMethane", "gCO2" = "gCarbonDioxide",
+  "gN2O" = "gNitrousOxide", "gO2" = "gDiOxygen"
+)
+internal_to_formula <- setNames(names(formula_to_internal), formula_to_internal)
+
+# Convert unit string: chemical formulas -> internal names
+map_formula_to_internal <- function(unit_str) {
+  for (formula in names(formula_to_internal)) {
+    unit_str <- gsub(formula, formula_to_internal[[formula]], unit_str, fixed = TRUE)
+  }
+  unit_str
+}
+
+# Convert unit string: internal names -> chemical formulas (for display)
+map_internal_to_formula <- function(unit_str) {
+  for (internal in names(internal_to_formula)) {
+    unit_str <- gsub(internal, internal_to_formula[[internal]], unit_str, fixed = TRUE)
+  }
+  unit_str
+}
+
+# Wrapper for set_units that maps chemical formulas to internal names
+safe_set_units <- function(x, unit_str) {
+  mapped_str <- map_formula_to_internal(unit_str)
+  units::set_units(x, units::as_units(mapped_str))
+}
+
 # Copy the unit attribute from the meta data to the units data array
 LPJmLDataCalc$set("private", "copy_unit_meta2array",
                   function() {
@@ -249,6 +279,7 @@ LPJmLDataCalc$set("private", "copy_unit_meta2array",
                       }
                       return(x)
                     }
+
                     unit <- private$.meta$unit
                     # The units::set_units methods only accepts two formats
                     # either using "g/m" and "m^2" or using "g m-1" and "m2".
@@ -259,8 +290,8 @@ LPJmLDataCalc$set("private", "copy_unit_meta2array",
                     if (stringr::str_detect(private$.meta$unit, "/"))
                       unit <- insert_caret(unit)
                     unit <- set_minussign_to_nounit(unit)
-                    private$.data <- units::set_units(private$.data,
-                                                      as_units(unit))
+
+                    private$.data <- safe_set_units(private$.data, unit)
                   })
 
 
@@ -268,6 +299,8 @@ LPJmLDataCalc$set("private", "copy_unit_meta2array",
 LPJmLDataCalc$set("private", "copy_unit_array2meta",
                   function() {
                     deparsed_unit <- units::deparse_unit(private$.data)
+                    # Map internal unit names back to chemical formulas for display
+                    deparsed_unit <- map_internal_to_formula(deparsed_unit)
                     private$.meta$.__set_attribute__("unit", deparsed_unit)
                   })
 
@@ -275,8 +308,8 @@ LPJmLDataCalc$set("private", "copy_unit_array2meta",
 LPJmLDataCalc$set("private", ".__convert_unit__",
                   function(unit) {
                     private$.data <- keep_dimnames_and_dims(private$.data,
-                                                            units::set_units,
-                                                            as_units(unit))
+                                                            safe_set_units,
+                                                            unit)
                     private$copy_unit_array2meta()
                   })
 
