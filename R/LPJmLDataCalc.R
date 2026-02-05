@@ -233,7 +233,7 @@ map_units <- function(unit_str, mapping) {
   for (from in names(mapping)) {
     unit_str <- gsub(from, mapping[[from]], unit_str, fixed = TRUE)
   }
-  unit_str
+  return(unit_str)
 }
 
 # Wrapper for set_units that maps chemical formulas to internal names

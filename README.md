@@ -56,7 +56,7 @@ A BibTeX entry for LaTeX users is
 @Misc{,
   title = {lpjmlstats: Statistical tools for LPJmL data analysis},
   author = {David Hötten and Jannes Breier and Christoph Müller and Stephen B. Wirth},
-  date = {2026-02-03},
+  date = {2026-02-05},
   year = {2026},
   url = {https://github.com/PIK-LPJmL/lpjmlstats},
   note = {Version: 0.9.2},
