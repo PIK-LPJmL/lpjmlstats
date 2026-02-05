@@ -1,7 +1,7 @@
-create_ilamb_report <- function(baseline_dir,
-                                under_test_dirs,
-                                output_file,
-                                sim_ident,
+create_ilamb_report <- function(baseline_dir = baseline_dir,
+                                under_test_dirs = under_test_dirs,
+                                sim_table = NULL,
+                                output_file = NULL,
                                 eval_vars = c("mgpp", "mevap", "mtransp", "mrh", "mnpp", "vegc"),
                                 ilamb_run_script = file.path(ilamb_dir, "ilamb_run_cmd.sh")) {
 
@@ -22,7 +22,7 @@ create_ilamb_report <- function(baseline_dir,
 
   # 3. Create MODELS folder structure
   get_subfolder_name <- function(dir) {
-    x <- sim_ident[sim_ident$sim_paths == dir, ]$sim_ident
+    x <- sim_table[sim_table$sim_paths == dir, ]$sim_ident
     gsub("/", "_", x)
   }
   base_subfolder <- get_subfolder_name(unlist(baseline_dir))
