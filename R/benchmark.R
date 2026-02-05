@@ -327,6 +327,14 @@ create_simulation_table <- function(paths) {
     # get filename of any fitting file
     file <- list.files(path, pattern = paths$suffix, full.names = TRUE)[1]
 
+    # check if a file was found
+    if (is.na(file)) {
+      stop(paste0("No file with extension ", paths$suffix,
+           " found in directory ", path,
+           " Please check if provided path is correct
+             and contains LPJmL output files."))
+    }
+
     # get relevant meta information from that file
     meta <- lpjmlkit::read_meta(file)
     sim_names <- c(sim_names, meta$sim_name)

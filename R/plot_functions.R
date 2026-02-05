@@ -194,6 +194,12 @@ map_tibble_to_ggplot <-
     # get world map
     world <- rnaturalearth::ne_countries(returnclass = "sf", scale = "small", type = "countries")
 
+    # Expand limits if they are equal (e.g., all-zero data)
+    # to avoid colorspace scale error
+    if (!is.null(limits) && limits[1] == limits[2]) {
+      limits <- c(limits[1] - 1, limits[1] + 1)
+    }
+    
     # setup breaks
     breaks <- function(limits) {
       if (limits[1] != limits[2])

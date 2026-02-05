@@ -185,8 +185,8 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
       self$print_metric_header()
       self$print_metric_description()
       self$print_year_subset()
-      plotlist <- self$plot()
-      self$arrange_plots(plotlist)
+      plotlist <- tryCatch(self$plot())
+      try(self$arrange_plots(plotlist))
     },
 
     #' @description
