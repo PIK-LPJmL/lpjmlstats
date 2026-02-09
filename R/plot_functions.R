@@ -11,21 +11,21 @@ create_table_plot <- function(var_grp_list, m_options) {
   table <- var_grp_list_to_table(var_grp_list)
 
   # convert to character using scientific notation
-  table <- table %>%
-    dplyr::rowwise() %>%
+  table <- table |>
+    dplyr::rowwise() |>
     dplyr::mutate(dplyr::across(dplyr::where(is.numeric),
                                 format, digits = m_options$disp_digits))
 
   # escape characters
   # uses function from knitr that is not exported, which could be problematic
   # if an error is thrown here the internal function(name) may have changed
-  table <- table %>%
+  table <- table |>
     dplyr::mutate_all(asNamespace("knitr")$escape_latex)
   colnames(table) <- asNamespace("knitr")$escape_latex(colnames(table))
 
   # insert linebreaks
-  table <- table %>%
-    dplyr::mutate(dplyr::across(dplyr::where(is.character), insert_linebreaks)) %>%
+  table <- table |>
+    dplyr::mutate(dplyr::across(dplyr::where(is.character), insert_linebreaks)) |>
     dplyr::mutate_all(kableExtra::linebreak)
 
   return(table)
@@ -179,8 +179,8 @@ map_tibble_to_ggplot <-
 
     # Crop values to limits and drop NA pixels
     if (!is.null(limits)) {
-      tibble <- tibble %>%
-        dplyr::mutate(value = pmax(pmin(.data$value, limits[2]), limits[1])) %>%
+      tibble <- tibble |>
+        dplyr::mutate(value = pmax(pmin(.data$value, limits[2]), limits[1])) |>
         dplyr::filter(!is.na(.data$value))
     }
 
@@ -199,7 +199,7 @@ map_tibble_to_ggplot <-
     if (!is.null(limits) && limits[1] == limits[2]) {
       limits <- c(limits[1] - 1, limits[1] + 1)
     }
-    
+
     # setup breaks
     breaks <- function(limits) {
       if (limits[1] != limits[2])

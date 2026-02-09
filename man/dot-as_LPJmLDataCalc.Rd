@@ -17,6 +17,6 @@ For internal package development use the obj can also be an array with the dimen
 An LPJmLDataCalc object.
 }
 \description{
-Function to coerce (convert) an \code{\link[lpjmlkit:LPJmLData]{lpjmlkit::LPJmLData}} object into an
+Function to coerce (convert) an \code{\link{LPJmLData}} object into an
 LPJmLDataCalc object with extended functionality.
 }

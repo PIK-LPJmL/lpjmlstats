@@ -13,7 +13,7 @@ arrange_table_plot <- function(plotlist, m_options) {
       longtable = TRUE,
       align = "l",
       col.names = kableExtra::linebreak(names(plotlist), align = "l")
-    ) %>%
+    ) |>
       kableExtra::kable_styling(
         font_size = m_options$font_size,
         latex_options = c("repeat_header", "HOLD_position"),
