@@ -136,9 +136,15 @@
 #'
 #' # Example 6
 #' # Benchmark with custom metric options
+#' # In this example the font size of the table of the GlobSumTimeAvgTable
+#' # metric is reduced. This may be needed if more than two under_test
+#' # runs are benchmarked, which leads to a larger table, that may not fit
+#' # within the fixed width of the pdf report. In addition, the
+#' # TimeAvgMap metric is set to highlight soilc, which means that the map of 
+#' # soilc will use the complete width of the document. 
 #' metric_options <- list(
-#'   GlobSumTimeAvgTable = list(font_size = 12), # use larger font size in table
-#'   TimeAvgMap = list(highlight = "soilc")      # plots a larger map for soilc
+#'   GlobSumTimeAvgTable = list(font_size = 5), # use larger font size in table
+#'   TimeAvgMap = list(highlight = "soilc")     # plots a larger map for soilc
 #' )
 #' BM_data <- benchmark("path_to_baseline_results",
 #'                      "path_to_under_test_results",
@@ -172,7 +178,25 @@
 #' benchmark(list(sim1 = "path_to_baseline_results"),
 #'           list(sim2 = "path_to_under_test_results"),
 #'           ILAMB_report = TRUE)
-#'
+#' 
+#' # Example 10
+#' # Change metric options after benchmarking is finished
+#' # If e.g. the font size in the table or in maps is too large,
+#' # or the color scale in the maps needs to be finer,
+#' # the metric options need to be changed. However,
+#' # running a completly new benchmarking can take a long time.
+#' # This can be overcome by savin g the benchmarkResult object
+#' # and changing the metric options afterwards.
+#' BM_data <- benchmark("path_to_baseline_results",
+#'                     "path_to_under_test_results")
+#' # change font size of GlobSumTimeAvgTable to 5
+#' BM_data$GlobSumTimeAvgTable$m_options$font_size <- 5
+#' BM_data$TimeAvgMap$m_options$font_size <- 5
+#' # add more breaks 
+#' BM_data$TimeAvgMap$m_options$color_scale_n_breaks <- 6 
+#' 
+#' # recreate pdf report with changed options
+#' create_pdf_report(BM_data, "my_updated_benchmark.pdf")
 #' }
 #'
 #' @seealso \code{\link{create_pdf_report}}
