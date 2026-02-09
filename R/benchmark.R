@@ -4,8 +4,17 @@
 #' against a baseline run.
 #'
 #' @param baseline_dir Path to directory containing the baseline run.
+#' Can be list with single entry.
+#' The name of the entry will be used as simulation identifier
+#' in the benchmarking results and the pdf report.
+#' ! For the custom names to have an effect, all simulations
+#' (incl. under test) need to have a custom name !
 #' @param under_test_dirs List of paths to directories containing the under
-#' test run results.
+#' test run results. If names are provided for the entries of the list,
+#' these will be used as simulation identifiers in the
+#' benchmarking results and the pdf report.
+#' ! For the custom names to have an effect, all simulations
+#' (incl. under test) need to have a custom name !
 #' @param settings List that defines for each output which metrics to use.
 #'  The list has to have the following structure:
 #'  \itemize{
@@ -136,9 +145,15 @@
 #'
 #' # Example 6
 #' # Benchmark with custom metric options
+#' # In this example the font size of the table of the GlobSumTimeAvgTable
+#' # metric is reduced. This may be needed if more than two under_test
+#' # runs are benchmarked, which leads to a larger table, that may not fit
+#' # within the fixed width of the pdf report. In addition, the
+#' # TimeAvgMap metric is set to highlight soilc, which means that the map of
+#' # soilc will use the complete width of the document.
 #' metric_options <- list(
-#'   GlobSumTimeAvgTable = list(font_size = 12), # use larger font size in table
-#'   TimeAvgMap = list(highlight = "soilc")      # plots a larger map for soilc
+#'   GlobSumTimeAvgTable = list(font_size = 5), # use larger font size in table
+#'   TimeAvgMap = list(highlight = "soilc")     # plots a larger map for soilc
 #' )
 #' BM_data <- benchmark("path_to_baseline_results",
 #'                      "path_to_under_test_results",
@@ -173,13 +188,30 @@
 #'           list(sim2 = "path_to_under_test_results"),
 #'           ILAMB_report = TRUE)
 #'
+#' # Example 10
+#' # Change metric options after benchmarking is finished
+#' # If e.g. the font size in the table or in maps is too large,
+#' # or the color scale in the maps needs to be finer,
+#' # the metric options need to be changed. However,
+#' # running a completly new benchmarking can take a long time.
+#' # This can be overcome by savin g the benchmarkResult object
+#' # and changing the metric options afterwards.
+#' BM_data <- benchmark("path_to_baseline_results",
+#'                     "path_to_under_test_results")
+#' # change font size of GlobSumTimeAvgTable to 5
+#' BM_data$GlobSumTimeAvgTable$m_options$font_size <- 5
+#' BM_data$TimeAvgMap$m_options$font_size <- 5
+#' # add more breaks
+#' BM_data$TimeAvgMap$m_options$color_scale_n_breaks <- 6
+#'
+#' # recreate pdf report with changed options
+#' create_pdf_report(BM_data, "my_updated_benchmark.pdf")
 #' }
 #'
 #' @seealso \code{\link{create_pdf_report}}
 #'
 #' @md
 #'
-#' @importFrom dplyr %>%
 #' @importFrom lpjmlstats read_io_calc
 #' @importFrom utils getFromNamespace
 #' @export
@@ -327,6 +359,14 @@ create_simulation_table <- function(paths) {
     # get filename of any fitting file
     file <- list.files(path, pattern = paths$suffix, full.names = TRUE)[1]
 
+    # check if a file was found
+    if (is.na(file)) {
+      stop(paste0("No file with extension ", paths$suffix,
+                  " found in directory ", path,
+                  ". Please check if provided path is correct
+                  and contains LPJmL output files."))
+    }
+
     # get relevant meta information from that file
     meta <- lpjmlkit::read_meta(file)
     sim_names <- c(sim_names, meta$sim_name)
@@ -389,8 +429,8 @@ create_unique_short_sim_paths <- function(sim_paths) {
   collapse_until_i <- function(splitted_paths, i) {
     lapply(splitted_paths, function(x) {
       ifelse(i <= length(x),
-             paste(x[1:i] %>% rev, collapse = "/"),
-             paste(x[1:length(x)] %>% rev, collapse = "/")) # nolint
+             paste(rev(x[1:i]), collapse = "/"),
+             paste(rev(x[1:length(x)]), collapse = "/")) # nolint
     })
   }
 

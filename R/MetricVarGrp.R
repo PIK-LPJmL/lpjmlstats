@@ -103,7 +103,7 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
     capture_summary = function(lpjml_calc, var, type) {
       if (!is.null(self$m_options$year_subset)) {
         subset_years <- function(lpjml_calc, years) {
-          lpjml_calc %>% subset_time_pattern(paste0("^", years, "-")) # match e.g. 2023-02-01
+          lpjml_calc |> subset_time_pattern(paste0("^", years, "-")) # match e.g. 2023-02-01
         }
         lpjml_calc <-
           keep_units_lpjml_calc(lpjml_calc,
@@ -185,8 +185,8 @@ Metric <- R6::R6Class( # nolint: cyclocomp_linter object_linter_name
       self$print_metric_header()
       self$print_metric_description()
       self$print_year_subset()
-      plotlist <- self$plot()
-      self$arrange_plots(plotlist)
+      plotlist <- tryCatch(self$plot())
+      try(self$arrange_plots(plotlist))
     },
 
     #' @description
