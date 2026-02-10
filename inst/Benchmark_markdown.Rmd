@@ -57,9 +57,9 @@ sim_table <-
 
 # reorder columns as they should be displayed
 tabl <- sim_table |> dplyr::select(sim_names,
-                                    sim_ident,
-                                    sim_type,
-                                    lpjml_version)
+                                   sim_ident,
+                                   sim_type,
+                                   lpjml_version)
 
 # create and style table
 knitr::kable(
