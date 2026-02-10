@@ -16,8 +16,8 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       #' @param data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(data) {
-        data %>%
-          aggregate(cell = list(to = "global", stat = "weighted_sum")) %>%
+        data |>
+          aggregate(cell = list(to = "global", stat = "weighted_sum")) |>
           aggregate(time = list(to = "sim_period", stat = "mean"))
       },
 
@@ -94,8 +94,8 @@ GlobAvgTimeAvgTable <- R6::R6Class( # nolint: object_name_linter.
     #' @param data LPJmLDataCalc object to be summarized
     #' @return A summarized \link{LPJmLDataCalc} object
     summarize = function(data) {
-      data %>%
-        aggregate(cell = list(to = "global", stat = "weighted_mean")) %>%
+      data |>
+        aggregate(cell = list(to = "global", stat = "weighted_mean")) |>
         aggregate(time = list(to = "sim_period", stat = "mean"))
     },
 
@@ -129,7 +129,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' @param data LPJmLDataCalc object to be summarized
     #' @return A summarized \link{LPJmLDataCalc} object
     summarize = function(data) {
-      data %>%
+      data |>
         aggregate(cell = list(to = "global", stat = "weighted_sum"))
     },
 
@@ -198,7 +198,7 @@ GlobAvgTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' @param data LPJmLDataCalc object to be summarized
     #' @return A summarized \link{LPJmLDataCalc} object
     summarize = function(data) {
-      data %>%
+      data |>
         aggregate(cell = list(to = "global", stat = "weighted_mean"))
     },
 
@@ -229,8 +229,8 @@ GlobSumAnnAvgTimeseries <- # nolint: object_name_linter.
       #' @param data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(data) {
-        data %>%
-          aggregate(time = list(to = "years", stat = "mean")) %>%
+        data |>
+          aggregate(time = list(to = "years", stat = "mean")) |>
           aggregate(cell = list(to = "global", stat = "weighted_sum"))
       },
 
@@ -261,8 +261,8 @@ GlobAvgAnnAvgTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' @param data LPJmLDataCalc object to be summarized
     #' @return A summarized \link{LPJmLDataCalc} object
     summarize = function(data) {
-      data %>%
-        aggregate(time = list(to = "years", stat = "mean")) %>%
+      data |>
+        aggregate(time = list(to = "years", stat = "mean")) |>
         aggregate(cell = list(to = "global", stat = "weighted_mean"))
     },
 
@@ -293,7 +293,7 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
       #' @param lpjml_data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(lpjml_data) {
-        subset(lpjml_data, cell = self$m_options$cell) %>%
+        subset(lpjml_data, cell = self$m_options$cell) |>
           aggregate(time = list(to = "years", stat = "mean"))
       },
 
@@ -380,7 +380,7 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' @param data LPJmLDataCalc object to be summarized
       #' @return A summarized \link{LPJmLDataCalc} object
       summarize = function(data) {
-        data %>%
+        data |>
           aggregate(time = list(to = "sim_period", stat = "mean"))
       },
 
