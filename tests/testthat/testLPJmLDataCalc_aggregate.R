@@ -138,13 +138,13 @@ test_that("usecases of aggregation with cow and plotting runs error free", {
   soiln$add_grid()
 
   # usecase 1: subset and plot
-  expect_no_error(soiln %>% subset(time = 1) %>% plot())
+  expect_no_error(soiln |> subset(time = 1) |> plot())
 
   # usecase 2: aggregate, subset and plot
   expect_no_error(
-    soiln %>%
-      aggregate(cell = list(to = "countries", stat = "sum")) %>%
-      subset(time = 1) %>%
+    soiln |>
+      aggregate(cell = list(to = "countries", stat = "sum")) |>
+      subset(time = 1) |>
       plot()
   )
 })
@@ -158,7 +158,7 @@ test_that("usecases of aggregation with cow integral on multiple timesteps ",
             soiln$add_grid()
 
             # aggregate multiple time steps #nolint
-            expect_no_error(soiln %>%
+            expect_no_error(soiln |>
                               aggregate(cell =
                                           list(to = "countries", stat = "sum")))
 
@@ -334,7 +334,7 @@ test_that("grid for aggregation is loaded automatically", {
   path_to_soil_n_json <-
     test_path("../testdata/path1", "soiln.bin.json")
   soiln <- read_io_calc(path_to_soil_n_json)
-  expect_no_error(soiln %>% aggregate(cell = list(to = "global", stat = "sum")))
+  expect_no_error(soiln |> aggregate(cell = list(to = "global", stat = "sum")))
 })
 
 
