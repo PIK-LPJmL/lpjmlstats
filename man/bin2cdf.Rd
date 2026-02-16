@@ -52,7 +52,7 @@ Time axis is created based on the temporal resolution of the data:
 bin2cdf("output/vegc.bin.json", "output/vegc.nc")
 
 # With days time axis
-bin2cdf("output/mgpp.bin.json", "output/mgpp.nc", use_days = TRUE
+bin2cdf("output/mgpp.bin.json", "output/mgpp.nc", use_days = TRUE)
 }
 
 }

@@ -222,7 +222,7 @@ bin2cdf <- function(input_file,
   # Create file
   nc <- ncdf4::nc_create(output_file,
                          list(var_def, time_bnds_def, lat_bnds_def, lon_bnds_def))
-  on.exit(ncdf4::nc_close(nc), add = TRUE)
+  on.exit(ncdf4::nc_close(nc), add = TRUE) # nolint: undesirable_function_linter
 
   # Rearrange and write data
   out_array <- .rearrange_to_grid(data_array, grid_info$lon_idx,
@@ -236,12 +236,12 @@ bin2cdf <- function(input_file,
   }
 
   # Create and write lat/lon bounds
-  ncdf4::ncvar_put(nc, "lon_bnds", 
-                   t(cbind(grid_info$lon - grid_info$cellsize_lon/2, 
-                           grid_info$lon + grid_info$cellsize_lon/2)))
-  ncdf4::ncvar_put(nc, "lat_bnds", 
-                   t(cbind(grid_info$lat - grid_info$cellsize_lat/2, 
-                           grid_info$lat + grid_info$cellsize_lat/2)))
+  ncdf4::ncvar_put(nc, "lon_bnds",
+                   t(cbind(grid_info$lon - grid_info$cellsize_lon / 2,
+                           grid_info$lon + grid_info$cellsize_lon / 2)))
+  ncdf4::ncvar_put(nc, "lat_bnds",
+                   t(cbind(grid_info$lat - grid_info$cellsize_lat / 2,
+                           grid_info$lat + grid_info$cellsize_lat / 2)))
 
   # Add global attributes
   if (!is.null(meta$source)) {

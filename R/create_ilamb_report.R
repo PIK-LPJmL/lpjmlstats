@@ -1,10 +1,12 @@
+#' Create ILAMB Report
+#'
+#' @keywords internal
 create_ilamb_report <- function(baseline_dir = baseline_dir,
                                 under_test_dirs = under_test_dirs,
                                 sim_table = NULL,
                                 output_file = NULL,
                                 eval_vars = c("mgpp", "mevap", "mtransp", "mrh", "mnpp", "vegc"),
                                 ilamb_run_script = file.path(ilamb_dir, "ilamb_run_cmd.sh")) {
-
   # 1. Create the iLAMB output directory
   if (is.null(output_file) || length(output_file) == 0)
     output_file <- "benchmark.pdf"
@@ -55,13 +57,13 @@ create_ilamb_report <- function(baseline_dir = baseline_dir,
     for (dir in c(baseline_dir, under_test_dirs)) {
       input_file <- file.path(dir, paste0(var, ".bin.json"))
       ident <- get_subfolder_name(dir)
-      
+
       # Read metadata to get standardized variable name (bin2cdf will read it again,
       # but this is necessary to construct the output filename before conversion)
       meta <- lpjmlkit::read_meta(input_file)
       name <- LPJmLMetaDataCalc$new(meta)$name
       output_file <- file.path(ilamb_dir, "MODELS", ident, paste0(name, ".nc"))
-      
+
       # Pass varname to avoid bin2cdf reading metadata again for name resolution
       bin2cdf(input_file, output_file, varname = name, use_days = TRUE)
     }
