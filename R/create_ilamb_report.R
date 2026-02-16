@@ -50,21 +50,16 @@ create_ilamb_report <- function(baseline_dir = baseline_dir,
     }
   }
 
-  # 5. Convert vars to NetCDF using the OLD C bin2cdf binary
-  bin2cdf_path <- system.file("bin2cdf", package = "lpjmlstats")
+  # 5. Convert vars to NetCDF using the R bin2cdf function
   process_var <- function(var) {
     for (dir in c(baseline_dir, under_test_dirs)) {
-      meta <- lpjmlkit::read_meta(file.path(dir, paste0(var, ".bin.json")))
-      name <- LPJmLMetaDataCalc$new(meta)$name
+      input_file <- file.path(dir, paste0(var, ".bin.json"))
       ident <- get_subfolder_name(dir)
-      system(
-        paste(bin2cdf_path, "-days -metafile",
-          name,
-          file.path(dir, "grid.bin.json"),
-          file.path(dir, paste0(var, ".bin.json")),
-          file.path(ilamb_dir, "MODELS", ident, paste0(name, ".nc"))
-        )
-      )
+      meta <- lpjmlkit::read_meta(input_file)
+      name <- LPJmLMetaDataCalc$new(meta)$name
+      output_file <- file.path(ilamb_dir, "MODELS", ident, paste0(name, ".nc"))
+      
+      bin2cdf(input_file, output_file, use_days = TRUE)
     }
   }
 
