@@ -55,11 +55,15 @@ create_ilamb_report <- function(baseline_dir = baseline_dir,
     for (dir in c(baseline_dir, under_test_dirs)) {
       input_file <- file.path(dir, paste0(var, ".bin.json"))
       ident <- get_subfolder_name(dir)
+      
+      # Read metadata to get standardized variable name (bin2cdf will read it again,
+      # but this is necessary to construct the output filename before conversion)
       meta <- lpjmlkit::read_meta(input_file)
       name <- LPJmLMetaDataCalc$new(meta)$name
       output_file <- file.path(ilamb_dir, "MODELS", ident, paste0(name, ".nc"))
       
-      bin2cdf(input_file, output_file, use_days = TRUE)
+      # Pass varname to avoid bin2cdf reading metadata again for name resolution
+      bin2cdf(input_file, output_file, varname = name, use_days = TRUE)
     }
   }
 
