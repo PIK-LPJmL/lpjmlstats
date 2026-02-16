@@ -75,6 +75,18 @@ test_that("benchmark report generation runs through without errors", {
   file.remove(report_path)
 })
 
+test_that("correct error message is thrown when no LPJmL files where found in directory", {
+  baseline_dir <- testthat::test_path("../testdata/")
+  under_test_dir <- testthat::test_path("../testdata/path2")
+  settings <-
+    list(soiln = list(GlobSumTimeAvgTable))
+
+  expect_error(
+    benchmark(baseline_dir, under_test_dir, settings, pdf_report = FALSE),
+    "Please check"
+  )
+})
+
 
 # ----- test benchmark utitlity functions
 

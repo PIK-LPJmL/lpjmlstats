@@ -52,14 +52,14 @@ sim_table <- attr(bench_data, "sim_table")
 
 # manually escape special character ":" and "_"
 sim_table <-
-  sim_table %>%
+  sim_table |>
   dplyr::mutate_all(escape_latex_special_chars)
 
 # reorder columns as they should be displayed
-tabl <- sim_table %>% dplyr::select(sim_names,
-                                    sim_ident,
-                                    sim_type,
-                                    lpjml_version)
+tabl <- sim_table |> dplyr::select(sim_names,
+                                   sim_ident,
+                                   sim_type,
+                                   lpjml_version)
 
 # create and style table
 knitr::kable(
@@ -70,7 +70,7 @@ knitr::kable(
   escape = FALSE,
   # allow latex commands but depends on manual escaping
   col.names = c("Sim Name", "Sim Identifier", "Sim Type", "Version")
-)  %>%
+)  |>
   kableExtra::kable_styling(font_size = 8,
                             latex_options = c("HOLD_position"))
 ```
@@ -78,8 +78,8 @@ knitr::kable(
 \textbf{Simulation Paths}
 ```{r print-simulation-paths, results='asis'}
 # select relevant columns and make font size of paths very small
-tabl <- sim_table %>%
-  dplyr::mutate(sim_paths = paste0("\\tiny ", sim_paths)) %>%
+tabl <- sim_table |>
+  dplyr::mutate(sim_paths = paste0("\\tiny ", sim_paths)) |>
   dplyr::select(sim_ident, sim_paths)
 
 # create and style table
@@ -89,7 +89,7 @@ knitr::kable(
   booktabs = TRUE,
   escape = FALSE,
   col.names = c("Sim Identifier", "Sim Path")
-) %>%
+) |>
   kableExtra::kable_styling(font_size = 8,
                             latex_options = c("HOLD_position"))
 ```
