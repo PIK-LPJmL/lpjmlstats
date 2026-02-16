@@ -47,11 +47,8 @@ bin2cdf <- function(input_file,
          "Please install it with: install.packages('ncdf4')")
   }
 
-  # Validate compress parameter (0 = no compression, 1-9 = compression levels)
-  if (compress < 0 || compress > 9) {
-    stop("compress must be between 0 and 9.")
-  }
-  # ncdf4 only accepts 1-9; 0 means no compression (NA)
+  # Validate compress parameter (0-9; 0 = no compression, ncdf4 uses NA for no compression)
+  if (compress < 0 || compress > 9) stop("compress must be between 0 and 9.")
   compress <- if (compress == 0) NA else compress
 
   # Validate output directory exists
@@ -72,7 +69,8 @@ bin2cdf <- function(input_file,
 
   # Resolve variable name
   if (is.null(varname)) {
-    varname <- meta$variable
+    # Use LPJmLMetaDataCalc to get the standardized name (e.g., "gpp" not "mgpp")
+    varname <- LPJmLMetaDataCalc$new(meta)$name
     if (is.null(varname) || varname == "") {
       varname <- gsub("\\.bin(\\.json)?$", "", basename(input_file))
     }
@@ -112,45 +110,76 @@ bin2cdf <- function(input_file,
   cs_lon <- if (is.null(meta$cellsize_lon)) 0.5 else meta$cellsize_lon
   cs_lat <- if (is.null(meta$cellsize_lat)) 0.5 else meta$cellsize_lat
 
-  lon_rounded <- round(lons / cs_lon) * cs_lon
-  lat_rounded <- round(lats / cs_lat) * cs_lat
-  lon_unique <- sort(unique(lon_rounded))
-  lat_unique <- sort(unique(lat_rounded))
+  # LPJmL coordinates are cell-centered; extract unique values
+  lon_unique <- sort(unique(lons))
+  lat_unique <- sort(unique(lats))
+
+  # Direct match - coordinates are already on the grid
+  lon_idx <- match(lons, lon_unique)
+  lat_idx <- match(lats, lat_unique)
 
   list(lon = lon_unique, lat = lat_unique,
-       lon_idx = match(lon_rounded, lon_unique),
-       lat_idx = match(lat_rounded, lat_unique))
+       lon_idx = lon_idx, lat_idx = lat_idx,
+       cellsize_lon = cs_lon, cellsize_lat = cs_lat)
 }
 
 # Build time axis values and units string
 .build_time_axis <- function(nstep, ntimesteps, firstyear, use_days) {
+  # Define days per month for noleap calendar
+  days_in_month <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
+
   if (use_days) {
-    vals <- if (nstep == 1) {
-      (seq_len(ntimesteps) - 1) * 365 + 183  # Annual: mid-year
-    } else if (nstep == 12) {
-      days_in_month <- c(31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31)
-      mid_month <- cumsum(days_in_month) - days_in_month / 2
-      idx <- seq_len(ntimesteps) - 1
-      (idx %/% 12) * 365 + mid_month[(idx %% 12) + 1]
-    } else {
-      seq_len(ntimesteps) - 1  # Daily
-    }
-    list(vals = vals, units = paste0("days since ", firstyear, "-1-1 0:0:0"))
-  } else {
+    # For noleap calendar: 365 days/year, no leap years
     if (nstep == 1) {
-      list(vals = seq(firstyear, length.out = ntimesteps), units = "years")
+      # Annual: mid-year day 182 (July 1)
+      vals <- (seq_len(ntimesteps) - 1) * 365 + 182
+      bounds <- NULL
+    } else if (nstep == 12) {
+      # Monthly: mid-month day 15
+      month_start <- c(0, cumsum(days_in_month[-12]))
+      mid_month <- month_start + 15
+      month_bounds_start <- c(0, cumsum(days_in_month[-12]))
+      month_bounds_end <- cumsum(days_in_month)
+
+      idx <- seq_len(ntimesteps) - 1
+      year_num <- idx %/% 12
+      month_num <- idx %% 12
+
+      vals <- year_num * 365 + mid_month[month_num + 1]
+      bounds <- cbind(
+        year_num * 365 + month_bounds_start[month_num + 1],
+        year_num * 365 + month_bounds_end[month_num + 1]
+      )
     } else {
-      prefix <- if (nstep == 12) "months" else "days"
-      list(vals = seq_len(ntimesteps) - 1,
-           units = paste0(prefix, " since ", firstyear, "-1-1 0:0:0"))
+      # Daily: day count from start
+      vals <- seq_len(ntimesteps) - 1
+      bounds <- NULL
     }
+
+    return(list(
+      vals = vals,
+      units = paste0("days since ", firstyear, "-1-1 0:0:0"),
+      calendar = "noleap",
+      bounds = bounds
+    ))
   }
+
+  # Non-days time axis
+  if (nstep == 1) {
+    return(list(vals = seq(firstyear, length.out = ntimesteps), units = "years"))
+  }
+
+  prefix <- if (nstep == 12) "months" else "days"
+  list(
+    vals = seq_len(ntimesteps) - 1,
+    units = paste0(prefix, " since ", firstyear, "-1-1 0:0:0")
+  )
 }
 
 # Write the NetCDF file
 .write_netcdf <- function(output_file, grid_info, time_info, nbands,
                           dim_names, meta, varname, compress, data_array) {
-  missing_val <- -9999.0
+  missing_val <- -1.e+32
   nlon <- length(grid_info$lon)
   nlat <- length(grid_info$lat)
   ntimesteps <- length(time_info$vals)
@@ -159,10 +188,14 @@ bin2cdf <- function(input_file,
   lon_dim <- ncdf4::ncdim_def("lon", "degrees_east", grid_info$lon)
   lat_dim <- ncdf4::ncdim_def("lat", "degrees_north", grid_info$lat)
   time_dim <- ncdf4::ncdim_def("time", time_info$units, time_info$vals)
+  bnds_dim <- ncdf4::ncdim_def("bnds", "", 1:2, create_dimvar = FALSE)
 
   if (nbands > 1) {
-    band_names <- dim_names[["band"]]
-    if (is.null(band_names)) band_names <- as.character(seq_len(nbands))
+    band_names <- if (is.null(dim_names[["band"]])) {
+      as.character(seq_len(nbands))
+    } else {
+      dim_names[["band"]]
+    }
     band_dim <- ncdf4::ncdim_def("band", "", seq_len(nbands),
                                  create_dimvar = FALSE)
     dims <- list(lon_dim, lat_dim, band_dim, time_dim)
@@ -171,16 +204,24 @@ bin2cdf <- function(input_file,
     dims <- list(lon_dim, lat_dim, time_dim)
   }
 
-  # Define variable
+  # Define main variable
   var_unit <- if (is.null(meta$unit) || meta$unit == "") "1" else meta$unit
   long_name <- if (is.null(meta$descr)) varname else meta$descr
-
   var_def <- ncdf4::ncvar_def(varname, var_unit, dims, missing_val,
                               longname = long_name, prec = "float",
                               compression = compress)
 
-  # Create file and ensure cleanup
-  nc <- ncdf4::nc_create(output_file, var_def)
+  # Define bounds variables
+  time_bnds_def <- ncdf4::ncvar_def("time_bnds", time_info$units,
+                                    list(bnds_dim, time_dim), prec = "double")
+  lat_bnds_def <- ncdf4::ncvar_def("lat_bnds", "degrees_north",
+                                   list(bnds_dim, lat_dim), prec = "double")
+  lon_bnds_def <- ncdf4::ncvar_def("lon_bnds", "degrees_east",
+                                   list(bnds_dim, lon_dim), prec = "double")
+
+  # Create file
+  nc <- ncdf4::nc_create(output_file,
+                         list(var_def, time_bnds_def, lat_bnds_def, lon_bnds_def))
   on.exit(ncdf4::nc_close(nc), add = TRUE)
 
   # Rearrange and write data
@@ -189,20 +230,49 @@ bin2cdf <- function(input_file,
                                   ntimesteps, nbands, missing_val)
   ncdf4::ncvar_put(nc, var_def, out_array)
 
-  # Add attributes
-  ncdf4::ncatt_put(nc, 0, "source", paste("lpjmlstats bin2cdf, R version",
-                                          utils::packageVersion("lpjmlstats")))
-  ncdf4::ncatt_put(nc, 0, "history",
-                   paste(Sys.time(), "- converted from LPJmL binary format"))
-  if (!is.null(meta$source)) {
-    ncdf4::ncatt_put(nc, 0, "LPJmL_version", meta$source)
+  # Write bounds data
+  if (!is.null(time_info$bounds)) {
+    ncdf4::ncvar_put(nc, "time_bnds", t(time_info$bounds))
   }
 
-  # Coordinate attributes (standard_name, long_name, axis)
+  # Create and write lat/lon bounds
+  ncdf4::ncvar_put(nc, "lon_bnds", 
+                   t(cbind(grid_info$lon - grid_info$cellsize_lon/2, 
+                           grid_info$lon + grid_info$cellsize_lon/2)))
+  ncdf4::ncvar_put(nc, "lat_bnds", 
+                   t(cbind(grid_info$lat - grid_info$cellsize_lat/2, 
+                           grid_info$lat + grid_info$cellsize_lat/2)))
+
+  # Add global attributes
+  if (!is.null(meta$source)) {
+    ncdf4::ncatt_put(nc, 0, "source", meta$source)
+  }
+
+  history <- paste(
+    c(meta$history,
+      paste(Sys.time(), ": Converted by lpjmlstats bin2cdf.R version",
+            utils::packageVersion("lpjmlstats"))),
+    collapse = "\n"
+  )
+  ncdf4::ncatt_put(nc, 0, "history", history)
+
+  if (!is.null(meta$global_attrs)) {
+    for (attr_name in names(meta$global_attrs)) {
+      ncdf4::ncatt_put(nc, 0, attr_name, meta$global_attrs[[attr_name]])
+    }
+  }
+
+  # Coordinate attributes
   .add_coord_attrs(nc, "lon", "longitude", "Longitude", "X")
   .add_coord_attrs(nc, "lat", "latitude", "Latitude", "Y")
   .add_coord_attrs(nc, "time", "time", "Time", "T")
-  ncdf4::ncatt_put(nc, "time", "calendar", "standard")
+
+  ncdf4::ncatt_put(nc, "lon", "bounds", "lon_bnds")
+  ncdf4::ncatt_put(nc, "lat", "bounds", "lat_bnds")
+  ncdf4::ncatt_put(nc, "time", "bounds", "time_bnds")
+
+  calendar <- if (!is.null(time_info$calendar)) time_info$calendar else "noleap"
+  ncdf4::ncatt_put(nc, "time", "calendar", calendar)
 
   if (!is.null(band_names)) {
     ncdf4::ncatt_put(nc, varname, "band_names",

@@ -4,6 +4,7 @@ create_ilamb_report <- function(baseline_dir = baseline_dir,
                                 output_file = NULL,
                                 eval_vars = c("mgpp", "mevap", "mtransp", "mrh", "mnpp", "vegc"),
                                 ilamb_run_script = file.path(ilamb_dir, "ilamb_run_cmd.sh")) {
+
   # 1. Create the iLAMB output directory
   if (is.null(output_file) || length(output_file) == 0)
     output_file <- "benchmark.pdf"
@@ -49,17 +50,20 @@ create_ilamb_report <- function(baseline_dir = baseline_dir,
     }
   }
 
-  # 5. Convert vars to NetCDF using the bin2cdf function
+  # 5. Convert vars to NetCDF using the OLD C bin2cdf binary
+  bin2cdf_path <- system.file("bin2cdf", package = "lpjmlstats")
   process_var <- function(var) {
     for (dir in c(baseline_dir, under_test_dirs)) {
       meta <- lpjmlkit::read_meta(file.path(dir, paste0(var, ".bin.json")))
       name <- LPJmLMetaDataCalc$new(meta)$name
       ident <- get_subfolder_name(dir)
-      bin2cdf(
-        input_file = file.path(dir, paste0(var, ".bin.json")),
-        output_file = file.path(ilamb_dir, "MODELS", ident, paste0(name, ".nc")),
-        varname = name,
-        use_days = TRUE
+      system(
+        paste(bin2cdf_path, "-days -metafile",
+          name,
+          file.path(dir, "grid.bin.json"),
+          file.path(dir, paste0(var, ".bin.json")),
+          file.path(ilamb_dir, "MODELS", ident, paste0(name, ".nc"))
+        )
       )
     }
   }
