@@ -131,11 +131,13 @@ bin2cdf <- function(input_file,
   if (use_days) {
     # For noleap calendar: 365 days/year, no leap years
     if (nstep == 1) {
-      # Annual: mid-year day 182 (July 1)
-      vals <- (seq_len(ntimesteps) - 1) * 365 + 182
-      bounds <- NULL
+      # Annual: midpoint at day 182 (July 1, middle of year)
+      idx <- seq_len(ntimesteps) - 1
+      vals <- idx * 365 + 182
+      # Bounds: start and end of each year
+      bounds <- cbind(idx * 365, (idx + 1) * 365)
     } else if (nstep == 12) {
-      # Monthly: mid-month day 15
+      # Monthly: midpoint at day 15 of each month
       month_start <- c(0, cumsum(days_in_month[-12]))
       mid_month <- month_start + 15
       month_bounds_start <- c(0, cumsum(days_in_month[-12]))
@@ -151,9 +153,10 @@ bin2cdf <- function(input_file,
         year_num * 365 + month_bounds_end[month_num + 1]
       )
     } else {
-      # Daily: day count from start
-      vals <- seq_len(ntimesteps) - 1
-      bounds <- NULL
+      # Daily: midpoint at 12:00:00 (0.5 days from start)
+      vals <- seq_len(ntimesteps) - 0.5
+      # Bounds: start and end of each day
+      bounds <- cbind(seq_len(ntimesteps) - 1, seq_len(ntimesteps))
     }
 
     return(list(
@@ -164,15 +167,35 @@ bin2cdf <- function(input_file,
     ))
   }
 
-  # Non-days time axis
+  # Non-days time axis: use midpoints for consistency with C version
   if (nstep == 1) {
-    return(list(vals = seq(firstyear, length.out = ntimesteps), units = "years"))
+    # Annual: midpoint of year (e.g., 1901.5 for middle of 1901)
+    vals <- seq(firstyear, length.out = ntimesteps) + 0.5
+    # Bounds: start and end of each year
+    bounds <- cbind(
+      seq(firstyear, length.out = ntimesteps),
+      seq(firstyear + 1, length.out = ntimesteps)
+    )
+    return(list(vals = vals, units = "years", bounds = bounds))
+  }
+
+  if (nstep == 12) {
+    # Monthly: midpoint of each month (0.5, 1.5, 2.5, ...)
+    vals <- seq_len(ntimesteps) - 0.5
+    # Bounds: start and end of each month
+    bounds <- cbind(seq_len(ntimesteps) - 1, seq_len(ntimesteps))
+  } else {
+    # Daily: midpoint of each day (0.5, 1.5, 2.5, ...)
+    vals <- seq_len(ntimesteps) - 0.5
+    # Bounds: start and end of each day
+    bounds <- cbind(seq_len(ntimesteps) - 1, seq_len(ntimesteps))
   }
 
   prefix <- if (nstep == 12) "months" else "days"
   list(
-    vals = seq_len(ntimesteps) - 1,
-    units = paste0(prefix, " since ", firstyear, "-1-1 0:0:0")
+    vals = vals,
+    units = paste0(prefix, " since ", firstyear, "-1-1 0:0:0"),
+    bounds = bounds
   )
 }
 
