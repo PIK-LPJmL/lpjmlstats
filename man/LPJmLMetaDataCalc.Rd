@@ -116,7 +116,7 @@ Save in metadata that data is in time_aggregation format
 \if{html}{\out{<a id="method-LPJmLMetaDataCalc-print"></a>}}
 \if{latex}{\out{\hypertarget{method-LPJmLMetaDataCalc-print}{}}}
 \subsection{Method \code{print()}}{
-Wrapper for \code{\link{LPJmLMetaData}} print method.
+Wrapper for \code{\link[lpjmlkit:LPJmLMetaData]{lpjmlkit::LPJmLMetaData}} print method.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{LPJmLMetaDataCalc$print(spaces = "", ...)}\if{html}{\out{</div>}}
 }
@@ -126,7 +126,7 @@ Wrapper for \code{\link{LPJmLMetaData}} print method.
 \describe{
 \item{\code{spaces}}{string of spaces to be printed as prefix}
 
-\item{\code{...}}{additional arguments passed to \code{\link{LPJmLMetaData}} print method}
+\item{\code{...}}{additional arguments passed to \code{\link[lpjmlkit:LPJmLMetaData]{lpjmlkit::LPJmLMetaData}} print method}
 }
 \if{html}{\out{</div>}}
 }
