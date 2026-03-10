@@ -69,3 +69,28 @@ test_that("metric option sep_cmp_lims still works when FALSE", {
   expect_no_error(out$TimeAvgMapWithAbs$generate_report_content())
   dev.off()
 })
+
+test_that("metric option fill_axis_tick_label_angle rotates colorbar labels", {
+  baseline_dir <- testthat::test_path("../testdata/path1")
+  under_test_dir <- testthat::test_path("../testdata/path2")
+
+  settings <- list(soiln = list(TimeAvgMap))
+
+  metric_options <- list(TimeAvgMap = list(fill_axis_tick_label_angle = 45, year_subset = c("2010")))
+
+  out <- benchmark(
+    baseline_dir,
+    under_test_dir,
+    settings,
+    pdf_report = FALSE,
+    metric_options = metric_options
+  )
+
+  # Check that the option is properly set
+  expect_equal(out$TimeAvgMap$m_options$fill_axis_tick_label_angle, 45)
+
+  # Verify plots can be generated without error
+  pdf(file = NULL)
+  expect_no_error(out$TimeAvgMap$generate_report_content())
+  dev.off()
+})

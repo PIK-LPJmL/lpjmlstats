@@ -430,6 +430,8 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' limits for the values in the map plot (default c(0.05, 0.95))
       #' - `n_breaks`: number of breaks for each arm of the diverging
       #' color scale (default 3)
+      #' - `fill_axis_tick_label_angle`: integer, angle in degrees for the fill axis (colorbar)
+      #' tick labels (default 45)
       #' - `year_subset`: character vector, defines which calendar years the metric considers,
       #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
       #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
@@ -446,7 +448,8 @@ TimeAvgMap <- # nolint: object_name_linter.
         quantiles = c(0.05, 0.95),
         year_subset = as.character(1991:2000),
         cell_subset = NULL,
-        n_breaks = 3,
+        n_breaks = 5,
+        fill_axis_tick_label_angle = 45,
         num_cols = 2,
         var_subheading = FALSE,
         band_subheading = FALSE
@@ -511,6 +514,8 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       #' have their own separate limits (default TRUE)
       #' - `n_breaks`: number of breaks for each arm of the diverging
       #' color scale (default 3)
+      #' - `fill_axis_tick_label_angle`: integer, angle in degrees for the fill axis (colorbar)
+      #' tick labels (default 45)
       #' - `year_subset`: character vector, defines which calendar years the metric considers,
       #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
       #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
@@ -528,7 +533,8 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
         sep_cmp_lims = TRUE,
         year_subset = as.character(1991:2000),
         cell_subset = NULL,
-        n_breaks = 3,
+        n_breaks = 5,
+        fill_axis_tick_label_angle = 45,
         num_cols = 3,
         var_subheading = FALSE,
         band_subheading = FALSE
@@ -719,6 +725,7 @@ TimeAvgMapTreeCover <- # nolint: object_name_linter.
         year_subset = as.character(1991:2000),
         cell_subset = NULL,
         n_breaks = 8,
+        fill_axis_tick_label_angle = 45,
         num_cols = 3,
         var_subheading = FALSE,
         band_subheading = FALSE

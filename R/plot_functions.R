@@ -160,6 +160,7 @@ lpjml_calc_to_map <- function(lpjml_calc,
     plot_title,
     font_size = m_options$font_size,
     n_breaks = m_options$n_breaks,
+    fill_axis_tick_label_angle = m_options$fill_axis_tick_label_angle,
     limits = limits_plot,
     colorbar_length = colorbar_length
   )
@@ -174,7 +175,8 @@ map_tibble_to_ggplot <-
            title,
            colorbar_length = 1.4,
            font_size = 9,
-           n_breaks = 3,
+           n_breaks = 5,
+           fill_axis_tick_label_angle = 45,
            limits = NULL) {
 
     # Crop values to limits and drop NA pixels
@@ -253,7 +255,8 @@ map_tibble_to_ggplot <-
         # stretch the legend to width of plot
         legend.key.width = ggplot2::unit(colorbar_length, "cm"),
         legend.key.height = ggplot2::unit(0.2, "cm"),
-        aspect.ratio = (y_range[2] - y_range[1]) / (x_range[2] - x_range[1])
+        aspect.ratio = (y_range[2] - y_range[1]) / (x_range[2] - x_range[1]),
+        legend.text = ggplot2::element_text(angle = fill_axis_tick_label_angle)
       )
 
     p <- p + benchmark_theme(p, font_size) + ggplot2::ggtitle(title)
