@@ -122,9 +122,6 @@ deprecate_map_m_options <- function(m_options, version = "1.2.0") {
   m_options$scale_fill_n_breaks <- deprecate_arg(
     m_options$scale_fill_n_breaks, m_options$n_breaks, version
   )
-  m_options$scale_fill_tick_label_angle <- deprecate_arg(
-    m_options$scale_fill_tick_label_angle, m_options$fill_axis_tick_label_angle, version
-  )
   m_options
 }
 
