@@ -426,11 +426,11 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' All variables with a name that contains at least one these strings as a substring,
       #' will not be plotted in the plotgrid (see `num_cols`) but before the plot grid starts.
       #' These plots are allowed to extent to full page width. (default NULL)
-      #' - `quantiles`: quantiles used to determine the lower and upper
+      #' - `scale_fill_quantiles`: quantiles used to determine the lower and upper
       #' limits for the values in the map plot (default c(0.05, 0.95))
-      #' - `n_breaks`: number of breaks for each arm of the diverging
-      #' color scale (default 3)
-      #' - `fill_axis_tick_label_angle`: integer, angle in degrees for the fill axis (colorbar)
+      #' - `scale_fill_n_breaks`: number of breaks for each arm of the diverging
+      #' color scale (default 5)
+      #' - `scale_fill_tick_label_angle`: integer, angle in degrees for the fill axis (colorbar)
       #' tick labels (default 45)
       #' - `year_subset`: character vector, defines which calendar years the metric considers,
       #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
@@ -445,11 +445,11 @@ TimeAvgMap <- # nolint: object_name_linter.
       m_options = list(
         font_size = 6,
         highlight = NULL,
-        quantiles = c(0.05, 0.95),
+        scale_fill_quantiles = c(0.05, 0.95),
         year_subset = as.character(1991:2000),
         cell_subset = NULL,
-        n_breaks = 5,
-        fill_axis_tick_label_angle = 45,
+        scale_fill_n_breaks = 5,
+        scale_fill_tick_label_angle = 45,
         num_cols = 2,
         var_subheading = FALSE,
         band_subheading = FALSE
@@ -507,14 +507,14 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       #' All variables with a name that contains at least one these strings as a substring,
       #' will not be plotted in the plotgrid (see `num_cols`) but before the plot grid starts.
       #' These plots are allowed to extent to full page width. (default NULL)
-      #' - `quantiles`: quantiles used to determine the lower and upper
+      #' - `scale_fill_quantiles`: quantiles used to determine the lower and upper
       #' limits for the values in the map plot (default c(0.05, 0.95))
       #' - `sep_cmp_lims`: logical, if TRUE not all plots of a var_grp
       #' will have the same limits anymore, but the compare plots
       #' have their own separate limits (default TRUE)
-      #' - `n_breaks`: number of breaks for each arm of the diverging
-      #' color scale (default 3)
-      #' - `fill_axis_tick_label_angle`: integer, angle in degrees for the fill axis (colorbar)
+      #' - `scale_fill_n_breaks`: number of breaks for each arm of the diverging
+      #' color scale (default 5)
+      #' - `scale_fill_tick_label_angle`: integer, angle in degrees for the fill axis (colorbar)
       #' tick labels (default 45)
       #' - `year_subset`: character vector, defines which calendar years the metric considers,
       #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
@@ -529,12 +529,12 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       m_options = list(
         font_size = 6,
         highlight = NULL,
-        quantiles = c(0.05, 0.95),
+        scale_fill_quantiles = c(0.05, 0.95),
         sep_cmp_lims = TRUE,
         year_subset = as.character(1991:2000),
         cell_subset = NULL,
-        n_breaks = 5,
-        fill_axis_tick_label_angle = 45,
+        scale_fill_n_breaks = 5,
+        scale_fill_tick_label_angle = 45,
         num_cols = 3,
         var_subheading = FALSE,
         band_subheading = FALSE
@@ -720,12 +720,12 @@ TimeAvgMapTreeCover <- # nolint: object_name_linter.
       m_options = list(
         font_size = 4,
         highlight = NULL,
-        quantiles = c(0.05, 0.95),
+        scale_fill_quantiles = c(0.05, 0.95),
         sep_cmp_lims = TRUE,
         year_subset = as.character(1991:2000),
         cell_subset = NULL,
-        n_breaks = 8,
-        fill_axis_tick_label_angle = 45,
+        scale_fill_n_breaks = 8,
+        scale_fill_tick_label_angle = 45,
         num_cols = 3,
         var_subheading = FALSE,
         band_subheading = FALSE
