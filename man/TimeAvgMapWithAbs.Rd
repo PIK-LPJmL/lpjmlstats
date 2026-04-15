@@ -22,13 +22,15 @@ beginning of report content of the metric.
 All variables with a name that contains at least one these strings as a substring,
 will not be plotted in the plotgrid (see \code{num_cols}) but before the plot grid starts.
 These plots are allowed to extent to full page width. (default NULL)
-\item \code{quantiles}: quantiles used to determine the lower and upper
+\item \code{scale_fill_quantiles}: quantiles used to determine the lower and upper
 limits for the values in the map plot (default c(0.05, 0.95))
 \item \code{sep_cmp_lims}: logical, if TRUE not all plots of a var_grp
 will have the same limits anymore, but the compare plots
 have their own separate limits (default TRUE)
-\item \code{n_breaks}: number of breaks for each arm of the diverging
-color scale (default 3)
+\item \code{scale_fill_n_breaks}: number of breaks for each arm of the diverging
+color scale (default 5)
+\item \code{scale_fill_tick_label_angle}: integer, angle in degrees for the fill axis (colorbar)
+tick labels (default 45)
 \item \code{year_subset}: character vector, defines which calendar years the metric considers,
 i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
 \item \code{cell_subset}: character vector, defines which cells to subset (default NULL)
