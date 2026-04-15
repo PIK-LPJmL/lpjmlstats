@@ -190,8 +190,9 @@ create_var_grp <-
 
 get_test_m_options <- function() {
   m_options <- list(font_size = 8,
-                    n_breaks = 3,
-                    quantiles = c(0.05, 0.95),
+                    scale_fill_n_breaks = 5,
+                    scale_fill_quantiles = c(0.05, 0.95),
+                    scale_fill_tick_label_angle = 45,
                     var_subheading = FALSE,
                     band_subheading = FALSE,
                     num_cols = 2)

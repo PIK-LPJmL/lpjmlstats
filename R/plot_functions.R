@@ -114,24 +114,36 @@ create_map_plots <- function(var_grp_list,
   return(plot_list)
 }
 
+# Handle deprecated m_options argument names for map metrics
+deprecate_map_m_options <- function(m_options, version = "1.2.0") {
+  m_options$scale_fill_quantiles <- deprecate_arg(
+    m_options$scale_fill_quantiles, m_options$quantiles, version
+  )
+  m_options$scale_fill_n_breaks <- deprecate_arg(
+    m_options$scale_fill_n_breaks, m_options$n_breaks, version
+  )
+  m_options
+}
+
 # Function to get limits for the different types of data ("under_test", "baseline", "compare")
 # in the var_grp, depending
 # on the options set in m_options.
 get_type_limits <- function(var_grp, m_options) {
+  m_options <- deprecate_map_m_options(m_options)
   if (!is.null(m_options$sep_cmp_lims) && m_options$sep_cmp_lims) {
     var_grp_cmp <- var_grp$deep_clone()
     var_grp_cmp$under_test <- NULL
     var_grp_cmp$baseline <- NULL
-    limits_cmp <- var_grp_cmp$get_limits(quantiles = m_options$quantiles)
+    limits_cmp <- var_grp_cmp$get_limits(quantiles = m_options$scale_fill_quantiles)
 
     var_grp_non_cmp <- var_grp$deep_clone()
     var_grp_non_cmp$compare <- NULL
-    limits_non_cmp <- var_grp_non_cmp$get_limits(quantiles = m_options$quantiles)
+    limits_non_cmp <- var_grp_non_cmp$get_limits(quantiles = m_options$scale_fill_quantiles)
 
     rm(var_grp_cmp, var_grp_non_cmp)
     return(list(baseline = limits_non_cmp, under_test = limits_non_cmp, compare = limits_cmp))
   } else {
-    limits_all <- var_grp$get_limits(quantiles = m_options$quantiles)
+    limits_all <- var_grp$get_limits(quantiles = m_options$scale_fill_quantiles)
     return(list(baseline = limits_all, under_test = limits_all, compare = limits_all))
   }
 }
@@ -142,6 +154,7 @@ lpjml_calc_to_map <- function(lpjml_calc,
                               m_options,
                               limits,
                               colorbar_length = 1.4) {
+  m_options <- deprecate_map_m_options(m_options)
   pos_in_var_grp <- lpjml_calc$meta$pos_in_var_grp
   # select the limits that are defined for the type (e.g. "under_test")
   limits_plot <- limits[[pos_in_var_grp$type]]
@@ -159,7 +172,8 @@ lpjml_calc_to_map <- function(lpjml_calc,
     tibble,
     plot_title,
     font_size = m_options$font_size,
-    n_breaks = m_options$n_breaks,
+    scale_fill_n_breaks = m_options$scale_fill_n_breaks,
+    scale_fill_tick_label_angle = m_options$scale_fill_tick_label_angle,
     limits = limits_plot,
     colorbar_length = colorbar_length
   )
@@ -174,7 +188,8 @@ map_tibble_to_ggplot <-
            title,
            colorbar_length = 1.4,
            font_size = 9,
-           n_breaks = 3,
+           scale_fill_n_breaks = 5,
+           scale_fill_tick_label_angle = 45,
            limits = NULL) {
 
     # Crop values to limits and drop NA pixels
@@ -204,7 +219,7 @@ map_tibble_to_ggplot <-
     breaks <- function(limits) {
       if (limits[1] != limits[2])
         breaks <-
-          ((-n_breaks - 0.5):(n_breaks + 0.5)) / (n_breaks + 0.5) *
+          ((-scale_fill_n_breaks - 0.5):(scale_fill_n_breaks + 0.5)) / (scale_fill_n_breaks + 0.5) *
           max(abs(limits))
       else
         breaks <- c(limits[1] - 1, limits[1] + 1)
@@ -253,7 +268,8 @@ map_tibble_to_ggplot <-
         # stretch the legend to width of plot
         legend.key.width = ggplot2::unit(colorbar_length, "cm"),
         legend.key.height = ggplot2::unit(0.2, "cm"),
-        aspect.ratio = (y_range[2] - y_range[1]) / (x_range[2] - x_range[1])
+        aspect.ratio = (y_range[2] - y_range[1]) / (x_range[2] - x_range[1]),
+        legend.text = ggplot2::element_text(angle = scale_fill_tick_label_angle)
       )
 
     p <- p + benchmark_theme(p, font_size) + ggplot2::ggtitle(title)
