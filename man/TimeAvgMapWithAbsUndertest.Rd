@@ -34,7 +34,7 @@ tick labels (default 45)
 \item \code{year_subset}: character vector, defines which calendar years the metric considers,
 i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
 \item \code{cell_subset}: character vector, defines which cells to subset (default NULL)
-\item \code{num_cols}: integer, number of columns in the plot grid in the report (default 3)
+\item \code{num_cols}: integer, number of columns in the plot grid in the report (default 2)
 \item \code{var_subheading}: logical, if TRUE, a linebreak and a subheading will
 be inserted before plots for a new variable are added to the report.
 with the name of the variable will be added. Both things are intended to visually seperate
