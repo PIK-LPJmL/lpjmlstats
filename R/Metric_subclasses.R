@@ -559,6 +559,83 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
     )
   )
 
+#' @title TimeAvgMapWithAbsUndertest
+#' @description
+#' TimeAvgMapWithAbsUndertest metric.
+#' See \link{Metric} for the documentation of metrics in general.
+#' @export
+TimeAvgMapWithAbsUndertest <- # nolint: object_name_linter.
+  R6::R6Class(
+    "TimeAvgMapWithAbsUndertest",
+    inherit = TimeAvgMapWithAbs,
+    public = list(
+      #' @description
+      #' Compare the baseline summary with the under test summaries by
+      #' subtracting the baseline from the under test. The baseline is
+      #' then set to NULL so it is omitted when printing the plots.
+      #' @param var_grp variable group
+      compare = function(var_grp) {
+        # Run the comparison logic from TimeAvgMapWithAbs
+        super$compare(var_grp)
+
+        # Remove the baseline so it isn't printed
+        var_grp$baseline <- NULL
+      },
+
+      #' @field m_options
+      #' List of metric options specific to this metric:
+      #' - `font_size`: integer, font size of the map plot (default 6)
+      #' - `highlight`: vector of strings, indicating which variables
+      #' should be highlighted in the report, that is receive a larger plot at the
+      #' beginning of report content of the metric.
+      #' All variables with a name that contains at least one these strings as a substring,
+      #' will not be plotted in the plotgrid (see `num_cols`) but before the plot grid starts.
+      #' These plots are allowed to extent to full page width. (default NULL)
+      #' - `scale_fill_quantiles`: quantiles used to determine the lower and upper
+      #' limits for the values in the map plot (default c(0.05, 0.95))
+      #' - `sep_cmp_lims`: logical, if TRUE not all plots of a var_grp
+      #' will have the same limits anymore, but the compare plots
+      #' have their own separate limits (default TRUE)
+      #' - `scale_fill_n_breaks`: number of breaks for each arm of the diverging
+      #' color scale (default 5)
+      #' - `scale_fill_tick_label_angle`: integer, angle in degrees for the fill axis (colorbar)
+      #' tick labels (default 45)
+      #' - `year_subset`: character vector, defines which calendar years the metric considers,
+      #' i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default 1991:2000).
+      #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
+      #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
+      #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will
+      #' be inserted before plots for a new variable are added to the report.
+      #' with the name of the variable will be added. Both things are intended to visually seperate
+      #' the plots of different variables and to better organize the report,
+      #' especially if the metric generates many plots for each variable. (default FALSE)
+      #' - `band_subheading`: analogous to var_subheading but for bands (default FALSE)
+      m_options = list(
+        font_size = 6,
+        highlight = NULL,
+        scale_fill_quantiles = c(0.05, 0.95),
+        sep_cmp_lims = TRUE,
+        year_subset = as.character(1991:2000),
+        cell_subset = NULL,
+        scale_fill_n_breaks = 5,
+        scale_fill_tick_label_angle = 45,
+        num_cols = 2,
+        var_subheading = FALSE,
+        band_subheading = FALSE
+      ),
+
+      #' @field title
+      #' Section header used in the report
+      title = "Time Average Maps With Absolute Undertest Values",
+
+      #' @field description
+      #' Description used in the report
+      description = "The cell time values are averaged
+                     over time and plotted on a map. The difference
+                     to the baseline is also plotted, but the baseline itself is omitted. \n"
+    )
+  )
+
 # ------------ metrics for special outputs -------------------------------------
 
 #' @title GlobSumTimeAvgTablePFT_harvest

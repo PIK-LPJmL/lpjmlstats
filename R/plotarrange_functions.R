@@ -35,8 +35,11 @@ arrange_map_plots <- function(plotlist, m_options) {
 
 arrange_plots_all <- function(plotlist, num_cols, wrap) {
   print_plotrow <- function(plotrow) {
-    if (!is.null(plotrow))
+    if (!is.null(plotrow)) {
       print(plotrow + patchwork::plot_layout(nrow = 1, widths = rep(1, num_cols)))
+      # Force a markdown line break after the plot is printed
+      cat("\n\n")
+    }
   }
   # wrapping each plot means that patchwork does not
   # try to align plots which is sometimes more robust
