@@ -159,8 +159,7 @@ GlobSumTimeseries <- R6::R6Class( # nolint: object_name_linter.
     #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
     #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
     #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will
-    #' be inserted before plots for a new variable are added to the report.
-    #' Both things are intended to visually seperate
+    #' be inserted before plots for a each new variable. This is intended to visually separate
     #' the plots of different variables and to better organize the report,
     #' especially if the metric generates many plots for each variable. (default FALSE)
     #' - `band_subheading`: analogous to var_subheading but for bands (default FALSE)
@@ -305,8 +304,7 @@ CellSubsetAnnAvgTimeseries <- # nolint: object_name_linter.
       #' - `cell`: cells to be subsetted (default 10000)
       #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
       #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will
-      #' be inserted before plots for a new variable are added to the report.
-      #' with the name of the variable will be added. Both things are intended to visually seperate
+      #' be inserted before plots for a each new variable. This is intended to visually separate
       #' the plots of different variables and to better organize the report,
       #' especially if the metric generates many plots for each variable. (default FALSE)
       #' - `band_subheading`: analogous to var_subheading but for bands (default FALSE)
@@ -421,7 +419,7 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' List of metric options specific to this metric:
       #' - `font_size`: integer, font size of the map plot (default 6)
       #' - `highlight`: vector of strings, indicating which variables
-      #' should be highlighted in the report, that is receive a larger plot at the
+      #' should be highlighted in the report, i.e. receive a larger plot at the
       #' beginning of report content of the metric.
       #' All variables with a name that contains at least one these strings as a substring,
       #' will not be plotted in the plotgrid (see `num_cols`) but before the plot grid starts.
@@ -437,8 +435,7 @@ TimeAvgMap <- # nolint: object_name_linter.
       #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
       #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
       #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will
-      #' be inserted before plots for a new variable are added to the report.
-      #' with the name of the variable will be added. Both things are intended to visually seperate
+      #' be inserted before plots for a each new variable. This is intended to visually separate
       #' the plots of different variables and to better organize the report,
       #' especially if the metric generates many plots for each variable. (default FALSE)
       #' - `band_subheading`: analogous to var_subheading but for bands (default FALSE)
@@ -502,7 +499,7 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       #' List of metric options specific to this metric:
       #' - `font_size`: integer, font size of the map plot (default 6)
       #' - `highlight`: vector of strings, indicating which variables
-      #' should be highlighted in the report, that is receive a larger plot at the
+      #' should be highlighted in the report, i.e. receive a larger plot at the
       #' beginning of report content of the metric.
       #' All variables with a name that contains at least one these strings as a substring,
       #' will not be plotted in the plotgrid (see `num_cols`) but before the plot grid starts.
@@ -521,8 +518,7 @@ TimeAvgMapWithAbs <- # nolint: object_name_linter.
       #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
       #' - `num_cols`: integer, number of columns in the plot grid in the report (default 3)
       #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will
-      #' be inserted before plots for a new variable are added to the report.
-      #' with the name of the variable will be added. Both things are intended to visually seperate
+      #' be inserted before plots for a each new variable. This is intended to visually separate
       #' the plots of different variables and to better organize the report,
       #' especially if the metric generates many plots for each variable. (default FALSE)
       #' - `band_subheading`: analogous to var_subheading but for bands (default FALSE)
@@ -586,7 +582,7 @@ TimeAvgMapWithAbsUndertest <- # nolint: object_name_linter.
       #' List of metric options specific to this metric:
       #' - `font_size`: integer, font size of the map plot (default 6)
       #' - `highlight`: vector of strings, indicating which variables
-      #' should be highlighted in the report, that is receive a larger plot at the
+      #' should be highlighted in the report, i.e. receive a larger plot at the
       #' beginning of report content of the metric.
       #' All variables with a name that contains at least one these strings as a substring,
       #' will not be plotted in the plotgrid (see `num_cols`) but before the plot grid starts.
@@ -605,8 +601,7 @@ TimeAvgMapWithAbsUndertest <- # nolint: object_name_linter.
       #' - `cell_subset`: character vector, defines which cells to subset (default NULL)
       #' - `num_cols`: integer, number of columns in the plot grid in the report (default 2)
       #' - `var_subheading`: logical, if TRUE, a linebreak and a subheading will
-      #' be inserted before plots for a new variable are added to the report.
-      #' with the name of the variable will be added. Both things are intended to visually seperate
+      #' be inserted before plots for a each new variable. This is intended to visually separate
       #' the plots of different variables and to better organize the report,
       #' especially if the metric generates many plots for each variable. (default FALSE)
       #' - `band_subheading`: analogous to var_subheading but for bands (default FALSE)
