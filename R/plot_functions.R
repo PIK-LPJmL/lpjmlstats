@@ -269,7 +269,10 @@ map_tibble_to_ggplot <-
         legend.key.width = ggplot2::unit(colorbar_length, "cm"),
         legend.key.height = ggplot2::unit(0.2, "cm"),
         aspect.ratio = (y_range[2] - y_range[1]) / (x_range[2] - x_range[1]),
-        legend.text = ggplot2::element_text(angle = scale_fill_tick_label_angle)
+        legend.text = ggplot2::element_text(angle = scale_fill_tick_label_angle),
+        axis.text = ggplot2::element_blank(),
+        axis.title = ggplot2::element_blank(),
+        axis.ticks = ggplot2::element_blank()
       )
 
     p <- p + benchmark_theme(p, font_size) + ggplot2::ggtitle(title)
