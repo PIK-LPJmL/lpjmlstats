@@ -21,8 +21,7 @@ i.e., a data subset that the metric works with; e.g., c("1995", "1996") (default
 \item \code{cell_subset}: character vector, defines which cells to subset (default NULL)
 \item \code{num_cols}: integer, number of columns in the plot grid in the report (default 2)
 \item \code{var_subheading}: logical, if TRUE, a linebreak and a subheading will
-be inserted before plots for a new variable are added to the report.
-Both things are intended to visually seperate
+be inserted before plots for a each new variable. This is intended to visually separate
 the plots of different variables and to better organize the report,
 especially if the metric generates many plots for each variable. (default FALSE)
 \item \code{band_subheading}: analogous to var_subheading but for bands (default FALSE)

@@ -4,16 +4,14 @@ on:
   push:
     branches: [main, master]
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
     branches: [main, master]
 
 jobs:
   check:
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
       - uses: r-lib/actions/setup-pandoc@v2
 
@@ -25,33 +23,30 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: |
-            lucode2
-            covr
-            madrat
-            magclass
-            citation
-            gms
-            goxygen
-            GDPuc
+            any::lucode2
+            any::covr
+            any::madrat
+            any::magclass
+            any::citation
+            any::gms
+            any::goxygen
+            any::GDPuc
           # piam packages also available on CRAN (madrat, magclass, citation,
           # gms, goxygen, GDPuc) will usually have an outdated binary version
           # available; by using extra-packages we get the newest version
 
-      - name: Run pre-commit checks
-        shell: bash
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      - name: Install python dependencies if applicable
         run: |
-          python -m pip install pre-commit
-          python -m pip freeze --local
-          pre-commit run --show-diff-on-failure --color=always --all-files
+          [ -f requirements.txt ] && python -m pip install --upgrade pip wheel || true
+          [ -f requirements.txt ] && pip install -r requirements.txt || true
 
       - name: Verify validation key
         shell: Rscript {0}
         run: lucode2:::validkey(stopIfInvalid = TRUE)
-
-      - name: Verify that lucode2::buildLibrary was successful
-        if: github.event_name == 'pull_request'
-        shell: Rscript {0}
-        run: lucode2:::isVersionUpdated()
 
       - name: Checks
         shell: Rscript {0}
@@ -60,31 +55,7 @@ jobs:
           lucode2::check(runLinter = FALSE)
 
       - name: Test coverage
-        if: ${{ github.event_name != 'pull_request' }}
         shell: Rscript {0}
-        run: |
-          nonDummyTests <- setdiff(list.files("./tests/testthat/"), c("test-dummy.R", "_snaps"))
-          if(length(nonDummyTests) > 0 && !lucode2:::loadBuildLibraryConfig()[["skipCoverage"]]) {
-            coverage <- covr::package_coverage(quiet = FALSE)
-            # The following function might be unnecessary if r-lib/covr#616 gets merged
-            to_simple_codecov <- function(coverage) {
-              fullLineCoverage <- covr:::per_line(coverage)
-              data <- Map(function(fileCoverage) {
-                resultCoverage <- lapply(fileCoverage$coverage, jsonlite::unbox)
-                names(resultCoverage) <- seq_along(resultCoverage)
-                return(resultCoverage)
-              }, fullLineCoverage)
-              return(jsonlite::toJSON(list("coverage" = data), na = "null"))
-            }
-            writeLines(to_simple_codecov(coverage), "simple-codecov.json")
-          }
+        run: covr::codecov(quiet = FALSE)
         env:
           NOT_CRAN: "true"
-
-      - uses: codecov/codecov-action@v4
-        if: ${{ github.event_name != 'pull_request' }}
-        with:
-          file: ./simple-codecov.json
-          plugin: noop
-          disable_search: true
-          token: ${{ secrets.CODECOV_TOKEN }}

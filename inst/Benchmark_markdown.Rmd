@@ -4,12 +4,13 @@ header-includes:
 - \usepackage{makecell}
 - \usepackage{float}
 - \usepackage{longtable}
+- \usepackage{graphicx}
 - \floatplacement{figure}{H} 
 output:
   pdf_document:
     toc: false
     template: default.latex
-geometry: margin=2.1cm
+geometry: margin=1cm
 ---
 
 ```{r setup-settings-and-metadata, echo = FALSE}
@@ -22,7 +23,9 @@ knitr::opts_chunk$set(
   dev = getOption("lpjmlstats.graphics_device", "png"),
   crop = NULL,
   fig.pos = "H",
-  fig.height = getOption("lpjmlstats.fig_height", 2.4)
+  fig.height = getOption("lpjmlstats.fig_height", 2.4),
+  out.width = "100%",    # Stretch to the maximum LaTeX text width
+  fig.align = "center"   # Ensure they stay centered
 )
 ```
 

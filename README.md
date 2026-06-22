@@ -1,8 +1,8 @@
 # Statistical tools for LPJmL data analysis
 
-R package **lpjmlstats**, version **0.9.6**
+R package **lpjmlstats**, version **0.10.0**
 
-[![CRAN status](https://www.r-pkg.org/badges/version/lpjmlstats)](https://cran.r-project.org/package=lpjmlstats) [![R build status](https://github.com/PIK-LPJmL/lpjmlstats/workflows/check/badge.svg)](https://github.com/PIK-LPJmL/lpjmlstats/actions) [![codecov](https://codecov.io/gh/PIK-LPJmL/lpjmlstats/branch/master/graph/badge.svg)](https://app.codecov.io/gh/PIK-LPJmL/lpjmlstats) [![r-universe](https://pik-piam.r-universe.dev/badges/lpjmlstats)](https://pik-piam.r-universe.dev/builds)
+[![CRAN status](https://www.r-pkg.org/badges/version/lpjmlstats)](https://cran.r-project.org/package=lpjmlstats)  [![R build status](https://github.com/PIK-LPJmL/lpjmlstats/workflows/check/badge.svg)](https://github.com/PIK-LPJmL/lpjmlstats/actions) [![codecov](https://codecov.io/gh/PIK-LPJmL/lpjmlstats/branch/master/graph/badge.svg)](https://app.codecov.io/gh/PIK-LPJmL/lpjmlstats) [![r-universe](https://pik-piam.r-universe.dev/badges/lpjmlstats)](https://pik-piam.r-universe.dev/builds)
 
 ## Purpose and Functionality
 
@@ -48,17 +48,16 @@ In case of questions / problems please contact David Hötten <davidho@pik-potsda
 
 To cite package **lpjmlstats** in publications use:
 
-Hötten D, Breier J, Müller C, Wirth S (2026). "lpjmlstats: Statistical tools for LPJmL data analysis." Version: 0.9.6, <https://github.com/PIK-LPJmL/lpjmlstats>.
+Hötten D, Breier J, Müller C, Wirth S (2026). _lpjmlstats: Statistical tools for LPJmL data analysis_. R package version 0.10.0, <https://github.com/PIK-LPJmL/lpjmlstats>.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
-@Misc{,
+@Manual{,
   title = {lpjmlstats: Statistical tools for LPJmL data analysis},
   author = {David Hötten and Jannes Breier and Christoph Müller and Stephen B. Wirth},
-  date = {2026-04-15},
   year = {2026},
+  note = {R package version 0.10.0},
   url = {https://github.com/PIK-LPJmL/lpjmlstats},
-  note = {Version: 0.9.6},
 }
 ```

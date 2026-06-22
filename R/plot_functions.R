@@ -273,7 +273,10 @@ map_tibble_to_ggplot <-
           angle = scale_fill_tick_label_angle,
           hjust = if (scale_fill_tick_label_angle > 0) 1 else 0.5,
           vjust = if (scale_fill_tick_label_angle > 0) 1 else 0.5
-        )
+        ),
+        axis.text = ggplot2::element_blank(),
+        axis.title = ggplot2::element_blank(),
+        axis.ticks = ggplot2::element_blank()
       )
 
     p <- p + benchmark_theme(p, font_size) + ggplot2::ggtitle(title)
