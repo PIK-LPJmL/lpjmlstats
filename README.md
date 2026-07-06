@@ -1,8 +1,8 @@
 # Statistical tools for LPJmL data analysis
 
-R package **lpjmlstats**, version **0.10.0**
+R package **lpjmlstats**, version **0.10.1**
 
-[![CRAN status](https://www.r-pkg.org/badges/version/lpjmlstats)](https://cran.r-project.org/package=lpjmlstats)  [![R build status](https://github.com/PIK-LPJmL/lpjmlstats/workflows/check/badge.svg)](https://github.com/PIK-LPJmL/lpjmlstats/actions) [![codecov](https://codecov.io/gh/PIK-LPJmL/lpjmlstats/branch/master/graph/badge.svg)](https://app.codecov.io/gh/PIK-LPJmL/lpjmlstats) [![r-universe](https://pik-piam.r-universe.dev/badges/lpjmlstats)](https://pik-piam.r-universe.dev/builds)
+   [![R build status](https://github.com/PIK-LPJmL/lpjmlstats/workflows/check/badge.svg)](https://github.com/PIK-LPJmL/lpjmlstats/actions) [![codecov](https://codecov.io/gh/PIK-LPJmL/lpjmlstats/branch/master/graph/badge.svg)](https://app.codecov.io/gh/PIK-LPJmL/lpjmlstats) [![r-universe](https://pik-piam.r-universe.dev/badges/lpjmlstats)](https://pik-piam.r-universe.dev/builds)
 
 ## Purpose and Functionality
 
@@ -21,13 +21,13 @@ The additional repository can be made available permanently by adding the line a
 
 After that the most recent version of the package can be installed using `install.packages`:
 
-```r 
+```r
 install.packages("lpjmlstats")
 ```
 
 Package updates can be installed using `update.packages` (make sure that the additional repository has been added before running that command):
 
-```r 
+```r
 update.packages()
 ```
 
@@ -48,16 +48,17 @@ In case of questions / problems please contact David Hötten <davidho@pik-potsda
 
 To cite package **lpjmlstats** in publications use:
 
-Hötten D, Breier J, Müller C, Wirth S (2026). _lpjmlstats: Statistical tools for LPJmL data analysis_. R package version 0.10.0, <https://github.com/PIK-LPJmL/lpjmlstats>.
+Hötten D, Breier J, Müller C, Wirth S (2026). "lpjmlstats: Statistical tools for LPJmL data analysis." Version: 0.10.1, <https://github.com/PIK-LPJmL/lpjmlstats>.
 
 A BibTeX entry for LaTeX users is
 
  ```latex
-@Manual{,
+@Misc{,
   title = {lpjmlstats: Statistical tools for LPJmL data analysis},
   author = {David Hötten and Jannes Breier and Christoph Müller and Stephen B. Wirth},
+  date = {2026-06-22},
   year = {2026},
-  note = {R package version 0.10.0},
   url = {https://github.com/PIK-LPJmL/lpjmlstats},
+  note = {Version: 0.10.1},
 }
 ```
