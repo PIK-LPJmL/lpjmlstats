@@ -447,6 +447,10 @@ paste_custom <- function(..., sep = "; ") {
 prettify_units <- function(unit_vec) {
   str_units <- as.character(unit_vec)
 
+  # Keep internal unit handling parseable, but present CH4 in tonnes style.
+  str_units <- stringr::str_replace_all(str_units, "TgCH4", "MtCH4")
+  str_units <- stringr::str_replace_all(str_units, "TgMethane", "MtCH4")
+
   # set pattern to empty regex; i.e. regex matches only empty strings
   str_units <- stringr::str_replace_all(str_units,
                                         pattern = "^$", replacement = " - ")

@@ -242,17 +242,6 @@ safe_set_units <- function(x, unit_str) {
   units::set_units(x, units::as_units(mapped_str))
 }
 
-# Canonicalize unit strings for robust lookup in conversion tables.
-# This resolves equivalent notations like yr-1, a-1, or /yr.
-normalize_unit_for_lookup <- function(unit_str) {
-  mapped_str <- map_units(unit_str, formula_to_internal)
-  normalized <- tryCatch(
-    units::deparse_unit(units::as_units(mapped_str)),
-    error = function(e) mapped_str
-  )
-  map_units(normalized, internal_to_formula)
-}
-
 # Copy the unit attribute from the meta data to the units data array
 LPJmLDataCalc$set("private", "copy_unit_meta2array",
                   function() {
@@ -332,16 +321,12 @@ LPJmLDataCalc$set(
     conversions <- read.csv(path_to_table, stringsAsFactors = FALSE)
 
     # Get the current unit of the data array
-    current_unit <- normalize_unit_for_lookup(units::deparse_unit(private$.data))
-    conversion_units <- vapply(conversions$original_unit,
-                               normalize_unit_for_lookup,
-                               character(1))
+    current_unit <- units::deparse_unit(private$.data)
     # Check if current unit is in the table
-    if (current_unit %in% conversion_units) {
+    if (current_unit %in% conversions$original_unit) {
       # Get the corresponding converted unit
       converted_unit <-
-        conversions$converted_unit[conversion_units == current_unit]
-      converted_unit <- converted_unit[[1]]
+        conversions$converted_unit[conversions$original_unit == current_unit]
       # Convert the unit
       private$.__convert_unit__(converted_unit)
     }
