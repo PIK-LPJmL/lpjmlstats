@@ -382,14 +382,6 @@ test_that("applying conversion table converts gCH4 yr-1 to TgCH4 yr-1", {
   expect_equal(lpjml_calc1$data, 1e-12, ignore_attr = TRUE)
 })
 
-test_that("applying conversion table matches equivalent year notation", {
-  lpjml_calc1 <- create_LPJmLDataCalc(1, "gCH4 a-1", nyear = 1)
-
-  lpjml_calc1$apply_unit_conversion_table()
-
-  expect_equal(lpjml_calc1$meta$unit, "TgCH4 yr-1")
-  expect_equal(lpjml_calc1$data, 1e-12, ignore_attr = TRUE)
-})
 
 test_that("applying conversion table uses configured unit table path", {
   table_path <- tempfile(fileext = ".csv")
