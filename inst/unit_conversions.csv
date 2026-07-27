@@ -9,4 +9,5 @@ gN,GtN
 m2 mm yr-1,TL yr-1
 gC m-2,kgC m-2
 gN m-2,kgN m-2
-m2 mm month-1, km3 yr-1
+m2 mm month-1,km3 yr-1
+gMethane yr-1,TgMethane yr-1

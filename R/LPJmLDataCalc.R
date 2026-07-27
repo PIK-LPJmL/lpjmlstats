@@ -308,9 +308,12 @@ LPJmLDataCalc$set(
     if (is.null(path_to_table)) {
       path_to_table <-
         getOption(
-          "LPJmLDataCalc.unit_conversion_table",
-          system.file("unit_conversions.csv",
-                      package = "lpjmlstats")
+          "lpjmlstats.unit_conversion_table",
+          getOption(
+            "LPJmLDataCalc.unit_conversion_table",
+            system.file("unit_conversions.csv",
+                        package = "lpjmlstats")
+          )
         )
     }
 

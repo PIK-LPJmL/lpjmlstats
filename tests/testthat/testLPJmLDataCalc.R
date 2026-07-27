@@ -373,6 +373,38 @@ test_that("applying conversion table does nothing for unspecified conversion", {
   expect_equal(lpjml_calc1$data, 1, ignore_attr = TRUE)
 })
 
+test_that("applying conversion table converts gCH4 yr-1 to TgCH4 yr-1", {
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "gCH4 yr-1", nyear = 1)
+
+  lpjml_calc1$apply_unit_conversion_table()
+
+  expect_equal(lpjml_calc1$meta$unit, "TgCH4 yr-1")
+  expect_equal(lpjml_calc1$data, 1e-12, ignore_attr = TRUE)
+})
+
+test_that("applying conversion table matches equivalent year notation", {
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "gCH4 a-1", nyear = 1)
+
+  lpjml_calc1$apply_unit_conversion_table()
+
+  expect_equal(lpjml_calc1$meta$unit, "TgCH4 yr-1")
+  expect_equal(lpjml_calc1$data, 1e-12, ignore_attr = TRUE)
+})
+
+test_that("applying conversion table uses configured unit table path", {
+  table_path <- tempfile(fileext = ".csv")
+  writeLines(c("original_unit,converted_unit", "gN,kgN"), table_path)
+
+  lpjml_calc1 <- create_LPJmLDataCalc(1, "gN", nyear = 1)
+  set_lpjmlstats_settings(unit_table_path = table_path)
+  on.exit(set_lpjmlstats_settings(unit_table_path = NULL), add = TRUE)
+
+  lpjml_calc1$apply_unit_conversion_table()
+
+  expect_equal(lpjml_calc1$meta$unit, "kgN")
+  expect_equal(lpjml_calc1$data, 1e-3, ignore_attr = TRUE)
+})
+
 test_that("keep dimnames works as expected", {
   array1 <- c(1, 1, 1, 1)
   dim(array1) <- c(x = 2, y = 2, z = 1)
