@@ -76,7 +76,6 @@ GlobSumTimeAvgTable <- # nolint: object_name_linter.
       description = "The cell-time values of each variable are weighted by
              reference area, summed globally
              and then averaged over time. \n"
-
     )
   )
 
@@ -812,5 +811,44 @@ TimeAvgMapTreeCover <- # nolint: object_name_linter.
       description = "The cell-time values of each variable are averaged over time.
         Bands that contain the string `tree` are added up.
         The resulting sum is then plotted on a map. \n"
+    )
+  )
+
+#' @title GlobCellSumTimeAvgTable
+#' @description
+#' GlobCellSumTimeAvgTable metric
+#' @export
+GlobCellSumTimeAvgTable <- # nolint: object_name_linter.
+  R6::R6Class(
+    "GlobCellSumTimeAvgTable",
+    inherit = GlobSumTimeAvgTable,
+    public = list(
+      summarize = function(data) {
+        data |>
+          aggregate(time = list(to = "sim_period", stat = "mean")) |>
+          aggregate(cell = list(to = "global", stat = "sum"))
+      },
+      title = "Global Cell Sum Time Average Table",
+      description = "Cell values summed globally without terr_area weighting,
+        then time-averaged.\n"
+    )
+  )
+
+#' @title GlobCellSumAnnAvgTimeseries
+#' @description
+#' GlobCellSumAnnAvgTimeseries metric
+#' @export
+GlobCellSumAnnAvgTimeseries <- # nolint: object_name_linter.
+  R6::R6Class(
+    "GlobCellSumAnnAvgTimeseries",
+    inherit = GlobSumAnnAvgTimeseries,
+    public = list(
+      summarize = function(data) {
+        data |>
+          aggregate(time = list(to = "years", stat = "mean")) |>
+          aggregate(cell = list(to = "global", stat = "sum"))
+      },
+      title = "Global Cell Sum Annual Average Time Series",
+      description = "Annual means summed globally without terr_area weighting.\n"
     )
   )

@@ -30,9 +30,15 @@ default_settings <- list(
   mtransp = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMapWithAbsUndertest),
   minterc = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMapWithAbsUndertest),
   mrunoff = c(GlobSumTimeAvgTable, GlobSumAnnAvgTimeseries, TimeAvgMapWithAbsUndertest),
-  `pft_harvest.pft$rainfed rice;
+  burntarea = c(GlobCellSumTimeAvgTable, GlobCellSumAnnAvgTimeseries, TimeAvgMapWithAbsUndertest),
+  `pft_harvest.pft$rainfed temperate cereals;
+  rainfed rice;
   rainfed maize;
   rainfed oil crops soybean;
+  irrigated temperate cereals;
+  irrigated rice;
+  irrigated maize;
+  irrigated oil crops soybean;
   rainfed grassland`  = c(GlobSumTimeAvgTablePFT_harvest,
                           GlobSumAnnTimeseriesPFT_harvest,
                           TimeAvgMapWithAbsUndertest)
