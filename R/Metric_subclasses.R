@@ -814,3 +814,31 @@ TimeAvgMapTreeCover <- # nolint: object_name_linter.
         The resulting sum is then plotted on a map. \n"
     )
   )
+
+GlobCellSumTimeAvgTable <- R6::R6Class(
+  "GlobCellSumTimeAvgTable",
+  inherit = GlobSumTimeAvgTable,
+  public = list(
+    summarize = function(data) {
+      data |>
+        aggregate(time = list(to = "sim_period", stat = "mean")) |>
+        aggregate(cell = list(to = "global", stat = "sum"))
+    },
+    title = "Global Cell Sum Time Average Table",
+    description = "Cell values summed globally without terr_area weighting, then time-averaged.\n"
+  )
+)
+
+GlobCellSumAnnAvgTimeseries <- R6::R6Class(
+  "GlobCellSumAnnAvgTimeseries",
+  inherit = GlobSumAnnAvgTimeseries,
+  public = list(
+    summarize = function(data) {
+      data |>
+        aggregate(time = list(to = "years", stat = "mean")) |>
+        aggregate(cell = list(to = "global", stat = "sum"))
+    },
+    title = "Global Cell Sum Annual Average Time Series",
+    description = "Annual means summed globally without terr_area weighting.\n"
+  )
+)
